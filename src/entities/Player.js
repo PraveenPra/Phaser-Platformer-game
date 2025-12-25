@@ -59,4 +59,21 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   canUseAttack(key) {
     return this.attacks[key]?.unlocked;
   }
+
+  spawnAttackHitbox(attack) {
+    const hitbox = this.scene.physics.add.sprite(
+      this.x + (this.flipX ? -attack.offsetX : attack.offsetX),
+      this.y + attack.offsetY,
+      null
+    );
+
+    hitbox.body.setSize(attack.width, attack.height);
+    hitbox.damage = attack.damage;
+    hitbox.owner = this;
+
+    hitbox.setVisible(false);
+    hitbox.body.allowGravity = false;
+
+    this.scene.time.delayedCall(60, () => hitbox.destroy());
+  }
 }
