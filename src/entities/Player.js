@@ -33,9 +33,9 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     };
 
     this.attacks = {
-      main: { anim: "attack-A", duration: 280 },
-      skill1: { anim: "attack-B", duration: 300 },
-      skill2: { anim: "attack-C", duration: 360 },
+      main: { anim: "attack-A", unlocked: true },
+      skill1: { anim: "attack-B", unlocked: true },
+      skill2: { anim: "attack-C", unlocked: true },
     };
   }
 

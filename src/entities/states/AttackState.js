@@ -2,17 +2,20 @@ import { PlayerState } from "./PlayerState.js";
 
 export class AttackState extends PlayerState {
   enter(player, attackKey) {
-    player.setVelocityX(0);
-
     const attack = player.attacks[attackKey];
-    if (!attack) {
+
+    if (!attack || !attack.unlocked) {
       player.setState("idle");
       return;
     }
 
-    player.playAnim(`${player.texture.key}_${attack.anim}`);
+    player.setVelocityX(0);
 
-    player.scene.time.delayedCall(attack.duration, () => {
+    const animKey = `${player.texture.key}_${attack.anim}`;
+    player.playAnim(animKey);
+
+    // IMPORTANT: wait for animation to finish
+    player.once(Phaser.Animations.Events.ANIMATION_COMPLETE, () => {
       player.setState("idle");
     });
   }

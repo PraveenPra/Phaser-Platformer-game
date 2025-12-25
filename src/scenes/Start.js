@@ -14,10 +14,10 @@ export class Start extends Phaser.Scene {
 
     createAnimations(this, key);
 
-    this.player = new Player(this, 200, 300, key);
+    this.player = new Player(this, 200, 200, key);
 
     const ground = this.physics.add
-      .staticImage(480, 520, null)
+      .staticImage(480, 220, null)
       .setDisplaySize(960, 10)
       .refreshBody();
 
