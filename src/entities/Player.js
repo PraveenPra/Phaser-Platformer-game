@@ -34,9 +34,11 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
     this.attacks = {
       main: { anim: "attack-A", unlocked: true },
-      skill1: { anim: "attack-B", unlocked: true },
-      skill2: { anim: "attack-C", unlocked: true },
+      skill1: { anim: "attack-B", unlocked: false },
+      skill2: { anim: "attack-C", unlocked: false },
     };
+
+    // this.attacks.skill1.unlocked = true;
   }
 
   setState(name, data = null) {
@@ -52,5 +54,9 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   playAnim(key) {
     if (this.anims.currentAnim?.key === key) return;
     this.play(key);
+  }
+
+  canUseAttack(key) {
+    return this.attacks[key]?.unlocked;
   }
 }

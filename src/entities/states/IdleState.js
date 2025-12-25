@@ -7,15 +7,15 @@ export class IdleState extends PlayerState {
   }
 
   update(player, cursors) {
-    if (player.attackKeys.main.isDown) {
+    if (player.attackKeys.main.isDown && player.canUseAttack("main")) {
       player.setState("attack", "main");
       return;
     }
-    if (player.attackKeys.skill1.isDown) {
+    if (player.attackKeys.skill1.isDown && player.canUseAttack("skill1")) {
       player.setState("attack", "skill1");
       return;
     }
-    if (player.attackKeys.skill2.isDown) {
+    if (player.attackKeys.skill2.isDown && player.canUseAttack("skill2")) {
       player.setState("attack", "skill2");
       return;
     }

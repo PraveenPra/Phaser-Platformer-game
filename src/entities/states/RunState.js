@@ -9,15 +9,16 @@ export class RunState extends PlayerState {
     //for now attack  lives in IdleState and RunState because:
     //Those are the states where attacks are allowed
     //Attack is a state transition, not a global action
-    if (player.attackKeys.main.isDown) {
+
+    if (player.attackKeys.main.isDown && player.canUseAttack("main")) {
       player.setState("attack", "main");
       return;
     }
-    if (player.attackKeys.skill1.isDown) {
+    if (player.attackKeys.skill1.isDown && player.canUseAttack("skill1")) {
       player.setState("attack", "skill1");
       return;
     }
-    if (player.attackKeys.skill2.isDown) {
+    if (player.attackKeys.skill2.isDown && player.canUseAttack("skill2")) {
       player.setState("attack", "skill2");
       return;
     }
