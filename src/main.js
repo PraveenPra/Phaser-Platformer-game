@@ -1,5 +1,6 @@
 import { Start } from "./scenes/Start.js";
 import { Preload } from "./scenes/Preload.js";
+import { CharacterSelect } from "./scenes/CharacterSelect.js";
 
 const config = {
   type: Phaser.AUTO,
@@ -10,7 +11,7 @@ const config = {
   height: 540,
   backgroundColor: "#1e1e1e",
   pixelArt: true,
-  scene: [Preload, Start],
+  scene: [Preload, CharacterSelect, Start],
   physics: {
     default: "arcade",
     arcade: {
