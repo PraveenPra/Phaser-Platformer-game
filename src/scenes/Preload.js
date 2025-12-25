@@ -6,8 +6,8 @@ export class Preload extends Phaser.Scene {
   preload() {
     this.load.atlas(
       "agumon",
-      "assets/digimons/Agumon/Gabumon.png",
-      "assets/digimons/Agumon/Gabumon.json"
+      "assets/digimons/Agumon/Agumon.png",
+      "assets/digimons/Agumon/Agumon.json"
     );
 
     this.load.atlas(
