@@ -18,7 +18,7 @@ export class Start extends Phaser.Scene {
 
     const ground = this.physics.add
       .staticImage(480, 520, null)
-      .setDisplaySize(960, 40)
+      .setDisplaySize(960, 10)
       .refreshBody();
 
     this.physics.add.collider(this.player, ground);
