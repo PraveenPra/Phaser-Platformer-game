@@ -11,16 +11,29 @@ export class Start extends Phaser.Scene {
   preload() {}
 
   create() {
+    // --- PAUSE SYSTEM ---
+    this.isPaused = false;
+
+    this.pauseKey = this.input.keyboard.addKey(
+      Phaser.Input.Keyboard.KeyCodes.P
+    );
+    // ======================
     const key = GameState.selectedDigimon;
 
     createAnimations(this, key);
 
     this.player = new Player(this, 200, 200, key);
 
-    this.ground = this.physics.add
-      .staticImage(480, 400, null)
-      .setDisplaySize(960, 10)
-      .refreshBody();
+    // this.ground = this.physics.add
+    //   .staticImage(480, 400, null)
+    //   .setDisplaySize(960, 10)
+    //   .refreshBody();
+
+    this.ground = this.add
+      .tileSprite(200, 400, 1480, 25, "ground")
+      .setScale(1, 1.8);
+
+    this.physics.add.existing(this.ground, true);
 
     this.physics.add.collider(this.player, this.ground);
 
@@ -46,9 +59,34 @@ export class Start extends Phaser.Scene {
         hitbox.destroy();
       }
     );
+
+    // ==========================
+    this.physics.world.createDebugGraphic();
+
+    // Optional: make debug clearer
+    this.physics.world.debugGraphic.setAlpha(0.75);
+    // =====================
   }
 
   update() {
+    // Toggle pause
+    if (Phaser.Input.Keyboard.JustDown(this.pauseKey)) {
+      this.isPaused = !this.isPaused;
+
+      if (this.isPaused) {
+        this.physics.world.pause();
+        this.anims.pauseAll();
+        console.log("⏸️ PAUSED");
+      } else {
+        this.physics.world.resume();
+        this.anims.resumeAll();
+        console.log("▶️ RESUMED");
+      }
+    }
+
+    // Stop all updates while paused
+    if (this.isPaused) return;
+    // ======================================
     this.player.update(this.cursors);
   }
 }

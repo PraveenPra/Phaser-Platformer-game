@@ -15,6 +15,8 @@ export class Preload extends Phaser.Scene {
       "assets/digimons/Gabumon/Gabumon.png",
       "assets/digimons/Gabumon/Gabumon.json"
     );
+
+    this.load.image("ground", "assets/ground.png");
   }
 
   create() {
