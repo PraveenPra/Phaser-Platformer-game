@@ -38,7 +38,9 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       skill2: { anim: "attack-C", unlocked: false },
     };
 
-    // this.attacks.skill1.unlocked = true;
+    //disable after testing
+    this.attacks.skill1.unlocked = true;
+    this.attacks.skill2.unlocked = true;
   }
 
   setState(name, data = null) {
@@ -60,19 +62,21 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     return this.attacks[key]?.unlocked;
   }
 
-  spawnAttackHitbox(attack) {
+  spawnAttackHitbox(hitboxData, damage = 1) {
+    const xOffset = this.flipX ? -hitboxData.offsetX : hitboxData.offsetX;
+
     const hitbox = this.scene.physics.add.sprite(
-      this.x + (this.flipX ? -attack.offsetX : attack.offsetX),
-      this.y + attack.offsetY,
+      this.x + xOffset,
+      this.y + hitboxData.offsetY,
       null
     );
 
-    hitbox.body.setSize(attack.width, attack.height);
-    hitbox.damage = attack.damage;
-    hitbox.owner = this;
-
-    hitbox.setVisible(false);
+    hitbox.body.setSize(hitboxData.width, hitboxData.height);
     hitbox.body.allowGravity = false;
+    hitbox.setVisible(false);
+
+    hitbox.damage = damage;
+    hitbox.owner = this;
 
     this.scene.time.delayedCall(60, () => hitbox.destroy());
   }

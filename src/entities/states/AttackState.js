@@ -38,9 +38,13 @@ export class AttackState extends PlayerState {
   }
 
   onAnimationFrame(anim, frame) {
+    if (this.attackData.type !== "melee") return;
     if (!this.attackData.hitFrames.includes(frame.index)) return;
 
-    this.player.spawnAttackHitbox(this.attackData);
+    this.player.spawnAttackHitbox(
+      this.attackData.hitbox,
+      this.attackData.damage
+    );
   }
 
   update() {
