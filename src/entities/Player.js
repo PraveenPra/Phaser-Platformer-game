@@ -12,6 +12,13 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
     this.setCollideWorldBounds(true);
     this.setScale(2);
+    this.setOrigin(0.5, 1); // Set origin to bottom center so legs align with ground
+
+    //add after physics body is created
+    // This does:Smaller collision box.Anchors collision to lower body (legs)
+    this.body.setSize(this.width * 0.4, this.height * 1.4);
+
+    this.body.setOffset(this.width * 0.1, this.height * 0.2);
 
     this.speed = 200;
     this.jumpPower = 420;

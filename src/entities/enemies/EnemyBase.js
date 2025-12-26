@@ -7,6 +7,10 @@ export class EnemyBase extends Phaser.Physics.Arcade.Sprite {
 
     this.setCollideWorldBounds(true);
     this.setScale(2);
+    this.setOrigin(0.5, 1);
+    this.body.setSize(this.width * 0.5, this.height * 1.4);
+
+    this.body.setOffset(this.width * 0.2, this.height * 0.2);
 
     this.maxHp = 3;
     this.hp = this.maxHp;
