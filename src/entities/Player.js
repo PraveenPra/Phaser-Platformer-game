@@ -78,6 +78,9 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     hitbox.damage = damage;
     hitbox.owner = this;
 
+    // ✅ ADD TO HITBOX GROUP
+    this.scene.attackHitboxes.add(hitbox);
+
     this.scene.time.delayedCall(60, () => hitbox.destroy());
   }
 }
