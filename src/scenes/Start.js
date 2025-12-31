@@ -2,6 +2,7 @@ import { createAnimations } from "../systems/AnimationFactory.js";
 import { GameState } from "../GameState.js";
 import { Player } from "../entities/Player.js";
 import { EnemyBase } from "../entities/enemies/EnemyBase.js";
+import { Player1 } from "../entities/Player1.js";
 
 export class Start extends Phaser.Scene {
   constructor() {
@@ -22,7 +23,7 @@ export class Start extends Phaser.Scene {
 
     createAnimations(this, key);
 
-    this.player = new Player(this, 200, 200, key);
+    this.player = new Player1(this, 200, 200, key);
 
     // this.ground = this.physics.add
     //   .staticImage(480, 400, null)

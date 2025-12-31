@@ -3,25 +3,20 @@ import { RunState } from "./states/RunState.js";
 import { JumpState } from "./states/JumpState.js";
 import { AttackState } from "./states/AttackState.js";
 
-export class Player extends Phaser.Physics.Arcade.Sprite {
+export class Player1 extends Phaser.Physics.Arcade.Sprite {
   constructor(scene, x, y, textureKey) {
     super(scene, x, y, textureKey);
+
+    this.sprite = scene.add.sprite(0, 0, textureKey);
+    this.sprite.setOrigin(1); // bottom-center feet lock
+    this.add(this.sprite);
 
     scene.add.existing(this);
     scene.physics.add.existing(this);
 
     this.setCollideWorldBounds(true);
     this.setScale(2);
-    // this.setOrigin(0.5, 1); // Set origin to bottom center so legs align with ground
 
-    //add after physics body is created
-    // This does:Smaller collision box.Anchors collision to lower body (legs)
-    // this.body.setSize(this.width * 0.4, this.height * 0.4);
-
-    // this.body.setOffset(this.width * 0.3, this.height * 0.6);
-
-    // this.body.setSize(18, 24); // stable collider
-    // this.body.setOffset(7, 8); // legs on ground
     this.body.setSize(
       this.body.width,
       this.body.height,

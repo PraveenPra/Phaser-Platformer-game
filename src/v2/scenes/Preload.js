@@ -22,8 +22,8 @@ export class Preload extends Phaser.Scene {
   }
 
   create() {
-    // this.scene.start("CharacterSelect");
-    GameState.selectedDigimon = "agumon";
-    this.scene.start("Start");
+    this.scene.start("CharacterSelect");
+    // GameState.selectedDigimon = "agumon";
+    // this.scene.start("Start");
   }
 }
