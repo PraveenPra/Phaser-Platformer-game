@@ -8,11 +8,16 @@ export const DIGIMON_PROFILES = {
     //   gravityY: 900,
     // },
 
-    // visual: {
-    //   originX: 0.5,
-    //   originY: 1,
-    //   yOffset: 0,
-    // },
+    visual: {
+      originX: 0.5,
+      originY: 1,
+      yOffset: -2,
+      anims: {
+        "attack-A": -6,
+        "attack-B": -3,
+        "attack-C": -5,
+      },
+    },
 
     stats: {
       hp: 100,
@@ -23,8 +28,43 @@ export const DIGIMON_PROFILES = {
     },
 
     attacks: {
-      main: "claw",
-      skill1: "pepper_breath",
+      main: {
+        anim: "attack-A",
+        damage: 10,
+        hitbox: {
+          width: 20,
+          height: 18,
+          offsetX: 16,
+          offsetY: -8,
+          // duration: 320,//ms
+        },
+        cooldown: 300,
+      },
+      skill1: {
+        anim: "attack-B",
+        damage: 18,
+        hitbox: {
+          width: 20,
+          height: 18,
+          offsetX: 16,
+          offsetY: -8,
+          // duration: 320,
+        },
+        cooldown: 800,
+      },
+
+      skill2: {
+        anim: "attack-C",
+        damage: 30,
+        hitbox: {
+          width: 20,
+          height: 18,
+          offsetX: 16,
+          offsetY: -8,
+          // duration: 320,
+        },
+        cooldown: 1500,
+      },
     },
 
     evolution: "greymon",
@@ -43,6 +83,9 @@ export const DIGIMON_PROFILES = {
       originX: 0.5,
       originY: 1,
       yOffset: -5,
+      anims: {
+        "attack-C": -4,
+      },
     },
 
     stats: {
@@ -54,8 +97,43 @@ export const DIGIMON_PROFILES = {
     },
 
     attacks: {
-      main: "horn",
-      skill1: "blue_blaster",
+      main: {
+        anim: "attack-A",
+        damage: 10,
+        hitbox: {
+          width: 20,
+          height: 18,
+          offsetX: 16,
+          offsetY: -8,
+          // duration: 320,//ms
+        },
+        cooldown: 300,
+      },
+      skill1: {
+        anim: "attack-B",
+        damage: 18,
+        hitbox: {
+          width: 20,
+          height: 18,
+          offsetX: 16,
+          offsetY: -8,
+          // duration: 320,
+        },
+        cooldown: 800,
+      },
+
+      skill2: {
+        anim: "attack-C",
+        damage: 30,
+        hitbox: {
+          width: 20,
+          height: 18,
+          offsetX: 16,
+          offsetY: -8,
+          // duration: 320,
+        },
+        cooldown: 1500,
+      },
     },
 
     evolution: "garurumon",

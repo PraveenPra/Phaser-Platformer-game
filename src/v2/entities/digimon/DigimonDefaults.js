@@ -22,5 +22,6 @@ export const DIGIMON_DEFAULTS = {
     maxHp: 100,
     attack: 10,
     defense: 5,
+    attackCooldown: 300, // ms
   },
 };
