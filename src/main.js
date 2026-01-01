@@ -1,6 +1,6 @@
-import { Start } from "./v2/scenes/Start.js";
-import { Preload } from "./v2/scenes/Preload.js";
-import { CharacterSelect } from "./v2/scenes/CharacterSelect.js";
+import { Start } from "./scenes/Start.js";
+import { Preload } from "./scenes/Preload.js";
+import { CharacterSelect } from "./scenes/CharacterSelect.js";
 
 const config = {
   type: Phaser.AUTO,

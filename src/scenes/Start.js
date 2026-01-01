@@ -1,8 +1,7 @@
 import { createAnimations } from "../systems/AnimationFactory.js";
 import { GameState } from "../GameState.js";
-import { Player } from "../entities/Player.js";
-import { EnemyBase } from "../entities/enemies/EnemyBase.js";
-import { Player1 } from "../entities/Player1.js";
+import { Player } from "../entities/Player/Player.js";
+import { Enemy } from "../entities/enemy/Enemy.js";
 
 export class Start extends Phaser.Scene {
   constructor() {
@@ -12,82 +11,29 @@ export class Start extends Phaser.Scene {
   preload() {}
 
   create() {
-    // --- PAUSE SYSTEM ---
-    this.isPaused = false;
-
-    this.pauseKey = this.input.keyboard.addKey(
-      Phaser.Input.Keyboard.KeyCodes.P
-    );
-    // ======================
     const key = GameState.selectedDigimon;
-
     createAnimations(this, key);
 
-    this.player = new Player1(this, 200, 200, key);
+    this.anims.create({
+      key: "fireball_fly",
+      frames: this.anims.generateFrameNumbers("fireball", { start: 0, end: 1 }),
+      frameRate: 10,
+      repeat: -1,
+    });
 
-    // this.ground = this.physics.add
-    //   .staticImage(480, 400, null)
-    //   .setDisplaySize(960, 10)
-    //   .refreshBody();
+    this.player = new Player(this, 200, 400, key);
 
-    this.ground = this.add
-      .tileSprite(200, 400, 1480, 25, "ground")
-      .setScale(1, 1.8);
-
+    this.ground = this.add.tileSprite(400, 500, 800, 12, "ground");
     this.physics.add.existing(this.ground, true);
 
     this.physics.add.collider(this.player, this.ground);
 
-    this.cursors = this.input.keyboard.createCursorKeys();
-
-    // ==========( HITBOXES)================
-    this.attackHitboxes = this.physics.add.group();
-
-    // ==============(ENEMIES)=========
-    this.enemies = this.physics.add.group();
-
-    createAnimations(this, "gabumon");
-
-    const enemy = new EnemyBase(this, 500, 100, "gabumon");
-    this.enemies.add(enemy);
-    this.physics.add.collider(this.enemies, this.ground);
-
-    this.physics.add.overlap(
-      this.enemies,
-      this.attackHitboxes,
-      (enemy, hitbox) => {
-        enemy.takeDamage(hitbox.damage);
-        hitbox.destroy();
-      }
-    );
-
-    // ==========================
-    this.physics.world.createDebugGraphic();
-
-    // Optional: make debug clearer
-    this.physics.world.debugGraphic.setAlpha(0.75);
-    // =====================
+    this.enemy = new Enemy(this, 500, 400, "gabumon");
+    this.physics.add.collider(this.enemy, this.ground);
   }
 
-  update() {
-    // Toggle pause
-    if (Phaser.Input.Keyboard.JustDown(this.pauseKey)) {
-      this.isPaused = !this.isPaused;
-
-      if (this.isPaused) {
-        this.physics.world.pause();
-        this.anims.pauseAll();
-        console.log("⏸️ PAUSED");
-      } else {
-        this.physics.world.resume();
-        this.anims.resumeAll();
-        console.log("▶️ RESUMED");
-      }
-    }
-
-    // Stop all updates while paused
-    if (this.isPaused) return;
-    // ======================================
-    this.player.update(this.cursors);
+  update(time, delta) {
+    this.player.update(delta);
+    this.enemy.update(delta);
   }
 }
