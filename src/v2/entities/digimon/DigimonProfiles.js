@@ -29,6 +29,7 @@ export const DIGIMON_PROFILES = {
 
     attacks: {
       main: {
+        type: "melee",
         anim: "attack-A",
         damage: 10,
         hitbox: {
@@ -41,19 +42,20 @@ export const DIGIMON_PROFILES = {
         cooldown: 300,
       },
       skill1: {
+        type: "projectile",
         anim: "attack-B",
         damage: 18,
-        hitbox: {
-          width: 20,
-          height: 18,
-          offsetX: 16,
-          offsetY: -8,
-          // duration: 320,
+        projectile: {
+          speed: 260,
+          offsetX: 18,
+          offsetY: -10,
+          lifetime: 1200,
         },
         cooldown: 800,
       },
 
       skill2: {
+        type: "melee",
         anim: "attack-C",
         damage: 30,
         hitbox: {
@@ -98,6 +100,7 @@ export const DIGIMON_PROFILES = {
 
     attacks: {
       main: {
+        type: "melee",
         anim: "attack-A",
         damage: 10,
         hitbox: {
@@ -110,19 +113,20 @@ export const DIGIMON_PROFILES = {
         cooldown: 300,
       },
       skill1: {
+        type: "projectile",
         anim: "attack-B",
         damage: 18,
-        hitbox: {
-          width: 20,
-          height: 18,
-          offsetX: 16,
-          offsetY: -8,
-          // duration: 320,
+        projectile: {
+          speed: 260,
+          offsetX: 18,
+          offsetY: -10,
+          lifetime: 1200,
         },
         cooldown: 800,
       },
 
       skill2: {
+        type: "melee",
         anim: "attack-C",
         damage: 30,
         hitbox: {

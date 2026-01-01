@@ -19,6 +19,8 @@ export class Preload extends Phaser.Scene {
     );
 
     this.load.image("ground", "assets/ground.png");
+
+    this.load.image("big-fireball", "assets/vfx/big-fireball.png");
   }
 
   create() {

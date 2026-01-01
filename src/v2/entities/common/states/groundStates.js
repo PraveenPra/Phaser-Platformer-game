@@ -1,4 +1,5 @@
 import { spawnAttackHitbox } from "../combat/spawnAttackHitbox.js";
+import { spawnProjectile } from "../combat/spawnProjectile.js";
 
 export const GroundStates = {
   idle: {
@@ -111,7 +112,13 @@ export const GroundStates = {
 
       entity.scene.time.delayedCall(40, () => {
         if (!entity.active) return;
-        spawnAttackHitbox(entity.scene, entity, attack.hitbox);
+        if (attack.type === "melee") {
+          spawnAttackHitbox(entity.scene, entity, attack.hitbox);
+        }
+
+        if (attack.type === "projectile") {
+          spawnProjectile(entity.scene, entity, attack);
+        }
       });
 
       entity.visual.sprite.once(
