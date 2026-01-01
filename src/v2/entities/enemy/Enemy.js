@@ -1,18 +1,18 @@
-import { resolveProfile } from "../digimon/resolveProfile.js";
 import { Character } from "../common/Character.js";
-import { PlayerInput } from "./PlayerInput.js";
+import { resolveProfile } from "../digimon/resolveProfile.js";
 import { GroundStates } from "../common/states/groundStates.js";
+import { EnemyAI } from "./EnemyAI.js";
 
-export class Player extends Character {
+export class Enemy extends Character {
   constructor(scene, x, y, textureKey) {
     const profile = resolveProfile(textureKey);
     super(scene, x, y, textureKey, profile, GroundStates, "idle");
 
-    this.inputHandler = new PlayerInput(scene);
+    this.ai = new EnemyAI();
   }
 
   update(dt) {
-    this.inputHandler.update(this);
+    this.ai.update(this, dt);
     super.update(dt);
   }
 }
