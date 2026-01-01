@@ -4,15 +4,26 @@ export function spawnAttackHitbox(scene, owner, config) {
   const hitbox = scene.physics.add.sprite(
     owner.x + config.offsetX * dir,
     owner.y + config.offsetY,
-    null
+    "__hitbox"
   );
+
+  hitbox.setTint(0xff0000); // melee = red
 
   hitbox.body.setSize(config.width, config.height);
   hitbox.body.allowGravity = false;
-  hitbox.setVisible(false);
 
-  scene.time.delayedCall(config.duration, () => {
-    hitbox.destroy();
+  // dev visibility toggle
+  hitbox.setVisible(true);
+  hitbox.setAlpha(0.4);
+
+  // scene.time.delayedCall(config.duration, () => {
+  //   hitbox.destroy();
+  // });
+
+  const lifetime = config.duration ?? 120;
+
+  scene.time.delayedCall(lifetime, () => {
+    if (hitbox.active) hitbox.destroy();
   });
 
   return hitbox;

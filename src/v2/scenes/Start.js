@@ -14,6 +14,13 @@ export class Start extends Phaser.Scene {
     const key = GameState.selectedDigimon;
     createAnimations(this, key);
 
+    this.anims.create({
+      key: "fireball_fly",
+      frames: this.anims.generateFrameNumbers("fireball", { start: 0, end: 1 }),
+      frameRate: 10,
+      repeat: -1,
+    });
+
     this.player = new Player(this, 200, 400, key);
 
     this.ground = this.add.tileSprite(400, 500, 800, 12, "ground");

@@ -1,13 +1,5 @@
 export const DIGIMON_PROFILES = {
   agumon: {
-    // body: {
-    //   width: 18,
-    //   height: 24,
-    //   offsetX: -9,
-    //   offsetY: -12,
-    //   gravityY: 900,
-    // },
-
     visual: {
       originX: 0.5,
       originY: 1,
@@ -46,11 +38,14 @@ export const DIGIMON_PROFILES = {
         anim: "attack-B",
         damage: 18,
         projectile: {
-          speed: 260,
-          offsetX: 18,
-          offsetY: -10,
-          lifetime: 1200,
+          texture: "fireball",
+          anim: "fireball_fly",
+          speed: 120,
+          offsetX: 20,
+          offsetY: -3,
+          lifetime: 900,
         },
+        fireFrame: 11,
         cooldown: 800,
       },
 
@@ -117,11 +112,13 @@ export const DIGIMON_PROFILES = {
         anim: "attack-B",
         damage: 18,
         projectile: {
+          texture: "big-fireball",
           speed: 260,
           offsetX: 18,
           offsetY: -10,
           lifetime: 1200,
         },
+        fireFrame: 4,
         cooldown: 800,
       },
 
