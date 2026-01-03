@@ -24,12 +24,14 @@ export const DIGIMON_PROFILES = {
         type: "melee",
         anim: "attack-A",
         damage: 10,
+        fireFrames: [3, 4, 5], // active hit window
         hitbox: {
           width: 20,
           height: 18,
           offsetX: 16,
           offsetY: -8,
           // duration: 320,//ms
+          duration: 80, // per-frame lifetime
         },
         cooldown: 300,
       },
@@ -53,12 +55,14 @@ export const DIGIMON_PROFILES = {
         type: "melee",
         anim: "attack-C",
         damage: 30,
+        fireFrames: [1, 3, 5], // active hit window
         hitbox: {
           width: 20,
           height: 18,
           offsetX: 16,
           offsetY: -8,
           // duration: 320,
+          // duration: 80, // per-frame lifetime
         },
         cooldown: 1500,
       },
@@ -98,11 +102,13 @@ export const DIGIMON_PROFILES = {
         type: "melee",
         anim: "attack-A",
         damage: 10,
+        fireFrames: [3, 4, 5], // active hit window
         hitbox: {
           width: 20,
           height: 18,
           offsetX: 16,
           offsetY: -8,
+          duration: 80, // per-frame lifetime
           // duration: 320,//ms
         },
         cooldown: 300,
@@ -126,11 +132,13 @@ export const DIGIMON_PROFILES = {
         type: "melee",
         anim: "attack-C",
         damage: 30,
+        fireFrames: [3, 4, 5], // active hit window
         hitbox: {
           width: 20,
           height: 18,
           offsetX: 16,
           offsetY: -8,
+          duration: 80, // per-frame lifetime
           // duration: 320,
         },
         cooldown: 1500,

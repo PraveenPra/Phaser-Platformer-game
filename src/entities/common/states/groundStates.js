@@ -112,69 +112,56 @@ export const GroundStates = {
       const animKey = `${entity.key}_${attack.anim}`;
       entity.visual.play(animKey);
 
-      // const fireFrame = attack.fireFrame ?? null;
+      // ===============================
+      // MELEE: multi-frame hit windows
+      // ===============================
+      if (attack.type === "melee" && attack.fireFrames?.length) {
+        const firedFrames = new Set();
 
-      // if (fireFrame !== null) {
-      //   // entity.visual.sprite.on(
-      //   //   Phaser.Animations.Events.ANIMATION_UPDATE,
-      //   //   function (anim, frame) {
-      //   //     if (frame.index === fireFrame) {
-      //   //       if (attack.type === "melee") {
-      //   //         spawnAttackHitbox(entity.scene, entity, attack.hitbox);
-      //   //       }
+        const onMeleeUpdate = (anim, frame) => {
+          if (anim.key !== animKey) return;
+          if (!attack.fireFrames.includes(frame.index)) return;
+          if (firedFrames.has(frame.index)) return;
 
-      //   //       if (attack.type === "projectile") {
-      //   //         spawnProjectile(entity.scene, entity, attack);
-      //   //       }
+          firedFrames.add(frame.index);
+          spawnAttackHitbox(entity.scene, entity, attack.hitbox);
+        };
 
-      //   //       this.off(Phaser.Animations.Events.ANIMATION_UPDATE);
-      //   //     }
-      //   //   }
-      //   // );
+        sprite.on(Phaser.Animations.Events.ANIMATION_UPDATE, onMeleeUpdate);
 
-      //   const onUpdate = (anim, frame) => {
-      //     if (anim.key !== animKey) return;
-      //     if (frame.index !== fireFrame) return;
-
-      //     if (attack.type === "melee") {
-      //       spawnAttackHitbox(entity.scene, entity, attack.hitbox);
-      //     }
-
-      //     if (attack.type === "projectile") {
-      //       spawnProjectile(entity.scene, entity, attack);
-      //     }
-
-      //     sprite.off(Phaser.Animations.Events.ANIMATION_UPDATE, onUpdate);
-      //   };
-
-      //   sprite.on(Phaser.Animations.Events.ANIMATION_UPDATE, onUpdate);
-      // }
-
-      const fireFrame = attack.fireFrame ?? null;
-
-      // 🔥 MELEE: spawn immediately if no fireFrame
-      if (attack.type === "melee" && fireFrame === null) {
-        spawnAttackHitbox(entity.scene, entity, attack.hitbox);
+        sprite.once(
+          Phaser.Animations.Events.ANIMATION_COMPLETE_KEY + animKey,
+          () => {
+            sprite.off(
+              Phaser.Animations.Events.ANIMATION_UPDATE,
+              onMeleeUpdate
+            );
+          }
+        );
       }
 
-      // 🔥 FRAME-BASED attacks (projectile OR melee with fireFrame)
-      if (fireFrame !== null) {
-        const onUpdate = (anim, frame) => {
+      // =================================
+      // PROJECTILE: single fire frame ONLY
+      // =================================
+      if (attack.type === "projectile" && attack.fireFrame !== undefined) {
+        const fireFrame = attack.fireFrame;
+
+        const onProjectileUpdate = (anim, frame) => {
           if (anim.key !== animKey) return;
           if (frame.index !== fireFrame) return;
 
-          if (attack.type === "melee") {
-            spawnAttackHitbox(entity.scene, entity, attack.hitbox);
-          }
+          spawnProjectile(entity.scene, entity, attack);
 
-          if (attack.type === "projectile") {
-            spawnProjectile(entity.scene, entity, attack);
-          }
-
-          sprite.off(Phaser.Animations.Events.ANIMATION_UPDATE, onUpdate);
+          sprite.off(
+            Phaser.Animations.Events.ANIMATION_UPDATE,
+            onProjectileUpdate
+          );
         };
 
-        sprite.on(Phaser.Animations.Events.ANIMATION_UPDATE, onUpdate);
+        sprite.on(
+          Phaser.Animations.Events.ANIMATION_UPDATE,
+          onProjectileUpdate
+        );
       }
 
       entity.visual.sprite.once(
