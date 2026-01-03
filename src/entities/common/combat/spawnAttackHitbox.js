@@ -16,15 +16,11 @@ export function spawnAttackHitbox(scene, owner, config) {
   hitbox.setVisible(true);
   hitbox.setAlpha(0.4);
 
-  // scene.time.delayedCall(config.duration, () => {
-  //   hitbox.destroy();
-  // });
-
-  const lifetime = config.duration ?? 120;
-
-  scene.time.delayedCall(lifetime, () => {
-    if (hitbox.active) hitbox.destroy();
-  });
+  if (config.duration) {
+    scene.time.delayedCall(config.duration, () => {
+      if (hitbox.active) hitbox.destroy();
+    });
+  }
 
   return hitbox;
 }

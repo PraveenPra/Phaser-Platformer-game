@@ -24,7 +24,7 @@ export const DIGIMON_PROFILES = {
         type: "melee",
         anim: "attack-A",
         damage: 10,
-        fireFrames: [3, 4, 5], // active hit window
+        fireFrames: [3, 5], // active hit window
         hitbox: {
           width: 20,
           height: 18,
@@ -55,7 +55,7 @@ export const DIGIMON_PROFILES = {
         type: "melee",
         anim: "attack-C",
         damage: 30,
-        fireFrames: [1, 3, 5], // active hit window
+        fireFrames: [1, 2, 3, 7], // active hit window
         hitbox: {
           width: 20,
           height: 18,

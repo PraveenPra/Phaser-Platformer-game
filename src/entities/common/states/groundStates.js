@@ -116,15 +116,28 @@ export const GroundStates = {
       // MELEE: multi-frame hit windows
       // ===============================
       if (attack.type === "melee" && attack.fireFrames?.length) {
-        const firedFrames = new Set();
+        let activeHitbox = null;
+        const fireFrames = new Set(attack.fireFrames);
 
         const onMeleeUpdate = (anim, frame) => {
           if (anim.key !== animKey) return;
-          if (!attack.fireFrames.includes(frame.index)) return;
-          if (firedFrames.has(frame.index)) return;
 
-          firedFrames.add(frame.index);
-          spawnAttackHitbox(entity.scene, entity, attack.hitbox);
+          const inWindow = fireFrames.has(frame.index);
+
+          // ▶ ENTER hit window
+          if (inWindow && !activeHitbox) {
+            activeHitbox = spawnAttackHitbox(
+              entity.scene,
+              entity,
+              attack.hitbox
+            );
+          }
+
+          // ⏹ EXIT hit window
+          if (!inWindow && activeHitbox) {
+            activeHitbox.destroy();
+            activeHitbox = null;
+          }
         };
 
         sprite.on(Phaser.Animations.Events.ANIMATION_UPDATE, onMeleeUpdate);
@@ -132,6 +145,10 @@ export const GroundStates = {
         sprite.once(
           Phaser.Animations.Events.ANIMATION_COMPLETE_KEY + animKey,
           () => {
+            if (activeHitbox) {
+              activeHitbox.destroy();
+              activeHitbox = null;
+            }
             sprite.off(
               Phaser.Animations.Events.ANIMATION_UPDATE,
               onMeleeUpdate
