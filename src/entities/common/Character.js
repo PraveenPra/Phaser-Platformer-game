@@ -1,6 +1,7 @@
 import { CharacterBody } from "./CharacterBody.js";
 import { CharacterVisual } from "./CharacterVisual.js";
 import { StateMachine } from "../../systems/StateMachine.js";
+import { CharacterHealthBar } from "./CharacterHealthBar.js";
 
 export class Character extends Phaser.GameObjects.Container {
   constructor(scene, x, y, textureKey, profile, states, initialState) {
@@ -19,6 +20,8 @@ export class Character extends Phaser.GameObjects.Container {
     this.isAttacking = false;
     this.currentAttackKey = null;
     this.requestedAttack = null;
+
+    this.healthBar = new CharacterHealthBar(scene, this);
 
     // combat runtime state
     this.currentHp = profile.combat.maxHp;
@@ -40,24 +43,19 @@ export class Character extends Phaser.GameObjects.Container {
     this.attackCooldowns[name] = this.scene.time.now + duration;
   }
 
-  // takeDamage(amount, source) {
-  //   this.stats.hp -= amount;
-
-  //   if (this.stats.hp <= 0) {
-  //     this.die();
-  //   }
-  // }
-
   takeDamage(amount, source) {
     if (this.isDead || this.isInvincible) return;
 
     this.currentHp -= amount;
+    this.currentHp = Math.max(0, this.currentHp);
 
     console.log(
       `[DAMAGE] ${this.key} took ${amount} dmg from ${source?.key} | HP=${this.currentHp}`
     );
+
+    this.healthBar.draw();
+
     if (this.currentHp <= 0) {
-      this.currentHp = 0;
       this.isDead = true;
       this.state.setState("dead");
     } else {

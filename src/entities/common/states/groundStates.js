@@ -265,6 +265,10 @@ export const GroundStates = {
       body.moves = false;
 
       entity.visual.play(`${entity.key}_defeated`);
+
+      if (entity.healthBar) {
+        entity.healthBar.destroy();
+      }
     },
 
     update(entity) {
