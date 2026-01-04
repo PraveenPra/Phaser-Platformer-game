@@ -17,4 +17,11 @@ export class Player extends Character {
     this.inputHandler.update(this);
     super.update(dt);
   }
+
+  onDeathAnimationComplete() {
+    // future:
+    // - respawn
+    // - game over screen
+    // - fade out
+  }
 }

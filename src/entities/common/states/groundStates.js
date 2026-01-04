@@ -264,11 +264,18 @@ export const GroundStates = {
       // ✅ freeze in place
       body.moves = false;
 
-      entity.visual.play(`${entity.key}_defeated`);
-
       if (entity.healthBar) {
         entity.healthBar.destroy();
       }
+
+      const animKey = `${entity.key}_defeated`;
+
+      entity.visual.play(animKey);
+
+      // 🔥 notify entity when death animation ends
+      entity.visual.onAnimComplete(animKey, () => {
+        entity.onDeathAnimationComplete?.();
+      });
     },
 
     update(entity) {

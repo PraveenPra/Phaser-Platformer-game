@@ -27,4 +27,25 @@ export class Enemy extends Character {
     this.ai.update(this, dt);
     super.update(dt);
   }
+
+  onDeathAnimationComplete() {
+    const sprite = this.visual.sprite;
+
+    // fade out
+    this.scene.tweens.add({
+      targets: sprite,
+      alpha: 0,
+      duration: 500,
+      ease: "Linear",
+      onComplete: () => {
+        // remove from enemy group
+        if (this.scene.enemies) {
+          this.scene.enemies.remove(this, true, true);
+        }
+
+        // destroy entity
+        this.destroy();
+      },
+    });
+  }
 }
