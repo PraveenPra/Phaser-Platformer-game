@@ -1,18 +1,22 @@
-export function setupHitboxCollisions(scene, hitbox, targets) {
+export function setupHitboxCollisions(scene, hitbox, targets, options = {}) {
+  const { destroyOnHit = false } = options;
+
   scene.physics.add.overlap(hitbox, targets, (hb, target) => {
-    if (!target.active) return;
-    if (target === hb.owner) return;
+    if (!target || !target.takeDamage) return;
+    if (target.isDead || target.isInvincible) return;
 
-    // 🔒 already hit during this attack window
-    if (hb.hitTargets.has(target)) return;
+    // prevent repeated hits
+    if (hb._hitTargets?.has(target)) return;
+    hb._hitTargets?.add(target);
 
-    hb.hitTargets.add(target);
+    console.log(
+      `[HIT CONFIRMED] ${hb.owner.key} → ${target.key} (${hb.damage})`
+    );
 
-    if (typeof target.takeDamage === "function") {
-      target.takeDamage(hb.damage, hb.owner);
-      console.log(
-        `[HIT CONFIRMED] ${hb.owner.key} → ${target.key} (${hb.damage})`
-      );
+    target.takeDamage(hb.damage, hb.owner);
+
+    if (destroyOnHit) {
+      hb.destroy();
     }
   });
 }
