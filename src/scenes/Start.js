@@ -2,6 +2,7 @@ import { createAnimations } from "../systems/AnimationFactory.js";
 import { GameState } from "../GameState.js";
 import { Player } from "../entities/Player/Player.js";
 import { Enemy } from "../entities/enemy/Enemy.js";
+import { PlayerHealthUI } from "../ui/PlayerHealthUI.js";
 
 export class Start extends Phaser.Scene {
   constructor() {
@@ -34,11 +35,14 @@ export class Start extends Phaser.Scene {
     this.enemies.add(enemy);
 
     this.physics.add.collider(enemy, this.ground);
+
+    this.playerHealthUI = new PlayerHealthUI(this, this.player);
   }
 
   update(time, delta) {
     this.player.update(delta);
-    // this.enemy.update(delta);
+    this.playerHealthUI.draw();
+
     this.enemies.children.iterate((enemy) => {
       if (enemy && enemy.update) {
         enemy.update(delta);

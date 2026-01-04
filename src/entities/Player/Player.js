@@ -8,6 +8,8 @@ export class Player extends Character {
     const profile = resolveProfile(textureKey);
     super(scene, x, y, textureKey, profile, GroundStates, "idle");
 
+    this.type = "player";
+
     this.inputHandler = new PlayerInput(scene);
   }
 

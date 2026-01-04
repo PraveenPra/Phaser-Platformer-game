@@ -21,9 +21,21 @@ export class Character extends Phaser.GameObjects.Container {
     this.currentAttackKey = null;
     this.requestedAttack = null;
 
-    this.healthBar = new CharacterHealthBar(scene, this, {
-      visible: this.type === "player", // enemies hidden initially
-    });
+    // if (this.type === "enemy") {
+    //   this.healthBar = new CharacterHealthBar(scene, this, {
+    //     visible: false,
+    //   });
+    // }
+    this.healthBar = null;
+
+    console.log(
+      "[HB INIT]",
+      this.key,
+      "type=",
+      this.type,
+      "healthBar=",
+      !!this.healthBar
+    );
 
     // combat runtime state
     this.currentHp = profile.combat.maxHp;
@@ -59,8 +71,8 @@ export class Character extends Phaser.GameObjects.Container {
     if (this.healthBar && !this.healthBar.graphics.visible) {
       this.healthBar.show();
     }
-
     this.healthBar?.draw();
+
     if (this.currentHp <= 0) {
       this.isDead = true;
       this.state.setState("dead");
