@@ -1,5 +1,6 @@
 import { spawnAttackHitbox } from "../combat/spawnAttackHitbox.js";
 import { spawnProjectile } from "../combat/spawnProjectile.js";
+import { setupHitboxCollisions } from "../combat/setupHitboxCollisions.js";
 
 export const GroundStates = {
   idle: {
@@ -9,6 +10,8 @@ export const GroundStates = {
     },
 
     update(entity) {
+      if (entity.isDead || entity.state.current === "hit") return;
+
       if (entity.input?.left || entity.input?.right) {
         entity.state.setState("run");
       }
@@ -41,6 +44,8 @@ export const GroundStates = {
     },
 
     update(entity) {
+      if (entity.isDead || entity.state.current === "hit") return;
+
       const body = entity.bodyLayer.body;
       const speed = entity.profile.move.speed;
 
@@ -85,6 +90,8 @@ export const GroundStates = {
     },
 
     update(entity) {
+      if (entity.isDead || entity.state.current === "hit") return;
+
       if (entity.bodyLayer.body.onFloor()) {
         entity.state.setState("idle");
       }
@@ -126,10 +133,16 @@ export const GroundStates = {
 
           // ▶ ENTER hit window
           if (inWindow && !activeHitbox) {
-            activeHitbox = spawnAttackHitbox(
+            activeHitbox = spawnAttackHitbox(entity.scene, entity, {
+              ...attack.hitbox,
+              damage: attack.damage,
+            });
+
+            // wire collision ONCE
+            setupHitboxCollisions(
               entity.scene,
-              entity,
-              attack.hitbox
+              activeHitbox,
+              entity.getAttackTargets(entity.scene)
             );
           }
 
@@ -192,5 +205,62 @@ export const GroundStates = {
     },
 
     update(entity) {},
+  },
+
+  hit: {
+    enter(entity, data) {
+      console.log(`[STATE] ${entity.key} → HIT`);
+
+      entity.isInvincible = true;
+      entity.isAttacking = false;
+
+      // stop movement
+      entity.bodyLayer.body.setVelocity(0, 0);
+      entity.bodyLayer.body.setAcceleration(0, 0);
+      entity.bodyLayer.body.setDrag(1000, 0);
+
+      // optional knockback
+      // if (data?.source?.x !== undefined) {
+      //   const dir = entity.x < data.source.x ? -1 : 1;
+      //   entity.bodyLayer.body.setVelocityX(80 * dir);
+      // }
+      console.log(entity.scene.anims.exists(`${entity.key}_take-hit`));
+
+      // play hit animation
+      entity.visual.play(`${entity.key}_take-hit`);
+
+      entity.visual.onAnimComplete(`${entity.key}_take-hit`, () => {
+        if (!entity.isDead) {
+          console.log(`[STATE] ${entity.key} HIT → IDLE`);
+          entity.state.setState("idle");
+        }
+      });
+    },
+
+    update(entity) {
+      // do nothing — locked state
+    },
+
+    exit(entity) {
+      entity.isInvincible = false;
+      entity.bodyLayer.body.setDrag(0, 0);
+    },
+  },
+  dead: {
+    enter(entity) {
+      entity.isDead = true;
+      entity.isInvincible = true;
+
+      entity.bodyLayer.body.setVelocity(0, 0);
+
+      // disable physics impulses
+      entity.bodyLayer.body.checkCollision.none = true;
+
+      entity.visual.play(`${entity.key}_defeated`);
+    },
+
+    update(entity) {
+      // nothing — terminal state
+    },
   },
 };

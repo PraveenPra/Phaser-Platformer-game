@@ -28,12 +28,21 @@ export class Start extends Phaser.Scene {
 
     this.physics.add.collider(this.player, this.ground);
 
-    this.enemy = new Enemy(this, 500, 400, "gabumon");
-    this.physics.add.collider(this.enemy, this.ground);
+    this.enemies = this.physics.add.group();
+
+    const enemy = new Enemy(this, 500, 400, "gabumon");
+    this.enemies.add(enemy);
+
+    this.physics.add.collider(enemy, this.ground);
   }
 
   update(time, delta) {
     this.player.update(delta);
-    this.enemy.update(delta);
+    // this.enemy.update(delta);
+    this.enemies.children.iterate((enemy) => {
+      if (enemy && enemy.update) {
+        enemy.update(delta);
+      }
+    });
   }
 }

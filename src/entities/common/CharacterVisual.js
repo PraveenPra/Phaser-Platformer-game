@@ -27,4 +27,11 @@ export class CharacterVisual {
   flip(left) {
     this.sprite.setFlipX(left);
   }
+
+  onAnimComplete(key, callback) {
+    this.sprite.once(
+      Phaser.Animations.Events.ANIMATION_COMPLETE_KEY + key,
+      callback
+    );
+  }
 }

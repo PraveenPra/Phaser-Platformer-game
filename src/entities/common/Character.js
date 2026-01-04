@@ -19,6 +19,11 @@ export class Character extends Phaser.GameObjects.Container {
     this.isAttacking = false;
     this.currentAttackKey = null;
     this.requestedAttack = null;
+
+    // combat runtime state
+    this.currentHp = profile.combat.maxHp;
+    this.isInvincible = false;
+    this.isDead = false;
   }
 
   update(dt) {
@@ -33,5 +38,34 @@ export class Character extends Phaser.GameObjects.Container {
 
   startCooldown(name, duration) {
     this.attackCooldowns[name] = this.scene.time.now + duration;
+  }
+
+  // takeDamage(amount, source) {
+  //   this.stats.hp -= amount;
+
+  //   if (this.stats.hp <= 0) {
+  //     this.die();
+  //   }
+  // }
+
+  takeDamage(amount, source) {
+    if (this.isDead || this.isInvincible) return;
+
+    this.currentHp -= amount;
+
+    console.log(
+      `[DAMAGE] ${this.key} took ${amount} dmg from ${source?.key} | HP=${this.currentHp}`
+    );
+    if (this.currentHp <= 0) {
+      this.currentHp = 0;
+      this.isDead = true;
+      this.state.setState("dead");
+    } else {
+      this.state.setState("hit", { source });
+    }
+  }
+
+  getAttackTargets(scene) {
+    return scene.enemies;
   }
 }

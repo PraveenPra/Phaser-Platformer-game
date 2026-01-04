@@ -1,26 +1,28 @@
 export class EnemyAI {
   constructor() {
     this.direction = 1; // 1 = right, -1 = left
-
+    this.mode = "patrol";
     // Patrol timer
     this.patrolTimer = 0;
-    this.patrolInterval = 2000; // ms
+    this.patrolInterval = 500; // ms
   }
 
   update(entity, dt) {
-    // Update patrol timer
-    this.patrolTimer += dt;
-    if (this.patrolTimer >= this.patrolInterval) {
-      this.turn();
-      this.patrolTimer = 0;
-    }
+    if (entity.isDead || entity.state.current === "hit") return;
 
-    // Set entity input
-    entity.input = {
-      left: this.direction < 0,
-      right: this.direction > 0,
-      jump: false,
-    };
+    if (this.mode === "patrol") {
+      this.patrolTimer += dt;
+      if (this.patrolTimer >= this.patrolInterval) {
+        this.turn();
+        this.patrolTimer = 0;
+      }
+
+      entity.input = {
+        left: this.direction < 0,
+        right: this.direction > 0,
+        jump: false,
+      };
+    }
   }
 
   turn() {

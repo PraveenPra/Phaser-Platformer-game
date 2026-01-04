@@ -7,20 +7,19 @@ export function spawnAttackHitbox(scene, owner, config) {
     "__hitbox"
   );
 
-  hitbox.setTint(0xff0000); // melee = red
+  hitbox.setTint(0xff0000);
+  hitbox.setAlpha(0.4);
 
   hitbox.body.setSize(config.width, config.height);
   hitbox.body.allowGravity = false;
-
-  // dev visibility toggle
   hitbox.setVisible(true);
-  hitbox.setAlpha(0.4);
 
-  if (config.duration) {
-    scene.time.delayedCall(config.duration, () => {
-      if (hitbox.active) hitbox.destroy();
-    });
-  }
+  // ownership & damage
+  hitbox.owner = owner;
+  hitbox.damage = config.damage;
+  hitbox.hitTargets = new Set(); // 🔒 per-attack damage control
+
+  console.log(`[HITBOX SPAWN] owner=${owner.key} dmg=${hitbox.damage}`);
 
   return hitbox;
 }
