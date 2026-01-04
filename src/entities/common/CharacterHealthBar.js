@@ -3,28 +3,45 @@ export class CharacterHealthBar {
     this.scene = scene;
     this.owner = owner;
 
-    this.width = config.width ?? 24;
-    this.height = config.height ?? 4;
-    this.offsetY = config.offsetY ?? -40;
+    this.width = config.width ?? 26;
+    this.height = config.height ?? 5;
+    this.offsetY = config.offsetY ?? -42;
 
-    this.bgColor = 0x000000;
-    this.hpColor = 0x00ff00;
+    // colors
+    this.bgGreen = 0x0b3d0b; // dark green background
+    this.green = 0x2ecc71;
+    this.red = 0xe74c3c;
+
+    this.visible = config.visible ?? true;
 
     this.graphics = scene.add.graphics();
     this.graphics.setDepth(1000);
 
     owner.add(this.graphics);
 
+    if (this.visible) {
+      this.draw();
+    } else {
+      this.graphics.setVisible(false);
+    }
+  }
+
+  show() {
+    this.graphics.setVisible(true);
     this.draw();
   }
 
   draw() {
-    const hpRatio = this.owner.currentHp / this.owner.profile.combat.maxHp;
+    const maxHp = this.owner.profile.combat.maxHp;
+    const hp = this.owner.currentHp;
+    const ratio = Phaser.Math.Clamp(hp / maxHp, 0, 1);
+
+    const hpColor = ratio <= 0.4 ? this.red : this.green;
 
     this.graphics.clear();
 
-    // background
-    this.graphics.fillStyle(this.bgColor, 0.6);
+    // background (dark green)
+    this.graphics.fillStyle(this.bgGreen, 1);
     this.graphics.fillRect(
       -this.width / 2,
       this.offsetY,
@@ -32,12 +49,12 @@ export class CharacterHealthBar {
       this.height
     );
 
-    // hp
-    this.graphics.fillStyle(this.hpColor, 1);
+    // hp foreground
+    this.graphics.fillStyle(hpColor, 1);
     this.graphics.fillRect(
       -this.width / 2,
       this.offsetY,
-      this.width * Phaser.Math.Clamp(hpRatio, 0, 1),
+      this.width * ratio,
       this.height
     );
   }
