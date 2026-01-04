@@ -8,8 +8,15 @@ export class EnemyAI {
   }
 
   update(entity, dt) {
-    if (entity.isDead || entity.state.current === "hit") return;
+    if (entity.isDead) {
+      entity.input = {};
+      return;
+    }
 
+    if (entity.state.current === "hit") {
+      entity.input = {};
+      return;
+    }
     if (this.mode === "patrol") {
       this.patrolTimer += dt;
       if (this.patrolTimer >= this.patrolInterval) {

@@ -199,7 +199,9 @@ export const GroundStates = {
         () => {
           entity.isAttacking = false;
           entity.startCooldown(attackKey, attack.cooldown);
-          entity.state.setState("idle");
+          if (!entity.isDead) {
+            entity.state.setState("idle");
+          }
         }
       );
     },
@@ -251,10 +253,16 @@ export const GroundStates = {
       entity.isDead = true;
       entity.isInvincible = true;
 
-      entity.bodyLayer.body.setVelocity(0, 0);
+      const body = entity.bodyLayer.body;
 
-      // disable physics impulses
-      entity.bodyLayer.body.checkCollision.none = true;
+      body.setVelocity(0, 0);
+      body.setAcceleration(0, 0);
+
+      // ✅ stop gravity instead of disabling collision
+      body.setAllowGravity(false);
+
+      // ✅ freeze in place
+      body.moves = false;
 
       entity.visual.play(`${entity.key}_defeated`);
     },

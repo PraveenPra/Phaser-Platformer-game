@@ -7,7 +7,10 @@ export class StateMachine {
     this.setState(initialState);
   }
 
-  setState(name) {
+  setState(name, data) {
+    // ❌ never leave dead state
+    if (this.current === "dead") return;
+
     if (this.current === name) return;
 
     if (this.current && this.states[this.current]?.exit) {
@@ -17,7 +20,7 @@ export class StateMachine {
     this.current = name;
 
     if (this.states[name]?.enter) {
-      this.states[name].enter(this.owner);
+      this.states[name].enter(this.owner, data);
     }
   }
 
