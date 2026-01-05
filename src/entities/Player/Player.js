@@ -24,4 +24,8 @@ export class Player extends Character {
     // - game over screen
     // - fade out
   }
+
+  getAttackTargets(scene) {
+    return scene.enemies;
+  }
 }

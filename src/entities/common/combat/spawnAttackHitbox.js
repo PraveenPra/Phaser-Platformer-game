@@ -21,5 +21,13 @@ export function spawnAttackHitbox(scene, owner, config) {
 
   console.log(`[HITBOX SPAWN] owner=${owner.key} dmg=${hitbox.damage}`);
 
+  //destroy hitboxes if the character dies
+  owner._activeHitboxes ??= new Set();
+  owner._activeHitboxes.add(hitbox);
+
+  hitbox.once("destroy", () => {
+    owner._activeHitboxes?.delete(hitbox);
+  });
+
   return hitbox;
 }

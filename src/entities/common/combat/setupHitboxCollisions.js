@@ -3,6 +3,10 @@ export function setupHitboxCollisions(scene, hitbox, targets, options = {}) {
 
   scene.physics.add.overlap(hitbox, targets, (hb, target) => {
     if (!target || !target.takeDamage) return;
+
+    // never hit yourself
+    if (target === hb.owner) return;
+
     if (target.isDead || target.isInvincible) return;
 
     // prevent repeated hits

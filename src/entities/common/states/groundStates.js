@@ -276,6 +276,14 @@ export const GroundStates = {
       entity.visual.onAnimComplete(animKey, () => {
         entity.onDeathAnimationComplete?.();
       });
+
+      // 💣 destroy any leftover hitboxes
+      if (entity._activeHitboxes) {
+        for (const hb of entity._activeHitboxes) {
+          if (hb.active) hb.destroy();
+        }
+        entity._activeHitboxes.clear();
+      }
     },
 
     update(entity) {

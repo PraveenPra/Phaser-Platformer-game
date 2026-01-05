@@ -48,4 +48,8 @@ export class Enemy extends Character {
       },
     });
   }
+
+  getAttackTargets(scene) {
+    return scene.player ? [scene.player] : [];
+  }
 }

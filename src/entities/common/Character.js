@@ -81,7 +81,7 @@ export class Character extends Phaser.GameObjects.Container {
     }
   }
 
-  getAttackTargets(scene) {
-    return scene.enemies;
-  }
+  // getAttackTargets(scene) {
+  //   return scene.enemies;
+  // }
 }
