@@ -1,46 +1,59 @@
 export class EnemyAI {
-  constructor(scene, entity) {
-    // ===== Patrol =====
+  constructor() {
+    // =========================
+    // PATROL
+    // =========================
     this.direction = 1;
     this.mode = "patrol";
 
     this.patrolTimer = 0;
     this.patrolInterval = 600;
 
-    // ===== Aggro / Combat =====
-    this.aggroRange = 220;
+    // =========================
+    // TERRITORY (FIXED ZONE)
+    // =========================
+    this.spawnX = null; // enemy home position
+    this.territoryRadius = 220; // player must be within THIS to aggro
+    this.disengageRadius = 260; // player leaves THIS → disengage
+
+    // =========================
+    // COMBAT
+    // =========================
     this.attackRange = 60;
-    this.attackBuffer = 6; // ✅ REQUIRED
-    this.disengageRange = 280;
+    this.attackBuffer = 6; // prevents edge jitter
 
+    // =========================
+    // AGGRO TIMING
+    // =========================
     this.loseAggroTimer = 0;
-    this.loseAggroDelay = 800;
+    this.loseAggroDelay = 800; // ms before disengage
 
-    // ===== Leash =====
-    this.spawnX = null;
-    this.maxChaseDistance = 300;
-
-    // ===== Debug =====
-    // ===== Debug =====
+    // =========================
+    // DEBUG
+    // =========================
     this.debug = true;
-    this.debugGfx = null; // ✅ lazy init
+    this.debugGfx = null;
   }
 
   update(entity, dt) {
-    // ===== Init spawn position once =====
+    const scene = entity.scene;
+    const player = scene.player;
+
+    // =========================
+    // INIT (ONCE)
+    // =========================
     if (this.spawnX === null) {
       this.spawnX = entity.x;
     }
 
-    // ===== Init debug graphics once =====
     if (this.debug && !this.debugGfx) {
-      this.debugGfx = entity.scene.add.graphics();
+      this.debugGfx = scene.add.graphics();
       this.debugGfx.setDepth(9999);
     }
-    const scene = entity.scene;
-    const player = scene.player;
 
-    // ===== Safety =====
+    // =========================
+    // SAFETY
+    // =========================
     if (!player || entity.isDead) {
       entity.input = {};
       return;
@@ -51,26 +64,29 @@ export class EnemyAI {
       return;
     }
 
-    const dx = player.x - entity.x;
-    const absDx = Math.abs(dx);
-    const distFromSpawn = Math.abs(entity.x - this.spawnX);
+    // =========================
+    // DISTANCES
+    // =========================
+    const dxEnemy = player.x - entity.x; // movement
+    const absDxEnemy = Math.abs(dxEnemy);
+
+    const dxSpawn = player.x - this.spawnX; // TERRITORY CHECK
+    const absDxSpawn = Math.abs(dxSpawn);
 
     // =========================
-    // MODE SWITCHING
+    // MODE SWITCHING (TERRITORY-BASED)
     // =========================
-    if (this.mode === "patrol" && absDx <= this.aggroRange) {
+    if (this.mode === "patrol" && absDxSpawn <= this.territoryRadius) {
       this.mode = "aggro";
       this.loseAggroTimer = 0;
     }
 
-    if (
-      this.mode === "aggro" &&
-      (absDx > this.disengageRange || distFromSpawn > this.maxChaseDistance)
-    ) {
+    if (this.mode === "aggro" && absDxSpawn > this.disengageRadius) {
       this.loseAggroTimer += dt;
+
       if (this.loseAggroTimer >= this.loseAggroDelay) {
         this.mode = "patrol";
-        this.turn();
+        this.turn(); // looks natural when returning
         entity.input = {};
         return;
       }
@@ -84,26 +100,14 @@ export class EnemyAI {
     if (this.mode === "patrol") {
       this.updatePatrol(entity, dt);
     } else {
-      this.updateAggro(entity, dx, absDx);
+      this.updateAggro(entity, dxEnemy, absDxEnemy);
     }
 
     // =========================
-    // DEBUG DRAW
+    // DEBUG
     // =========================
     if (this.debug) {
       this.drawDebug(entity);
-    }
-
-    if (this.debug && this.debugGfx) {
-      this.debugGfx.clear();
-
-      // aggro range (yellow)
-      this.debugGfx.lineStyle(1, 0xffff00, 0.6);
-      this.debugGfx.strokeCircle(entity.x, entity.y, this.aggroRange);
-
-      // attack range (red)
-      this.debugGfx.lineStyle(1, 0xff0000, 0.8);
-      this.debugGfx.strokeCircle(entity.x, entity.y, this.attackRange);
     }
   }
 
@@ -127,15 +131,15 @@ export class EnemyAI {
   // =========================
   // AGGRO / ATTACK
   // =========================
-  updateAggro(entity, dx, absDx) {
-    const dirToPlayer = dx < 0 ? -1 : 1;
+  updateAggro(entity, dxEnemy, absDxEnemy) {
+    const dir = dxEnemy < 0 ? -1 : 1;
 
     // face player
-    entity.visual.flip(dirToPlayer < 0);
+    entity.visual.flip(dir < 0);
 
-    // ===== ATTACK =====
+    // ===== ATTACK (RANGE GATED) =====
     if (
-      absDx <= this.attackRange &&
+      absDxEnemy <= this.attackRange - this.attackBuffer &&
       entity.canAttack("main") &&
       !entity.isAttacking
     ) {
@@ -143,10 +147,10 @@ export class EnemyAI {
       return;
     }
 
-    // ===== CHASE =====
+    // ===== CHASE (BUT STILL INSIDE TERRITORY) =====
     entity.input = {
-      left: dirToPlayer < 0,
-      right: dirToPlayer > 0,
+      left: dir < 0,
+      right: dir > 0,
     };
   }
 
@@ -161,27 +165,18 @@ export class EnemyAI {
     const g = this.debugGfx;
     g.clear();
 
-    // Aggro range
-    g.lineStyle(1, 0xffff00, 0.5);
-    g.strokeCircle(entity.x, entity.y - 12, this.aggroRange);
+    const y = entity.y - 12;
 
-    // Attack range
-    g.lineStyle(1, 0xff0000, 0.8);
-    g.strokeCircle(entity.x, entity.y - 12, this.attackRange);
+    // Territory (yellow)
+    g.lineStyle(1, 0xffff00, 0.4);
+    g.strokeCircle(this.spawnX, y, this.territoryRadius);
 
-    // Disengage
+    // Disengage (cyan)
     g.lineStyle(1, 0x00ffff, 0.3);
-    g.strokeCircle(entity.x, entity.y - 12, this.disengageRange);
+    g.strokeCircle(this.spawnX, y, this.disengageRadius);
 
-    // Leash
-    g.lineStyle(1, 0x00ff00, 0.3);
-    g.strokeLineShape(
-      new Phaser.Geom.Line(
-        this.spawnX - this.maxChaseDistance,
-        entity.y - 24,
-        this.spawnX + this.maxChaseDistance,
-        entity.y - 24
-      )
-    );
+    // Attack range (red, enemy-centered)
+    g.lineStyle(1, 0xff0000, 0.7);
+    g.strokeCircle(entity.x, y, this.attackRange);
   }
 }
