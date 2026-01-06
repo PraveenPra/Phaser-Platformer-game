@@ -18,6 +18,12 @@ export class Preload extends Phaser.Scene {
       "assets/digimons/Gabumon/Gabumon.json"
     );
 
+    this.load.atlas(
+      "chivmon",
+      "assets/digimons/Chivmon/Chivmon.png",
+      "assets/digimons/Chivmon/Chivmon.json"
+    );
+
     this.load.image("ground", "assets/ground.png");
 
     this.load.image("big-fireball", "assets/vfx/big-fireball.png");
