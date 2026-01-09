@@ -14,6 +14,10 @@ export class Enemy extends Character {
       visible: false, // show only on hit
     });
 
+    // not let others push enemy
+    this.body.setImmovable(true);
+    this.body.pushable = false; // optional
+
     this.ai = new EnemyAI();
   }
 

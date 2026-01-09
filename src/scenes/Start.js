@@ -66,6 +66,12 @@ export class Start extends Phaser.Scene {
     // physics
     this.physics.add.collider(this.player, this.groundLayer);
     this.physics.add.collider(this.enemies, this.groundLayer);
+    this.physics.add.collider(this.player, this.enemies);
+
+    // Camera follow player
+    // this.cameras.main.setBounds(0, 0, 800, 600);
+    // this.cameras.main.startFollow(this.player, true, 0.1, 0.1);
+    // this.cameras.main.setZoom(1.5);
   }
 
   update(time, delta) {
