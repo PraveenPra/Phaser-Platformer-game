@@ -33,6 +33,8 @@ export class Preload extends Phaser.Scene {
       frameHeight: 17,
     });
 
+    this.load.image("groundTile", "assets/ground-tile.png");
+
     // This generates a 1×1 white texture in memory.
     // No asset file needed. Perfect for systems.
     // To be used for attack hitboxes.

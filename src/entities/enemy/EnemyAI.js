@@ -6,27 +6,42 @@ export class EnemyAI {
     this.direction = 1;
     this.mode = "patrol";
 
-    this.patrolTimer = 0;
-    this.patrolInterval = 600;
+    // =========================
+    // TERRITORY (FIXED)
+    // =========================
+    this.spawnX = null;
 
-    // =========================
-    // TERRITORY (FIXED ZONE)
-    // =========================
-    this.spawnX = null; // enemy home position
-    this.territoryRadius = 220; // player must be within THIS to aggro
-    this.disengageRadius = 260; // player leaves THIS → disengage
+    // Single territory definition (Mario-style)
+    this.territoryRadius = 220;
+    this.disengageRadius = 320;
+
+    // Patrol stays inside territory
+    this.patrolRadius = this.territoryRadius;
 
     // =========================
     // COMBAT
     // =========================
     this.attackRange = 60;
-    this.attackBuffer = 6; // prevents edge jitter
+    this.attackBuffer = 6;
 
     // =========================
     // AGGRO TIMING
     // =========================
     this.loseAggroTimer = 0;
-    this.loseAggroDelay = 800; // ms before disengage
+    this.loseAggroDelay = 800;
+
+    // =========================
+    // EDGE DETECTION
+    // =========================
+    this.edgeCheckDistance = 18;
+    this.edgeCheckDepth = 26;
+    this.edgeTurnCooldown = 250; // ms
+    this.edgeTurnTimer = 0;
+
+    // =========================
+    // RETURN HOME
+    // =========================
+    this.returnTolerance = 6; // px close enough to home
 
     // =========================
     // DEBUG
@@ -40,7 +55,7 @@ export class EnemyAI {
     const player = scene.player;
 
     // =========================
-    // INIT (ONCE)
+    // INIT ONCE
     // =========================
     if (this.spawnX === null) {
       this.spawnX = entity.x;
@@ -67,16 +82,22 @@ export class EnemyAI {
     // =========================
     // DISTANCES
     // =========================
-    const dxEnemy = player.x - entity.x; // movement
+    const dxEnemy = player.x - entity.x;
     const absDxEnemy = Math.abs(dxEnemy);
 
-    const dxSpawn = player.x - this.spawnX; // TERRITORY CHECK
+    const dxSpawn = player.x - this.spawnX;
     const absDxSpawn = Math.abs(dxSpawn);
 
     // =========================
-    // MODE SWITCHING (TERRITORY-BASED)
+    // MODE SWITCHING (TERRITORY)
     // =========================
-    if (this.mode === "patrol" && absDxSpawn <= this.territoryRadius) {
+    const enemyDistFromSpawn = Math.abs(entity.x - this.spawnX);
+
+    if (
+      this.mode === "patrol" &&
+      absDxEnemy <= this.territoryRadius &&
+      enemyDistFromSpawn <= this.territoryRadius
+    ) {
       this.mode = "aggro";
       this.loseAggroTimer = 0;
     }
@@ -85,8 +106,7 @@ export class EnemyAI {
       this.loseAggroTimer += dt;
 
       if (this.loseAggroTimer >= this.loseAggroDelay) {
-        this.mode = "patrol";
-        this.turn(); // looks natural when returning
+        this.mode = "return";
         entity.input = {};
         return;
       }
@@ -99,8 +119,10 @@ export class EnemyAI {
     // =========================
     if (this.mode === "patrol") {
       this.updatePatrol(entity, dt);
-    } else {
+    } else if (this.mode === "aggro") {
       this.updateAggro(entity, dxEnemy, absDxEnemy);
+    } else if (this.mode === "return") {
+      this.updateReturn(entity);
     }
 
     // =========================
@@ -112,32 +134,78 @@ export class EnemyAI {
   }
 
   // =========================
-  // PATROL
+  // PATROL (EDGE SAFE)
   // =========================
   updatePatrol(entity, dt) {
-    this.patrolTimer += dt;
+    this.edgeTurnTimer -= dt;
 
-    if (this.patrolTimer >= this.patrolInterval) {
-      this.turn();
-      this.patrolTimer = 0;
+    const leftLimit = this.spawnX - this.patrolRadius;
+    const rightLimit = this.spawnX + this.patrolRadius;
+
+    // spatial patrol bounds
+    let turned = false;
+
+    // territory bounds first (authoritative)
+    if (entity.x <= leftLimit) {
+      console.warn("[TURN] LEFT LIMIT HIT");
+
+      this.direction = 1;
+      turned = true;
+    } else if (entity.x >= rightLimit) {
+      console.warn("[TURN] right LIMIT HIT");
+
+      this.direction = -1;
+      turned = true;
+    }
+
+    // edge safety only if NOT already turned
+    if (!turned && this.edgeTurnTimer <= 0) {
+      const hasGround = this.hasGroundAhead(entity);
+
+      console.warn(
+        "[EDGE CHECK]",
+        "x=",
+        entity.x.toFixed(1),
+        "dir=",
+        this.direction,
+        "hasGround=",
+        hasGround
+      );
+
+      if (!hasGround) {
+        console.error("[TURN] EDGE DETECTED");
+        this.turn();
+        this.edgeTurnTimer = this.edgeTurnCooldown;
+      }
     }
 
     entity.input = {
       left: this.direction < 0,
       right: this.direction > 0,
     };
+
+    console.log(
+      "[PATROL]",
+      "x=",
+      entity.x.toFixed(1),
+      "dir=",
+      this.direction,
+      "L=",
+      leftLimit.toFixed(1),
+      "R=",
+      rightLimit.toFixed(1)
+    );
   }
 
   // =========================
-  // AGGRO / ATTACK
+  // AGGRO
   // =========================
   updateAggro(entity, dxEnemy, absDxEnemy) {
     const dir = dxEnemy < 0 ? -1 : 1;
 
-    // face player
     entity.visual.flip(dir < 0);
 
-    // ===== ATTACK (RANGE GATED) =====
+    // attack gate
     if (
       absDxEnemy <= this.attackRange - this.attackBuffer &&
       entity.canAttack("main") &&
@@ -147,11 +215,70 @@ export class EnemyAI {
       return;
     }
 
-    // ===== CHASE (BUT STILL INSIDE TERRITORY) =====
     entity.input = {
       left: dir < 0,
       right: dir > 0,
     };
+  }
+
+  // =========================
+  // RETURN TO HOME (SMOOTH)
+  // =========================
+  updateReturn(entity) {
+    const dx = this.spawnX - entity.x;
+    const absDx = Math.abs(dx);
+
+    if (absDx <= this.returnTolerance) {
+      this.mode = "patrol";
+      this.direction = Math.random() < 0.5 ? -1 : 1;
+      entity.input = {};
+      return;
+    }
+
+    const dir = dx < 0 ? -1 : 1;
+    entity.visual.flip(dir < 0);
+
+    entity.input = {
+      left: dir < 0,
+      right: dir > 0,
+    };
+  }
+
+  // =========================
+  // EDGE CHECK (RAYCAST)
+  // =========================
+  hasGroundAhead(entity) {
+    const body = entity.bodyLayer.body;
+    const scene = entity.scene;
+
+    const dir = this.direction;
+    const x = body.x + body.width / 2 + dir * this.edgeCheckDistance;
+    // const y = body.y + body.height + 2;
+    const y = entity.y + entity.body.height / 2 + this.edgeCheckDepth;
+
+    // check tilemap layers
+    const layers = scene.groundLayer ? [scene.groundLayer] : [];
+
+    for (const layer of layers) {
+      const tile = layer.getTileAtWorldXY(x, y);
+      console.error(
+        "[GROUND PROBE]",
+        "x=",
+        x.toFixed(1),
+        "y=",
+        y.toFixed(1),
+        "tile=",
+        tile ? tile.index : null,
+        "collides=",
+        tile?.collides
+      );
+
+      if (tile && tile.collides) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   turn() {
@@ -159,7 +286,7 @@ export class EnemyAI {
   }
 
   // =========================
-  // DEBUG VISUALS
+  // DEBUG
   // =========================
   drawDebug(entity) {
     const g = this.debugGfx;
@@ -167,16 +294,32 @@ export class EnemyAI {
 
     const y = entity.y - 12;
 
-    // Territory (yellow)
+    // territory
     g.lineStyle(1, 0xffff00, 0.4);
     g.strokeCircle(this.spawnX, y, this.territoryRadius);
 
-    // Disengage (cyan)
+    // disengage
     g.lineStyle(1, 0x00ffff, 0.3);
     g.strokeCircle(this.spawnX, y, this.disengageRadius);
 
-    // Attack range (red, enemy-centered)
+    // attack
     g.lineStyle(1, 0xff0000, 0.7);
     g.strokeCircle(entity.x, y, this.attackRange);
+
+    // edge probe
+    const dir = this.direction;
+    g.lineStyle(1, 0x00ff00, 0.8);
+    g.strokeCircle(entity.x + dir * this.edgeCheckDistance, entity.y + 12, 3);
+
+    // Patrol territory
+    g.lineStyle(1, 0x00ff00, 0.4);
+    g.strokeLineShape(
+      new Phaser.Geom.Line(
+        this.spawnX - this.patrolRadius,
+        entity.y,
+        this.spawnX + this.patrolRadius,
+        entity.y
+      )
+    );
   }
 }
