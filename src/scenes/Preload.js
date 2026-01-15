@@ -35,6 +35,8 @@ export class Preload extends Phaser.Scene {
 
     this.load.image("groundTile", "assets/ground-tile.png");
 
+    this.load.image("level1-tileset", "assets/tilemaps/tileset_32x32.png");
+    this.load.tilemapTiledJSON("level1-map", "assets/tilemaps/level1.json");
     // This generates a 1×1 white texture in memory.
     // No asset file needed. Perfect for systems.
     // To be used for attack hitboxes.

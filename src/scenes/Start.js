@@ -38,40 +38,56 @@ export class Start extends Phaser.Scene {
 
     this.playerHealthUI = new PlayerHealthUI(this, this.player);
 
-    // =====================
-    // TILEMAP GROUND
-    // =====================
-    const map = this.make.tilemap({
-      tileWidth: 32,
-      tileHeight: 32,
-      width: 50,
-      height: 20,
-    });
+    // // =====================
+    // // TILEMAP GROUND
+    // // =====================
+    // const map = this.make.tilemap({
+    //   tileWidth: 32,
+    //   tileHeight: 32,
+    //   width: 50,
+    //   height: 20,
+    // });
 
-    const tileset = map.addTilesetImage("groundTile", "groundTile", 32, 32);
+    // const tileset = map.addTilesetImage("groundTile", "groundTile", 32, 32);
 
-    // create a blank layer
-    this.groundLayer = map.createBlankLayer("ground", tileset);
-    // move ground up so it’s visible
-    // this.groundLayer.setY(540 - map.tileHeight * 2);
+    // // create a blank layer
+    // this.groundLayer = map.createBlankLayer("ground", tileset);
+    // // move ground up so it’s visible
+    // // this.groundLayer.setY(540 - map.tileHeight * 2);
 
-    // fill bottom row with ground tiles
-    for (let x = 0; x < map.width; x++) {
-      this.groundLayer.putTileAt(0, x, 16);
-    }
+    // // fill bottom row with ground tiles
+    // for (let x = 0; x < map.width; x++) {
+    //   this.groundLayer.putTileAt(0, x, 16);
+    // }
 
-    // enable collision
-    this.groundLayer.setCollisionByExclusion([-1]);
+    // // enable collision
+    // this.groundLayer.setCollisionByExclusion([-1]);
 
-    // physics
-    this.physics.add.collider(this.player, this.groundLayer);
-    this.physics.add.collider(this.enemies, this.groundLayer);
+    //    // =====================
+    // // TILEMAP GROUND END
+    // // =====================
+
+    // // physics
+    // this.physics.add.collider(this.player, this.groundLayer);
+    // this.physics.add.collider(this.enemies, this.groundLayer);
     this.physics.add.collider(this.player, this.enemies);
 
     // Camera follow player
     // this.cameras.main.setBounds(0, 0, 800, 600);
     // this.cameras.main.startFollow(this.player, true, 0.1, 0.1);
     // this.cameras.main.setZoom(1.5);
+
+    // =================================================
+    const map = this.make.tilemap({
+      key: "level1-map",
+      tileWidth: 32,
+      tileHeight: 32,
+    });
+    const tileset = map.addTilesetImage("Tileset1", "level1-tileset");
+    this.groundLayer = map.createLayer("GroundLayer", tileset, 0, 0);
+    this.groundLayer.setCollisionByProperty({ collides: true });
+    this.physics.add.collider(this.player, this.groundLayer);
+    this.physics.add.collider(this.enemies, this.groundLayer);
   }
 
   update(time, delta) {

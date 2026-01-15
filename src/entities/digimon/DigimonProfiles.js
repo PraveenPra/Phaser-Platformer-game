@@ -15,8 +15,6 @@ export const DIGIMON_PROFILES = {
       hp: 100,
       attack: 40,
       defense: 5,
-      speed: 200,
-      jump: 420,
     },
 
     attacks: {
@@ -90,8 +88,6 @@ export const DIGIMON_PROFILES = {
       hp: 90,
       attack: 12,
       defense: 4,
-      speed: 2,
-      jump: 410,
     },
 
     attacks: {
