@@ -21,8 +21,8 @@ export class EnemyAI {
     // =========================
     // COMBAT
     // =========================
-    this.attackRange = 60;
-    this.attackBuffer = 6;
+    this.attackRange = 50;
+    this.attackBuffer = 14;
 
     // =========================
     // AGGRO TIMING
@@ -44,13 +44,33 @@ export class EnemyAI {
     this.returnTolerance = 6; // px close enough to home
 
     // =========================
+    // ATTACK TIMING (DUMB ENEMY)
+    // =========================
+    this.attackWindup = 300; // ms before attacking
+    this.attackTimer = 0;
+
+    this.postAttackPause = 400; // ms after attacking
+    this.postAttackTimer = 0;
+
+    this.hitStunMultiplier = 1.5;
+
+    // =========================
     // DEBUG
     // =========================
-    this.debug = true;
+    this.debug = false;
     this.debugGfx = null;
   }
 
   update(entity, dt) {
+    // =========================
+    // POST-ATTACK PAUSE
+    // =========================
+    if (this.postAttackTimer > 0) {
+      this.postAttackTimer -= dt;
+      entity.input = {};
+      return;
+    }
+
     const scene = entity.scene;
     const player = scene.player;
 
@@ -120,7 +140,7 @@ export class EnemyAI {
     if (this.mode === "patrol") {
       this.updatePatrol(entity, dt);
     } else if (this.mode === "aggro") {
-      this.updateAggro(entity, dxEnemy, absDxEnemy);
+      this.updateAggro(entity, dxEnemy, absDxEnemy, dt);
     } else if (this.mode === "return") {
       this.updateReturn(entity);
     }
@@ -213,21 +233,48 @@ export class EnemyAI {
   // =========================
   // AGGRO
   // =========================
-  updateAggro(entity, dxEnemy, absDxEnemy) {
+  updateAggro(entity, dxEnemy, absDxEnemy, dt) {
     const dir = dxEnemy < 0 ? -1 : 1;
-
     entity.visual.flip(dir < 0);
 
-    // attack gate
-    if (
-      absDxEnemy <= this.attackRange - this.attackBuffer &&
-      entity.canAttack("main") &&
-      !entity.isAttacking
-    ) {
-      entity.input = { attackMain: true };
+    // =========================
+    // ATTACK WIND-UP
+    // =========================
+    if (absDxEnemy <= this.attackRange) {
+      this.attackTimer += dt;
+
+      // stop moving while preparing
+      entity.input = {};
+
+      if (
+        absDxEnemy <= this.attackRange - this.attackBuffer &&
+        this.attackTimer >= this.attackWindup &&
+        entity.canAttack("main") &&
+        !entity.isAttacking
+      ) {
+        entity.input = { attackMain: true };
+        this.attackTimer = 0;
+        return;
+      }
+
       return;
     }
 
+    // reset if player leaves range
+    this.attackTimer = 0;
+
+    // =========================
+    // EDGE SAFETY DURING CHASE
+    // =========================
+    if (!this.hasGroundAhead(entity)) {
+      entity.input = {};
+      this.mode = "return";
+      return;
+    }
+
+    // =========================
+    // MOVE TOWARDS PLAYER
+    // =========================
     entity.input = {
       left: dir < 0,
       right: dir > 0,

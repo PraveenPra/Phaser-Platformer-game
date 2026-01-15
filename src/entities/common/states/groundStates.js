@@ -210,6 +210,12 @@ export const GroundStates = {
         () => {
           entity.isAttacking = false;
           entity.startCooldown(attackKey, attack.cooldown);
+
+          // 🧠 Enemy-only post attack hesitation
+          if (entity.role === "enemy" && entity.ai) {
+            entity.ai.postAttackTimer = entity.ai.postAttackPause;
+          }
+
           if (!entity.isDead) {
             entity.state.setState("idle");
           }
@@ -222,43 +228,36 @@ export const GroundStates = {
 
   hit: {
     enter(entity, data) {
-      console.log(`[STATE] ${entity.key} → HIT`);
-
       entity.isInvincible = true;
       entity.isAttacking = false;
 
-      // stop movement
-      entity.bodyLayer.body.setVelocity(0, 0);
-      entity.bodyLayer.body.setAcceleration(0, 0);
-      entity.bodyLayer.body.setDrag(1000, 0);
+      const body = entity.bodyLayer.body;
+      body.setVelocity(0, 0);
+      body.setAcceleration(0, 0);
+      body.setDrag(1000, 0);
 
-      // optional knockback
-      // if (data?.source?.x !== undefined) {
-      //   const dir = entity.x < data.source.x ? -1 : 1;
-      //   entity.bodyLayer.body.setVelocityX(80 * dir);
-      // }
-      console.log(entity.scene.anims.exists(`${entity.key}_take-hit`));
-
-      // play hit animation
       entity.visual.play(`${entity.key}_take-hit`);
 
-      entity.visual.onAnimComplete(`${entity.key}_take-hit`, () => {
+      const baseStun = 300;
+      const stun = entity.hitStunMultiplier
+        ? baseStun * entity.hitStunMultiplier
+        : baseStun;
+
+      entity.scene.time.delayedCall(stun, () => {
         if (!entity.isDead) {
-          console.log(`[STATE] ${entity.key} HIT → IDLE`);
           entity.state.setState("idle");
         }
       });
     },
 
-    update(entity) {
-      // do nothing — locked state
-    },
+    update() {},
 
     exit(entity) {
       entity.isInvincible = false;
       entity.bodyLayer.body.setDrag(0, 0);
     },
   },
+
   dead: {
     enter(entity) {
       entity.isDead = true;

@@ -104,7 +104,7 @@ export const DIGIMON_PROFILES = {
           duration: 80, // per-frame lifetime
           // duration: 320,//ms
         },
-        cooldown: 300,
+        cooldown: 900,
       },
       skill1: {
         type: "projectile",
