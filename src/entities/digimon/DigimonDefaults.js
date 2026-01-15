@@ -15,7 +15,7 @@ export const DIGIMON_DEFAULTS = {
 
   move: {
     speed: 200,
-    jump: 720,
+    jump: 920,
   },
 
   combat: {
