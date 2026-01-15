@@ -25,6 +25,10 @@ export class Preload extends Phaser.Scene {
     );
 
     this.load.image("ground", "assets/ground.png");
+    this.load.image("bg1", "assets/background_layer1.png");
+    this.load.image("bg2", "assets/background_layer2.png");
+    this.load.image("bg3", "assets/background_layer3.png");
+    this.load.image("bg4", "assets/background_layer4.png");
 
     this.load.image("big-fireball", "assets/vfx/big-fireball.png");
 

@@ -57,6 +57,71 @@ export class Start extends Phaser.Scene {
     this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
     this.cameras.main.startFollow(this.player, true, 0.1, 0.1);
     // this.cameras.main.setZoom(1.2);
+
+    // =====================
+    // PARALLAX BACKGROUNDS
+    // =====================
+    const cam = this.cameras.main;
+    const baseW = 320;
+    const baseH = 180;
+
+    // integer scale only (important for pixel art)
+    const scale = Math.ceil(cam.width / baseW);
+
+    this.bgScale = scale;
+
+    function createParallax(scene, key, depth, factor) {
+      const cam = scene.cameras.main;
+      const img = scene.textures.get(key).getSourceImage();
+
+      const bg = scene.add.tileSprite(
+        0,
+        cam.height - img.height * scene.bgScale,
+        cam.width,
+        img.height * scene.bgScale,
+        key
+      );
+
+      bg.setOrigin(0, 0)
+        .setScrollFactor(0)
+        .setScale(scene.bgScale)
+        .setDepth(depth);
+
+      bg.parallaxFactor = factor;
+      return bg;
+    }
+
+    this.bgSky = createParallax(this, "bg4", -50, 0.05);
+    this.bgMountains = createParallax(this, "bg3", -40, 0.04);
+    this.bgForest = createParallax(this, "bg2", -30, 0.02);
+    this.bgTrees = createParallax(this, "bg1", -20, 0.01);
+
+    // function createBg(scene, key, depth) {
+    //   const { width, height } = scene.scale;
+    //   const img = scene.textures.get(key).getSourceImage();
+
+    //   const bg = scene.add
+    //     .tileSprite(0, map.heightInPixels - img.height, width, img.height, key)
+    //     .setOrigin(0, 0)
+    //     .setScrollFactor(0)
+    //     .setDepth(depth);
+
+    //   return bg;
+    // }
+
+    // this.bg4 = createBg(this, "bg4", -40).setScale(1700, 1200);
+    // this.bg3 = createBg(this, "bg3", -30);
+    // this.bg2 = createBg(this, "bg2", -20);
+    // this.bg1 = createBg(this, "bg1", -10);
+
+    // this.scale.on("resize", (gameSize) => {
+    //   const { width, height } = gameSize;
+
+    //   this.bg4.setSize(width, height);
+    //   this.bg3.setSize(width, height);
+    //   this.bg2.setSize(width, height);
+    //   this.bg1.setSize(width, height);
+    // });
   }
 
   update(time, delta) {
@@ -68,5 +133,12 @@ export class Start extends Phaser.Scene {
         enemy.update(delta);
       }
     });
+
+    const camX = this.cameras.main.scrollX;
+
+    this.bgSky.tilePositionX = camX * this.bgSky.parallaxFactor;
+    this.bgMountains.tilePositionX = camX * this.bgMountains.parallaxFactor;
+    this.bgForest.tilePositionX = camX * this.bgForest.parallaxFactor;
+    this.bgTrees.tilePositionX = camX * this.bgTrees.parallaxFactor;
   }
 }
