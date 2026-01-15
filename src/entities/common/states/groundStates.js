@@ -90,9 +90,20 @@ export const GroundStates = {
     },
 
     update(entity) {
-      if (entity.isDead || entity.state.current === "hit") return;
+      const body = entity.bodyLayer.body;
+      const speed = entity.profile.move.speed;
 
-      if (entity.bodyLayer.body.onFloor()) {
+      // ===== AIR CONTROL =====
+      if (entity.input?.left) {
+        body.setVelocityX(-speed);
+        entity.visual.flip(true);
+      } else if (entity.input?.right) {
+        body.setVelocityX(speed);
+        entity.visual.flip(false);
+      }
+
+      // ===== LAND =====
+      if (body.onFloor()) {
         entity.state.setState("idle");
       }
     },
