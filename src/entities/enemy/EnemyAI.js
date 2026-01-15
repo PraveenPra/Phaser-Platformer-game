@@ -145,15 +145,28 @@ export class EnemyAI {
     // spatial patrol bounds
     let turned = false;
 
-    // territory bounds first (authoritative)
-    if (entity.x <= leftLimit) {
-      console.warn("[TURN] LEFT LIMIT HIT");
+    // =========================
+    // WALL COLLISION (HIGHEST PRIORITY)
+    // =========================
+    if (
+      (this.direction === -1 && entity.body.blocked.left) ||
+      (this.direction === 1 && entity.body.blocked.right)
+    ) {
+      console.warn("[TURN] WALL HIT");
+      this.turn();
+      this.edgeTurnTimer = this.edgeTurnCooldown;
+      turned = true;
+    }
 
+    // =========================
+    // TERRITORY BOUNDS
+    // =========================
+    if (!turned && entity.x <= leftLimit) {
+      console.warn("[TURN] LEFT LIMIT HIT");
       this.direction = 1;
       turned = true;
-    } else if (entity.x >= rightLimit) {
-      console.warn("[TURN] right LIMIT HIT");
-
+    } else if (!turned && entity.x >= rightLimit) {
+      console.warn("[TURN] RIGHT LIMIT HIT");
       this.direction = -1;
       turned = true;
     }
