@@ -3,6 +3,7 @@ import { GameState } from "../GameState.js";
 import { Player } from "../entities/Player/Player.js";
 import { Enemy } from "../entities/enemy/Enemy.js";
 import { PlayerHealthUI } from "../ui/PlayerHealthUI.js";
+import { EnemySpawnManager } from "../systems/EnemySpawnManager.js";
 
 export class Start extends Phaser.Scene {
   constructor() {
@@ -56,22 +57,34 @@ export class Start extends Phaser.Scene {
     this.cameras.main.startFollow(this.player, true, 0.1, 0.1);
     // this.cameras.main.setZoom(1.2);
 
-    this.enemies = this.physics.add.group();
-
-    const enemy = new Enemy(this, 650, 350, "gabumon");
-    this.enemies.add(enemy);
-
-    this.enemiesLayer = map.getObjectLayer("EnemiesLayer");
-    console.log("enemiesLayer", this.enemiesLayer);
-    this.enemiesLayer.objects.forEach((obj) => {
-      const x = obj.x;
-      const y = obj.y - obj.height; // IMPORTANT
-
-      const enemy = new Enemy(this, x, y, "chivmon");
-      this.enemies.add(enemy);
+    this.enemies = this.physics.add.group({
+      runChildUpdate: true,
     });
 
+    // Register enemy class (decouples manager)
+    this.registry.set("EnemyClass", Enemy);
+
+    // Enemy spawn manager
+    this.enemySpawner = new EnemySpawnManager(this, map, this.enemies);
+
+    // Enemies collide with ground
     this.physics.add.collider(this.enemies, this.groundLayer);
+    this.physics.add.collider(this.player, this.enemies);
+
+    // const enemy = new Enemy(this, 650, 350, "gabumon");
+    // this.enemies.add(enemy);
+
+    // this.enemiesLayer = map.getObjectLayer("EnemiesLayer");
+    // console.log("enemiesLayer", this.enemiesLayer);
+    // this.enemiesLayer.objects.forEach((obj) => {
+    //   const x = obj.x;
+    //   const y = obj.y - obj.height; // IMPORTANT
+
+    //   const enemy = new Enemy(this, x, y, "chivmon");
+    //   this.enemies.add(enemy);
+    // });
+
+    // this.physics.add.collider(this.enemies, this.groundLayer);
     // =====================
     // PARALLAX BACKGROUNDS
     // =====================
@@ -142,11 +155,12 @@ export class Start extends Phaser.Scene {
     this.player.update(delta);
     this.playerHealthUI.draw();
 
-    this.enemies.children.iterate((enemy) => {
-      if (enemy && enemy.update) {
-        enemy.update(delta);
-      }
-    });
+    // this.enemies.children.iterate((enemy) => {
+    //   if (enemy && enemy.update) {
+    //     enemy.update(delta);
+    //   }
+    // });
+    this.enemySpawner.update();
 
     const camX = this.cameras.main.scrollX;
 
