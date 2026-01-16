@@ -25,11 +25,6 @@ export class Start extends Phaser.Scene {
     this.player = new Player(this, 200, 350, key);
     this.player.body.setCollideWorldBounds(true);
 
-    this.enemies = this.physics.add.group();
-
-    const enemy = new Enemy(this, 650, 350, "gabumon");
-    this.enemies.add(enemy);
-
     this.playerHealthUI = new PlayerHealthUI(this, this.player);
 
     // // =====================
@@ -44,6 +39,10 @@ export class Start extends Phaser.Scene {
       tileHeight: 32,
     });
     const tileset = map.addTilesetImage("Tileset1", "level1-tileset");
+    const tilesetEnemies = map.addTilesetImage(
+      "Tileset2",
+      "level1-tileset-enemies"
+    ); //dummy placeholder tileset fr enemies
     this.groundLayer = map.createLayer("GroundLayer", tileset, 0, 0);
 
     // World bounds = full tilemap size
@@ -51,13 +50,28 @@ export class Start extends Phaser.Scene {
 
     this.groundLayer.setCollisionByProperty({ collides: true });
     this.physics.add.collider(this.player, this.groundLayer);
-    this.physics.add.collider(this.enemies, this.groundLayer);
 
     // Camera follow player
     this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
     this.cameras.main.startFollow(this.player, true, 0.1, 0.1);
     // this.cameras.main.setZoom(1.2);
 
+    this.enemies = this.physics.add.group();
+
+    const enemy = new Enemy(this, 650, 350, "gabumon");
+    this.enemies.add(enemy);
+
+    this.enemiesLayer = map.getObjectLayer("EnemiesLayer");
+    console.log("enemiesLayer", this.enemiesLayer);
+    this.enemiesLayer.objects.forEach((obj) => {
+      const x = obj.x;
+      const y = obj.y - obj.height; // IMPORTANT
+
+      const enemy = new Enemy(this, x, y, "chivmon");
+      this.enemies.add(enemy);
+    });
+
+    this.physics.add.collider(this.enemies, this.groundLayer);
     // =====================
     // PARALLAX BACKGROUNDS
     // =====================
