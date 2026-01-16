@@ -57,7 +57,7 @@ export class EnemyAI {
     // =========================
     // DEBUG
     // =========================
-    this.debug = false;
+    this.debug = true;
     this.debugGfx = null;
   }
 
@@ -172,7 +172,6 @@ export class EnemyAI {
       (this.direction === -1 && entity.body.blocked.left) ||
       (this.direction === 1 && entity.body.blocked.right)
     ) {
-      console.warn("[TURN] WALL HIT");
       this.turn();
       this.edgeTurnTimer = this.edgeTurnCooldown;
       turned = true;
@@ -182,11 +181,9 @@ export class EnemyAI {
     // TERRITORY BOUNDS
     // =========================
     if (!turned && entity.x <= leftLimit) {
-      console.warn("[TURN] LEFT LIMIT HIT");
       this.direction = 1;
       turned = true;
     } else if (!turned && entity.x >= rightLimit) {
-      console.warn("[TURN] RIGHT LIMIT HIT");
       this.direction = -1;
       turned = true;
     }
@@ -195,18 +192,7 @@ export class EnemyAI {
     if (!turned && this.edgeTurnTimer <= 0) {
       const hasGround = this.hasGroundAhead(entity);
 
-      console.warn(
-        "[EDGE CHECK]",
-        "x=",
-        entity.x.toFixed(1),
-        "dir=",
-        this.direction,
-        "hasGround=",
-        hasGround
-      );
-
       if (!hasGround) {
-        console.error("[TURN] EDGE DETECTED");
         this.turn();
         this.edgeTurnTimer = this.edgeTurnCooldown;
       }
@@ -216,18 +202,6 @@ export class EnemyAI {
       left: this.direction < 0,
       right: this.direction > 0,
     };
-
-    console.log(
-      "[PATROL]",
-      "x=",
-      entity.x.toFixed(1),
-      "dir=",
-      this.direction,
-      "L=",
-      leftLimit.toFixed(1),
-      "R=",
-      rightLimit.toFixed(1)
-    );
   }
 
   // =========================
@@ -321,17 +295,6 @@ export class EnemyAI {
 
     for (const layer of layers) {
       const tile = layer.getTileAtWorldXY(x, y);
-      console.error(
-        "[GROUND PROBE]",
-        "x=",
-        x.toFixed(1),
-        "y=",
-        y.toFixed(1),
-        "tile=",
-        tile ? tile.index : null,
-        "collides=",
-        tile?.collides
-      );
 
       if (tile && tile.collides) {
         return true;
