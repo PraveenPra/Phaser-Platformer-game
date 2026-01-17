@@ -2,6 +2,7 @@ import { CharacterBody } from "./CharacterBody.js";
 import { CharacterVisual } from "./CharacterVisual.js";
 import { StateMachine } from "../../systems/StateMachine.js";
 import { CharacterHealthBar } from "./CharacterHealthBar.js";
+import { CombatController } from "../../systems/CombatController.js";
 
 export class Character extends Phaser.GameObjects.Container {
   constructor(scene, x, y, textureKey, profile, states, initialState) {
@@ -15,6 +16,7 @@ export class Character extends Phaser.GameObjects.Container {
     this.visual = new CharacterVisual(scene, this, textureKey, profile);
 
     this.state = new StateMachine(this, initialState, states);
+    this.combat = new CombatController(this);
 
     this.attackCooldowns = {};
     this.isAttacking = false;
@@ -34,7 +36,7 @@ export class Character extends Phaser.GameObjects.Container {
       "type=",
       this.type,
       "healthBar=",
-      !!this.healthBar
+      !!this.healthBar,
     );
 
     // combat runtime state
@@ -64,7 +66,7 @@ export class Character extends Phaser.GameObjects.Container {
     this.currentHp = Math.max(0, this.currentHp);
 
     console.log(
-      `[DAMAGE] ${this.key} took ${amount} dmg from ${source?.key} | HP=${this.currentHp}`
+      `[DAMAGE] ${this.key} took ${amount} dmg from ${source?.key} | HP=${this.currentHp}`,
     );
 
     // 🔥 SHOW bar only when hit
