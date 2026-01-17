@@ -7,7 +7,7 @@ import { CharacterHealthBar } from "../common/CharacterHealthBar.js";
 export class Enemy extends Character {
   constructor(scene, x, y, textureKey) {
     const profile = resolveProfile(textureKey);
-    super(scene, x, y, textureKey, profile, GroundStates, "idle");
+    super(scene, x, y, textureKey, profile, "idle");
 
     this.role = "enemy";
     this.healthBar = new CharacterHealthBar(scene, this, {

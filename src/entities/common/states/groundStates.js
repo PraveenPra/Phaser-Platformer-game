@@ -56,12 +56,6 @@ export const GroundStates = {
         entity.state.setState("idle");
       }
 
-      if (entity.input?.up) {
-        entity.movement.moveVertical(-1);
-      } else if (entity.input?.down) {
-        entity.movement.moveVertical(1);
-      }
-
       if (entity.input?.jump) {
         entity.state.setState("jump");
       }

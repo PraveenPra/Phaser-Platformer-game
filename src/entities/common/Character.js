@@ -5,11 +5,16 @@ import { CharacterHealthBar } from "./CharacterHealthBar.js";
 import { CombatController } from "../../systems/CombatController.js";
 import { MovementController } from "../../systems/MovementController.js";
 import { GroundMovement } from "../../systems/GroundMovement.js";
+import { AirMovement } from "../../systems/AirMovement.js";
+import { AirStates } from "../common/states/airStates.js";
+import { GroundStates } from "../common/states/groundStates.js";
 
 export class Character extends Phaser.GameObjects.Container {
-  constructor(scene, x, y, textureKey, profile, states, initialState) {
+  constructor(scene, x, y, textureKey, profile, initialState) {
     super(scene, x, y);
     scene.add.existing(this);
+
+    let states = null;
 
     this.key = textureKey;
     this.profile = profile;
@@ -18,7 +23,15 @@ export class Character extends Phaser.GameObjects.Container {
     this.visual = new CharacterVisual(scene, this, textureKey, profile);
 
     // ✅ MUST exist before FSM
-    this.movement = new GroundMovement(this);
+
+    if (profile.movement?.mode == "air") {
+      this.movement = new AirMovement(this);
+      this.bodyLayer.body.setAllowGravity(false);
+      states = AirStates;
+    } else {
+      this.movement = new GroundMovement(this);
+      states = GroundStates;
+    }
 
     this.state = new StateMachine(this, initialState, states);
     this.combat = new CombatController(this);
