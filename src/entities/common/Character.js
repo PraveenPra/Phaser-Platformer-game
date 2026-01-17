@@ -3,6 +3,7 @@ import { CharacterVisual } from "./CharacterVisual.js";
 import { StateMachine } from "../../systems/StateMachine.js";
 import { CharacterHealthBar } from "./CharacterHealthBar.js";
 import { CombatController } from "../../systems/CombatController.js";
+import { MovementController } from "../../systems/MovementController.js";
 
 export class Character extends Phaser.GameObjects.Container {
   constructor(scene, x, y, textureKey, profile, states, initialState) {
@@ -14,6 +15,9 @@ export class Character extends Phaser.GameObjects.Container {
 
     this.bodyLayer = new CharacterBody(scene, this, profile);
     this.visual = new CharacterVisual(scene, this, textureKey, profile);
+
+    // ✅ MUST exist before FSM
+    this.movement = new MovementController(this);
 
     this.state = new StateMachine(this, initialState, states);
     this.combat = new CombatController(this);
@@ -46,6 +50,7 @@ export class Character extends Phaser.GameObjects.Container {
   }
 
   update(dt) {
+    // this.combat.update(dt);
     this.state.update(dt);
   }
 

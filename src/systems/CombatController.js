@@ -7,6 +7,10 @@ export class CombatController {
     this.entity = entity;
   }
 
+  requestAttack(attackKey) {
+    this.requestedAttack = attackKey;
+  }
+
   canAttack(attackKey) {
     return this.entity.canAttack(attackKey);
   }
