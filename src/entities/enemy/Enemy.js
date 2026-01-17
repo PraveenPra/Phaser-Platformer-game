@@ -47,6 +47,9 @@ export class Enemy extends Character {
           this.scene.enemies.remove(this, true, true);
         }
 
+        // destroy debug graphics
+        this.ai.destroyDebug();
+
         // destroy entity
         this.destroy();
       },

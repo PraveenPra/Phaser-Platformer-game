@@ -76,6 +76,15 @@ export class EnemyAI {
       this.spawnX = entity.x;
     }
 
+    // =========================
+    // DEBUG CLEANUP (EARLY EXIT)
+    // =========================
+    if (!this.debug && this.debugGfx) {
+      this.debugGfx.clear();
+      this.debugGfx.destroy();
+      this.debugGfx = null;
+    }
+
     if (this.debug && !this.debugGfx) {
       this.debugGfx = scene.add.graphics().setDepth(9999);
     }
@@ -117,27 +126,6 @@ export class EnemyAI {
     if (this.debug) {
       const enemyBody = entity.bodyLayer.body;
       const playerBody = player.bodyLayer.body;
-
-      console.log({
-        enemyX: entity.x,
-        enemyBodyLeft: enemyBody.left,
-        enemyBodyRight: enemyBody.right,
-
-        playerX: player.x,
-        playerBodyLeft: playerBody.left,
-        playerBodyRight: playerBody.right,
-
-        edgeDistance: absDxEnemy,
-        attackRange: this.attackRange,
-        buffer: this.attackBuffer,
-        attackTriggerAt: this.attackRange - this.attackBuffer,
-      });
-    }
-    if (this.debug) {
-      console.log({
-        enemySpriteVsBody: entity.x - (enemyBody.left + enemyBody.width / 2),
-        playerSpriteVsBody: player.x - (playerBody.left + playerBody.width / 2),
-      });
     }
 
     // =========================
@@ -225,6 +213,7 @@ export class EnemyAI {
   updateAggro(entity, dxEnemy, absDxEnemy, dt) {
     const dir = entity.scene.player.x < entity.x ? -1 : 1;
     entity.visual.flip(dir < 0);
+    this.direction = dir;
 
     // =========================
     // TRUE ATTACK ZONE
@@ -258,15 +247,6 @@ export class EnemyAI {
     // IN ATTACK AWARENESS ZONE
     // KEEP MOVING CLOSER
     // =========================
-    if (absDxEnemy <= this.attackRange) {
-      entity.input = {
-        left: dir < 0,
-        right: dir > 0,
-      };
-      return;
-    }
-
-    // close but not committed
     if (absDxEnemy <= this.attackRange) {
       entity.input = {
         left: dir < 0,
@@ -362,5 +342,13 @@ export class EnemyAI {
       entity.y + 12,
       3,
     );
+  }
+
+  destroyDebug() {
+    if (this.debugGfx) {
+      this.debugGfx.clear();
+      this.debugGfx.destroy();
+      this.debugGfx = null;
+    }
   }
 }
