@@ -1,25 +1,25 @@
-import { spawnAttackHitbox } from "../combat/spawnAttackHitbox.js";
-import { spawnProjectile } from "../combat/spawnProjectile.js";
-import { setupHitboxCollisions } from "../combat/setupHitboxCollisions.js";
-
-export const GroundStates = {
+export const AirStates = {
   idle: {
     enter(entity) {
-      entity.visual.play(`${entity.key}_idle`);
+      entity.visual.play(`${entity.key}_idle`, true);
       entity.movement.stop();
     },
 
     update(entity) {
       if (entity.isDead || entity.state.current === "hit") return;
 
-      if (entity.input?.left || entity.input?.right) {
-        entity.state.setState("run");
+      // ✅ movement
+      if (
+        entity.input?.left ||
+        entity.input?.right ||
+        entity.input?.up ||
+        entity.input?.down
+      ) {
+        entity.state.setState("fly");
+        return;
       }
 
-      if (entity.input?.jump) {
-        entity.state.setState("jump");
-      }
-
+      // ✅ ATTACKS (THIS WAS MISSING)
       if (entity.input?.attackMain) {
         entity.requestedAttack = "main";
         entity.state.setState("attack");
@@ -40,32 +40,42 @@ export const GroundStates = {
     },
   },
 
-  run: {
+  fly: {
     enter(entity) {
-      entity.visual.play(`${entity.key}_run`);
+      entity.visual.play(`${entity.key}_fly`, true);
     },
 
     update(entity) {
       if (entity.isDead || entity.state.current === "hit") return;
 
+      let moving = false;
+
       if (entity.input?.left) {
         entity.movement.moveHorizontal(-1);
+        moving = true;
       } else if (entity.input?.right) {
         entity.movement.moveHorizontal(1);
+        moving = true;
       } else {
-        entity.state.setState("idle");
+        entity.bodyLayer.body.setVelocityX(0);
       }
 
       if (entity.input?.up) {
         entity.movement.moveVertical(-1);
+        moving = true;
       } else if (entity.input?.down) {
         entity.movement.moveVertical(1);
+        moving = true;
+      } else {
+        entity.bodyLayer.body.setVelocityY(0);
       }
 
-      if (entity.input?.jump) {
-        entity.state.setState("jump");
+      if (!moving) {
+        entity.state.setState("idle");
+        return;
       }
 
+      // ✅ ATTACKS (ALSO MISSING)
       if (entity.input?.attackMain) {
         entity.requestedAttack = "main";
         entity.state.setState("attack");
@@ -82,25 +92,6 @@ export const GroundStates = {
         entity.requestedAttack = "skill2";
         entity.state.setState("attack");
         return;
-      }
-    },
-  },
-
-  jump: {
-    enter(entity) {
-      entity.visual.play(`${entity.key}_jump`);
-      entity.movement.jump();
-    },
-
-    update(entity) {
-      if (entity.input?.left) {
-        entity.movement.airControl(-1);
-      } else if (entity.input?.right) {
-        entity.movement.airControl(1);
-      }
-
-      if (entity.bodyLayer.body.onFloor()) {
-        entity.state.setState("idle");
       }
     },
   },
@@ -110,7 +101,13 @@ export const GroundStates = {
       const attackKey = entity.requestedAttack;
       entity.combat.execute(attackKey);
     },
-    update() {},
+
+    update(entity) {
+      // 🔒 stay here until combat finishes
+      if (!entity.isAttacking && !entity.isDead) {
+        entity.state.setState("idle");
+      }
+    },
   },
 
   hit: {
@@ -121,7 +118,7 @@ export const GroundStates = {
       const body = entity.bodyLayer.body;
       body.setVelocity(0, 0);
       body.setAcceleration(0, 0);
-      body.setDrag(1000, 0);
+      body.setDrag(1000, 1000);
 
       entity.visual.play(`${entity.key}_take-hit`);
 
@@ -131,14 +128,10 @@ export const GroundStates = {
         : baseStun;
 
       entity.scene.time.delayedCall(stun, () => {
-        if (!entity.isDead) {
-          entity.state.setState("idle");
-        }
+        if (!entity.isDead) entity.state.setState("idle");
       });
     },
-
     update() {},
-
     exit(entity) {
       entity.isInvincible = false;
       entity.bodyLayer.body.setDrag(0, 0);
@@ -151,30 +144,19 @@ export const GroundStates = {
       entity.isInvincible = true;
 
       const body = entity.bodyLayer.body;
-
       body.setVelocity(0, 0);
       body.setAcceleration(0, 0);
-
-      // ✅ stop gravity instead of disabling collision
       body.setAllowGravity(false);
-
-      // ✅ freeze in place
       body.moves = false;
 
-      if (entity.healthBar) {
-        entity.healthBar.destroy();
-      }
+      if (entity.healthBar) entity.healthBar.destroy();
 
       const animKey = `${entity.key}_defeated`;
-
       entity.visual.play(animKey);
-
-      // 🔥 notify entity when death animation ends
       entity.visual.onAnimComplete(animKey, () => {
         entity.onDeathAnimationComplete?.();
       });
 
-      // 💣 destroy any leftover hitboxes
       if (entity._activeHitboxes) {
         for (const hb of entity._activeHitboxes) {
           if (hb.active) hb.destroy();
@@ -182,9 +164,6 @@ export const GroundStates = {
         entity._activeHitboxes.clear();
       }
     },
-
-    update(entity) {
-      // nothing — terminal state
-    },
+    update() {},
   },
 };

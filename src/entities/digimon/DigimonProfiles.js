@@ -94,7 +94,7 @@ export const DIGIMON_PROFILES = {
       main: {
         type: "projectile",
         anim: "attack-A",
-        damage: 18,
+        damage: 5,
         projectile: {
           texture: "big-fireball",
           speed: 260,

@@ -15,8 +15,9 @@ export class Enemy extends Character {
     });
 
     // not let others push enemy
-    this.body.setImmovable(true);
-    this.body.pushable = false; // optional
+    this.bodyLayer.body.setImmovable(true);
+    this.bodyLayer.body.pushable = false;
+    // optional
 
     this.ai = new EnemyAI();
   }
