@@ -218,23 +218,73 @@ export class EnemyAI {
   // AGGRO
   // =========================
   updateAggro(entity, dxEnemy, absDxEnemy, dt) {
-    const dir = entity.scene.player.x < entity.x ? -1 : 1;
+    const player = entity.scene.player;
+    const dir = player.x < entity.x ? -1 : 1;
     entity.visual.flip(dir < 0);
     this.direction = dir;
 
-    // =========================
-    // TRUE ATTACK ZONE
-    // =========================
-    // distance required for actual melee contact
-    const meleeContactDistance = 6; // px (tweakable)
+    const mainAttack = entity.profile.attacks?.main;
+    const isProjectile = mainAttack?.type === "projectile";
 
     // =========================
-    // CLOSE ENOUGH TO HIT
+    // MELEE ENEMY LOGIC
     // =========================
-    if (absDxEnemy <= meleeContactDistance) {
+    if (!isProjectile) {
+      const meleeContactDistance = 6;
+
+      // Close enough to hit
+      if (absDxEnemy <= meleeContactDistance) {
+        this.attackTimer += dt;
+        entity.input = {};
+
+        if (
+          this.attackTimer >= this.attackWindup &&
+          entity.canAttack("main") &&
+          !entity.isAttacking
+        ) {
+          entity.input = { attackMain: true };
+          this.attackTimer = 0;
+        }
+        return;
+      }
+
+      // Need to get closer
+      if (absDxEnemy <= this.attackRange) {
+        entity.input = { left: dir < 0, right: dir > 0 };
+        return;
+      }
+
+      this.attackTimer = 0;
+
+      if (!this.hasGroundAhead(entity)) {
+        this.mode = "return";
+        entity.input = {};
+        return;
+      }
+
+      entity.input = { left: dir < 0, right: dir > 0 };
+      return;
+    }
+
+    // =========================
+    // PROJECTILE ENEMY LOGIC
+    // =========================
+    const projectileMinDistance = 28;
+    const projectileFireDistance = this.attackRange;
+
+    // TOO CLOSE → back away
+    if (absDxEnemy < projectileMinDistance) {
+      entity.input = {
+        left: dir > 0,
+        right: dir < 0,
+      };
+      this.attackTimer = 0;
+      return;
+    }
+
+    // FIRE ZONE → stand and shoot
+    if (absDxEnemy <= projectileFireDistance) {
       this.attackTimer += dt;
-
-      // NOW we stop moving
       entity.input = {};
 
       if (
@@ -244,24 +294,11 @@ export class EnemyAI {
       ) {
         entity.input = { attackMain: true };
         this.attackTimer = 0;
-        return;
       }
-
       return;
     }
 
-    // =========================
-    // IN ATTACK AWARENESS ZONE
-    // KEEP MOVING CLOSER
-    // =========================
-    if (absDxEnemy <= this.attackRange) {
-      entity.input = {
-        left: dir < 0,
-        right: dir > 0,
-      };
-      return;
-    }
-
+    // TOO FAR → move closer
     this.attackTimer = 0;
 
     if (!this.hasGroundAhead(entity)) {
@@ -270,10 +307,7 @@ export class EnemyAI {
       return;
     }
 
-    entity.input = {
-      left: dir < 0,
-      right: dir > 0,
-    };
+    entity.input = { left: dir < 0, right: dir > 0 };
   }
 
   // =========================

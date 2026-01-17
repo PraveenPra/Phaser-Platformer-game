@@ -92,19 +92,18 @@ export const DIGIMON_PROFILES = {
 
     attacks: {
       main: {
-        type: "melee",
+        type: "projectile",
         anim: "attack-A",
-        damage: 10,
-        fireFrames: [3, 4, 5], // active hit window
-        hitbox: {
-          width: 20,
-          height: 18,
-          offsetX: 16,
-          offsetY: -8,
-          duration: 80, // per-frame lifetime
-          // duration: 320,//ms
+        damage: 18,
+        projectile: {
+          texture: "big-fireball",
+          speed: 260,
+          offsetX: 18,
+          offsetY: -10,
+          lifetime: 1200,
         },
-        cooldown: 900,
+        fireFrame: 4,
+        cooldown: 800,
       },
       skill1: {
         type: "projectile",
