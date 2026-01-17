@@ -92,8 +92,15 @@ export class EnemyAI {
     // =========================
     // SAFETY
     // =========================
-    if (!player || entity.isDead) {
+    if (
+      !player ||
+      player.isDead ||
+      player.state?.current === "dead" ||
+      entity.isDead
+    ) {
       entity.input = {};
+      this.attackTimer = 0;
+      this.postAttackTimer = 0;
       return;
     }
 
