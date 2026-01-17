@@ -10,7 +10,9 @@ export const DIGIMON_PROFILES = {
         "attack-C": -5,
       },
     },
-
+    movement: {
+      mode: "ground", //air,hybrid
+    },
     stats: {
       hp: 100,
       attack: 40,
@@ -74,7 +76,9 @@ export const DIGIMON_PROFILES = {
       speed: 80,
       jump: 420,
     },
-
+    movement: {
+      mode: "air",
+    },
     visual: {
       originX: 0.5,
       originY: 1,
@@ -145,7 +149,9 @@ export const DIGIMON_PROFILES = {
       speed: 80,
       jump: 420,
     },
-
+    movement: {
+      mode: "ground",
+    },
     visual: {
       originX: 0.5,
       originY: 1,

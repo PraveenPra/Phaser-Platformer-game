@@ -10,5 +10,6 @@ export function resolveProfile(key) {
     move: { ...DIGIMON_DEFAULTS.move, ...specific.move },
     combat: { ...DIGIMON_DEFAULTS.combat, ...specific.combat },
     attacks: specific.attacks || {},
+    movement: specific.movement || {},
   };
 }
