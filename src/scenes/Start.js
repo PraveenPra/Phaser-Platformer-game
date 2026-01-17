@@ -4,6 +4,7 @@ import { Player } from "../entities/Player/Player.js";
 import { Enemy } from "../entities/enemy/Enemy.js";
 import { PlayerHealthUI } from "../ui/PlayerHealthUI.js";
 import { EnemySpawnManager } from "../systems/EnemySpawnManager.js";
+import { SceneControls } from "../utils/SceneControls.js";
 
 export class Start extends Phaser.Scene {
   constructor() {
@@ -13,6 +14,10 @@ export class Start extends Phaser.Scene {
   preload() {}
 
   create() {
+    this.controls = new SceneControls(this, {
+      keyPause: "ESC",
+    });
+
     const key = GameState.selectedDigimon;
     createAnimations(this, key);
 
@@ -42,7 +47,7 @@ export class Start extends Phaser.Scene {
     const tileset = map.addTilesetImage("Tileset1", "level1-tileset");
     const tilesetEnemies = map.addTilesetImage(
       "Tileset2",
-      "level1-tileset-enemies"
+      "level1-tileset-enemies",
     ); //dummy placeholder tileset fr enemies
     this.groundLayer = map.createLayer("GroundLayer", tileset, 0, 0);
 
@@ -106,7 +111,7 @@ export class Start extends Phaser.Scene {
         cam.height - img.height * scene.bgScale,
         cam.width,
         img.height * scene.bgScale,
-        key
+        key,
       );
 
       bg.setOrigin(0, 0)

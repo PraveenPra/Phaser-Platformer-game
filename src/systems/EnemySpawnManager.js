@@ -41,19 +41,11 @@ export class EnemySpawnManager {
         spawned: false,
       });
     });
-
-    console.log("Enemy spawn points:", this.spawnPoints.length);
-    this.spawnPoints.forEach((p) => {
-      console.log("SpawnPoint", p.id, "x:", p.x);
-    });
   }
 
   update() {
-    console.log("Spawner update tick");
-
     const cam = this.scene.cameras.main;
     const camCenterX = cam.scrollX + cam.width / 2;
-    console.log("Camera center X:", camCenterX);
 
     this.spawnPoints.forEach((point) => {
       const dist = Math.abs(point.x - camCenterX);
@@ -85,12 +77,6 @@ export class EnemySpawnManager {
     this.enemyGroup.add(enemy);
     this.activeEnemies.set(point.id, enemy);
     point.spawned = true;
-
-    console.log(
-      `Spawned ${config.texture} as ${point.type} at`,
-      point.x,
-      point.y
-    );
   }
 
   _despawnEnemy(point) {
@@ -102,7 +88,5 @@ export class EnemySpawnManager {
 
     this.activeEnemies.delete(point.id);
     point.spawned = false;
-
-    console.log("Despawned enemy", point.id);
   }
 }
