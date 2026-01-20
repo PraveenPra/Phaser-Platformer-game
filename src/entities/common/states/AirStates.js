@@ -1,8 +1,22 @@
 export const AirStates = {
   idle: {
     enter(entity) {
-      entity.visual.play(`${entity.key}_idle`, true);
+      // entity.visual.play(`${entity.key}_idle`, true);
+      // ▶ play same fly anim but slower
+      entity.visual.play(`${entity.key}_fly`, true);
+      entity.visual.sprite.anims.timeScale = 0.3;
+
       entity.movement.stop();
+
+      // 🪶 hover container, not visual
+      entity._hoverTween = entity.scene.tweens.add({
+        targets: entity,
+        y: entity.y - 8,
+        duration: 700,
+        yoyo: true,
+        repeat: -1,
+        ease: "Sine.easeInOut",
+      });
     },
 
     update(entity) {
@@ -38,11 +52,21 @@ export const AirStates = {
         return;
       }
     },
+
+    exit(entity) {
+      if (entity._hoverTween) {
+        entity._hoverTween.stop();
+        entity._hoverTween = null;
+      }
+
+      entity.visual.sprite.anims.timeScale = 1;
+    },
   },
 
   fly: {
     enter(entity) {
       entity.visual.play(`${entity.key}_fly`, true);
+      entity.visual.sprite.anims.timeScale = 1;
     },
 
     update(entity) {

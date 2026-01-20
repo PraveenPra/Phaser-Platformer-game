@@ -18,7 +18,12 @@ export function createAnimations(scene, textureKey) {
         .sort()
         .map((f) => ({ key: textureKey, frame: f })),
       frameRate: 10,
-      repeat: animKey.includes("idle") || animKey.includes("run") ? -1 : 0,
+      repeat:
+        animKey.includes("idle") ||
+        animKey.includes("run") ||
+        animKey.includes("fly")
+          ? -1
+          : 0,
     });
   });
 }
