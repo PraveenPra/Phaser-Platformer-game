@@ -10,6 +10,7 @@ export class CharacterSelect extends Phaser.Scene {
     createAnimations(this, "agumon");
     createAnimations(this, "gabumon");
     createAnimations(this, "chivmon");
+    createAnimations(this, "patamon");
 
     const agumon = this.add
       .sprite(300, 320, "agumon")
@@ -26,9 +27,15 @@ export class CharacterSelect extends Phaser.Scene {
       .play("chivmon_idle")
       .setInteractive();
 
+    const patamon = this.add
+      .sprite(860, 320, "patamon")
+      .play("patamon_idle")
+      .setInteractive();
+
     agumon.on("pointerdown", () => this.select("agumon"));
     gabumon.on("pointerdown", () => this.select("gabumon"));
     chivmon.on("pointerdown", () => this.select("chivmon"));
+    patamon.on("pointerdown", () => this.select("patamon"));
 
     this.add
       .text(480, 100, "SELECT DIGIMON", {

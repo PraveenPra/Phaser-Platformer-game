@@ -9,19 +9,25 @@ export class Preload extends Phaser.Scene {
     this.load.atlas(
       "agumon",
       "assets/digimons/Agumon/Agumon.png",
-      "assets/digimons/Agumon/Agumon.json"
+      "assets/digimons/Agumon/Agumon.json",
     );
 
     this.load.atlas(
       "gabumon",
       "assets/digimons/Gabumon/Gabumon.png",
-      "assets/digimons/Gabumon/Gabumon.json"
+      "assets/digimons/Gabumon/Gabumon.json",
     );
 
     this.load.atlas(
       "chivmon",
       "assets/digimons/Chivmon/Chivmon.png",
-      "assets/digimons/Chivmon/Chivmon.json"
+      "assets/digimons/Chivmon/Chivmon.json",
+    );
+
+    this.load.atlas(
+      "patamon",
+      "assets/digimons/Patamon/Patamon.png",
+      "assets/digimons/Patamon/Patamon.json",
     );
 
     this.load.image("ground", "assets/ground.png");
@@ -42,7 +48,7 @@ export class Preload extends Phaser.Scene {
     this.load.image("level1-tileset", "assets/tilemaps/tileset_32x32.png");
     this.load.image(
       "level1-tileset-enemies",
-      "assets/tilemaps/goblin_spritesheet.png"
+      "assets/tilemaps/goblin_spritesheet.png",
     ); //dummy placeholder tileset fr enemies
     this.load.tilemapTiledJSON("level1-map", "assets/tilemaps/Tilemap1.json");
     // This generates a 1×1 white texture in memory.
