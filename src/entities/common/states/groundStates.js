@@ -5,6 +5,14 @@ import { setupHitboxCollisions } from "../combat/setupHitboxCollisions.js";
 export const GroundStates = {
   idle: {
     enter(entity) {
+      const body = entity.bodyLayer.body;
+      const move = entity.profile.move;
+
+      // ✅ ground physics
+      body.setAllowGravity(true);
+      body.setDragX(move.decel);
+      body.setAccelerationX(0);
+
       entity.visual.play(`${entity.key}_idle`);
       entity.movement.stop();
     },
@@ -42,6 +50,13 @@ export const GroundStates = {
 
   run: {
     enter(entity) {
+      const body = entity.bodyLayer.body;
+      const move = entity.profile.move;
+
+      // ✅ ground physics
+      body.setAllowGravity(true);
+      body.setDragX(0); // no drag while actively moving
+
       entity.visual.play(`${entity.key}_run`);
     },
 
@@ -82,6 +97,11 @@ export const GroundStates = {
 
   jump: {
     enter(entity) {
+      const body = entity.bodyLayer.body;
+
+      // ✅ airborne now
+      body.setDragX(0);
+
       entity.visual.play(`${entity.key}_jump`);
       entity.movement.jump();
     },
@@ -135,7 +155,9 @@ export const GroundStates = {
 
     exit(entity) {
       entity.isInvincible = false;
-      entity.bodyLayer.body.setDrag(0, 0);
+      const body = entity.bodyLayer.body;
+      body.setDrag(0, 0);
+      body.setAcceleration(0, 0);
     },
   },
 

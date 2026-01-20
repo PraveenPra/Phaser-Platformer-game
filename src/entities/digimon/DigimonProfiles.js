@@ -77,7 +77,7 @@ export const DIGIMON_PROFILES = {
       jump: 420,
     },
     movement: {
-      mode: "air",
+      mode: "ground",
     },
     visual: {
       originX: 0.5,

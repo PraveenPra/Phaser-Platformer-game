@@ -1,6 +1,14 @@
 export const AirStates = {
   idle: {
     enter(entity) {
+      const body = entity.bodyLayer.body;
+      const move = entity.profile.move;
+
+      // ✅ flying physics
+      body.setAllowGravity(false);
+      body.setDrag(move.airDecel, move.airDecel);
+      body.setAcceleration(0, 0);
+
       // entity.visual.play(`${entity.key}_idle`, true);
       // ▶ play same fly anim but slower
       entity.visual.play(`${entity.key}_fly`, true);
@@ -54,6 +62,11 @@ export const AirStates = {
     },
 
     exit(entity) {
+      const body = entity.bodyLayer.body;
+
+      body.setDrag(0, 0);
+      body.setAcceleration(0, 0);
+
       if (entity._hoverTween) {
         entity._hoverTween.stop();
         entity._hoverTween = null;
@@ -65,6 +78,11 @@ export const AirStates = {
 
   fly: {
     enter(entity) {
+      const body = entity.bodyLayer.body;
+
+      body.setAllowGravity(false);
+      body.setDrag(0, 0);
+
       entity.visual.play(`${entity.key}_fly`, true);
       entity.visual.sprite.anims.timeScale = 1;
     },
@@ -94,6 +112,14 @@ export const AirStates = {
         entity.bodyLayer.body.setVelocityY(0);
       }
 
+      const body = entity.bodyLayer.body;
+      const len = Math.hypot(body.velocity.x, body.velocity.y);
+      const max = entity.profile.move.maxAirSpeed;
+
+      if (len > max) {
+        body.velocity.scale(max / len);
+      }
+
       if (!moving) {
         entity.state.setState("idle");
         return;
@@ -117,6 +143,13 @@ export const AirStates = {
         entity.state.setState("attack");
         return;
       }
+    },
+
+    exit(entity) {
+      const body = entity.bodyLayer.body;
+
+      body.setAcceleration(0, 0);
+      body.setDrag(0, 0);
     },
   },
 
@@ -158,7 +191,9 @@ export const AirStates = {
     update() {},
     exit(entity) {
       entity.isInvincible = false;
-      entity.bodyLayer.body.setDrag(0, 0);
+      const body = entity.bodyLayer.body;
+      body.setDrag(0, 0);
+      body.setAcceleration(0, 0);
     },
   },
 

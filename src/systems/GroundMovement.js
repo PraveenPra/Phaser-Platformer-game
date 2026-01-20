@@ -7,12 +7,24 @@ export class GroundMovement {
   }
 
   stop() {
-    this.entity.bodyLayer.body.setVelocityX(0);
+    const body = this.entity.bodyLayer.body;
+    const move = this.entity.profile.move;
+
+    //Drag should be higher than accel on ground → snappy but weighty.
+    body.setAccelerationX(0);
+    body.setDragX(move.decel);
   }
 
   moveHorizontal(dir) {
-    this.entity.bodyLayer.body.setVelocityX(dir * this.speed);
-    this.entity.visual.flip(dir < 0);
+    const body = this.entity.bodyLayer.body;
+    const move = this.entity.profile.move;
+
+    body.setAccelerationX(dir * move.accel);
+    body.setMaxVelocity(move.speed, body.maxVelocity.y);
+
+    if (dir !== 0) {
+      this.entity.visual.flip(dir < 0);
+    }
   }
 
   jump() {
