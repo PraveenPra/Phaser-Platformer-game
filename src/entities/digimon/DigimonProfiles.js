@@ -293,4 +293,88 @@ export const DIGIMON_PROFILES = {
     },
     evolution: "garurumon",
   },
+
+  seraphimon: {
+    body: {
+      width: 18,
+      height: 40,
+    },
+
+    move: {
+      speed: 80,
+      jump: 420,
+      airAccel: 600,
+      maxAirSpeed: 200, // add this if missing
+      airDecel: 300, // drag for air movement
+    },
+    movement: {
+      mode: "air",
+    },
+    visual: {
+      originX: 0.5,
+      originY: 1,
+      yOffset: -4,
+      xOffset: -2,
+      anims: {
+        "attack-C": -4,
+        fly: 12,
+      },
+    },
+
+    stats: {
+      hp: 90,
+      attack: 12,
+      defense: 4,
+      speed: 2,
+      jump: 410,
+    },
+
+    attacks: {
+      main: {
+        type: "projectile",
+        anim: "attack-A",
+        damage: 18,
+        projectile: {
+          texture: "big-fireball",
+          speed: 260,
+          offsetX: 28,
+          offsetY: 0,
+          lifetime: 1200,
+        },
+        fireFrame: 7,
+        cooldown: 800,
+      },
+      skill1: {
+        type: "projectile",
+        anim: "attack-B",
+        damage: 18,
+        projectile: {
+          texture: "big-fireball",
+          speed: 260,
+          offsetX: 18,
+          offsetY: -10,
+          lifetime: 1200,
+        },
+        fireFrame: 7,
+        cooldown: 800,
+      },
+
+      skill2: {
+        type: "melee",
+        anim: "attack-C",
+        damage: 30,
+        fireFrames: [3, 4, 5], // active hit window
+        hitbox: {
+          width: 20,
+          height: 18,
+          offsetX: 16,
+          offsetY: -8,
+          duration: 80, // per-frame lifetime
+          // duration: 320,
+        },
+        cooldown: 1500,
+      },
+    },
+    evolution: "garurumon",
+  },
 };
