@@ -5,11 +5,12 @@ export const UnifiedStates = {
 
       // AIR-ONLY idle = hover
       if (!e.canGround && e.canAir) {
+        console.error("AIR-ONLY IDLE");
         e.visual.play(`${e.key}_fly`, true);
         e.visual.sprite.anims.timeScale = 0.3;
         return;
       }
-
+      console.error("GROUND/HYBRID IDLE", `${e.key}_idle`);
       // ground / hybrid idle
       e.visual.play(`${e.key}_idle`);
     },
@@ -36,9 +37,9 @@ export const UnifiedStates = {
           e.state.setState("jump");
           return;
         }
-      } else if (e.canAir) {
-        e.state.setState("fly");
       }
+
+      // ❗ DO NOTHING while falling
     },
   },
 

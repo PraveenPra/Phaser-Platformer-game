@@ -27,6 +27,8 @@ export class Character extends Phaser.GameObjects.Container {
     // movement stays as-is (GroundMovement / AirMovement / MultiDomainMovement)
     if (profile.movement?.mode === "multi-domain") {
       this.movement = new MultiDomainMovement(this, profile.movement);
+      const def = profile.movement.default || "ground";
+      this.movement.switchDomain(def);
     } else if (profile.movement?.mode === "air") {
       this.movement = new AirMovement(this);
       this.bodyLayer.body.setAllowGravity(false);
@@ -35,10 +37,9 @@ export class Character extends Phaser.GameObjects.Container {
     }
 
     // 🔑 Initialize default movement domain
-    if (profile.movement?.mode === "multi-domain") {
-      const def = profile.movement.default || "ground";
-      this.movement.switchDomain(def);
-    }
+    // if (profile.movement?.mode === "multi-domain") {
+
+    // }
 
     // --- movement capabilities ---
     // 🧠 movement capability flags (USED BY UnifiedStates)
@@ -52,7 +53,14 @@ export class Character extends Phaser.GameObjects.Container {
       mode === "air" ||
       (mode === "multi-domain" && profile.movement.domains.includes("air"));
 
-    this.state = new StateMachine(this, initialState, UnifiedStates);
+    // Decide initial FSM state based on default movement domain
+    let startState = initialState;
+
+    if (profile.movement?.mode === "multi-domain") {
+      const def = profile.movement.default || "ground";
+      startState = def === "air" ? "fly" : "idle";
+    }
+    this.state = new StateMachine(this, startState, UnifiedStates);
     this.combat = new CombatController(this);
 
     this.attackCooldowns = {};
