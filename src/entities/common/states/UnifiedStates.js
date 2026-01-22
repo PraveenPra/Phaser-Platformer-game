@@ -89,7 +89,7 @@ export const UnifiedStates = {
       // ONE-TIME TAKEOFF (hybrid only)
       if (e.canAir && e.movement.switchDomain) {
         e.movement.switchDomain("air");
-        e.state.setState("fly");
+        e.state.setState("airIdle");
       }
     },
 
@@ -98,6 +98,63 @@ export const UnifiedStates = {
       if (!e.canAir && e.bodyLayer.body.onFloor()) {
         e.state.setState("idle");
       }
+    },
+  },
+
+  /* =========================
+     AIR IDLE (HOVER)
+     ========================= */
+  airIdle: {
+    enter(e) {
+      const body = e.bodyLayer.body;
+      const move = e.profile.move;
+
+      body.setAllowGravity(false);
+      body.setAcceleration(0, 0);
+      body.setDrag(move.airDecel, move.airDecel);
+
+      e.visual.play(`${e.key}_fly`, true);
+      e.visual.sprite.anims.timeScale = 0.3;
+
+      e.movement.stop();
+
+      // hover tween (container, not sprite)
+      e._hoverTween = e.scene.tweens.add({
+        targets: e,
+        y: e.y - 8,
+        duration: 700,
+        yoyo: true,
+        repeat: -1,
+        ease: "Sine.easeInOut",
+      });
+    },
+
+    update(e) {
+      const body = e.bodyLayer.body;
+
+      if (e.input?.left || e.input?.right || e.input?.up || e.input?.down) {
+        e.state.setState("fly");
+        return;
+      }
+
+      // land automatically
+      if (e.canGround && body.onFloor()) {
+        e.movement.switchDomain("ground");
+        e.state.setState("idle");
+      }
+    },
+
+    exit(e) {
+      if (e._hoverTween) {
+        e._hoverTween.stop();
+        e._hoverTween = null;
+      }
+
+      const body = e.bodyLayer.body;
+      body.setAcceleration(0, 0);
+      body.setDrag(0, 0);
+
+      e.visual.sprite.anims.timeScale = 1;
     },
   },
 
@@ -133,7 +190,11 @@ export const UnifiedStates = {
         return;
       }
 
-      if (!moving) e.movement.stop();
+      if (!moving) {
+        e.movement.stop();
+        e.state.setState("airIdle");
+        return;
+      }
     },
   },
 
