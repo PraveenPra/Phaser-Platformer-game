@@ -58,7 +58,7 @@ export class Character extends Phaser.GameObjects.Container {
 
     if (profile.movement?.mode === "multi-domain") {
       const def = profile.movement.default || "ground";
-      startState = def === "air" ? "fly" : "idle";
+      startState = def === "air" ? "airIdle" : "idle";
     }
     this.state = new StateMachine(this, startState, UnifiedStates);
     this.combat = new CombatController(this);
