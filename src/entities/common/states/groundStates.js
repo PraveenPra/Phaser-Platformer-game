@@ -99,20 +99,25 @@ export const GroundStates = {
     enter(entity) {
       const body = entity.bodyLayer.body;
 
-      // ✅ airborne now
+      // airborne now
       body.setDragX(0);
 
       entity.visual.play(`${entity.key}_jump`);
       entity.movement.jump();
+
+      // If multi-domain, switch movement AND FSM state to fly
+      if (
+        entity.profile.movement?.mode === "multi-domain" &&
+        entity.profile.movement.domains.includes("air")
+      ) {
+        entity.movement.switchDomain("air"); // switch to air movement
+        entity.state.setState("fly"); // switch FSM to AirStates.fly
+        return; // exit enter to prevent jump logic from continuing
+      }
     },
 
     update(entity) {
-      if (entity.input?.left) {
-        entity.movement.airControl(-1);
-      } else if (entity.input?.right) {
-        entity.movement.airControl(1);
-      }
-
+      // Landing
       if (entity.bodyLayer.body.onFloor()) {
         entity.state.setState("idle");
       }

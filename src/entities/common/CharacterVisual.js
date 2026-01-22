@@ -4,9 +4,14 @@ export class CharacterVisual {
     this.profile = profile;
 
     this.baseYOffset = profile.visual.yOffset ?? 0;
+    this.baseXOffset = profile.visual.xOffset ?? 0;
     this.animOffsets = profile.visual.anims ?? {};
 
-    this.sprite = scene.add.sprite(0, this.baseYOffset, textureKey);
+    this.sprite = scene.add.sprite(
+      this.baseXOffset,
+      this.baseYOffset,
+      textureKey,
+    );
     this.sprite.setOrigin(profile.visual.originX, profile.visual.originY);
 
     owner.add(this.sprite);
@@ -31,7 +36,7 @@ export class CharacterVisual {
   onAnimComplete(key, callback) {
     this.sprite.once(
       Phaser.Animations.Events.ANIMATION_COMPLETE_KEY + key,
-      callback
+      callback,
     );
   }
 }

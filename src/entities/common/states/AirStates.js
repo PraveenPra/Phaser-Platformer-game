@@ -79,12 +79,20 @@ export const AirStates = {
   fly: {
     enter(entity) {
       const body = entity.bodyLayer.body;
+      body.setAllowGravity(false); // fly physics
 
-      body.setAllowGravity(false);
       body.setDrag(0, 0);
 
       entity.visual.play(`${entity.key}_fly`, true);
       entity.visual.sprite.anims.timeScale = 1;
+
+      if (entity.bodyLayer.body.onFloor()) {
+        if (entity.profile.movement?.mode === "multi-domain") {
+          entity.movement.switchDomain("ground");
+          entity.state.setState("idle");
+          return;
+        }
+      }
     },
 
     update(entity) {

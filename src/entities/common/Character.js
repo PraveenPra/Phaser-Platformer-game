@@ -8,13 +8,13 @@ import { GroundMovement } from "../../systems/GroundMovement.js";
 import { AirMovement } from "../../systems/AirMovement.js";
 import { AirStates } from "../common/states/airStates.js";
 import { GroundStates } from "../common/states/groundStates.js";
+import { MultiDomainMovement } from "../../systems/MultiDomainMovement.js";
+import { UnifiedStates } from "../common/states/UnifiedStates.js";
 
 export class Character extends Phaser.GameObjects.Container {
   constructor(scene, x, y, textureKey, profile, initialState) {
     super(scene, x, y);
     scene.add.existing(this);
-
-    let states = null;
 
     this.key = textureKey;
     this.profile = profile;
@@ -23,17 +23,24 @@ export class Character extends Phaser.GameObjects.Container {
     this.visual = new CharacterVisual(scene, this, textureKey, profile);
 
     // ✅ MUST exist before FSM
-
-    if (profile.movement?.mode == "air") {
+    // Determine which states to use
+    // movement stays as-is (GroundMovement / AirMovement / MultiDomainMovement)
+    if (profile.movement?.mode === "multi-domain") {
+      this.movement = new MultiDomainMovement(this, profile.movement);
+    } else if (profile.movement?.mode === "air") {
       this.movement = new AirMovement(this);
       this.bodyLayer.body.setAllowGravity(false);
-      states = AirStates;
     } else {
       this.movement = new GroundMovement(this);
-      states = GroundStates;
     }
 
-    this.state = new StateMachine(this, initialState, states);
+    // 🔑 Initialize default movement domain
+    if (profile.movement?.mode === "multi-domain") {
+      const def = profile.movement.default || "ground";
+      this.movement.switchDomain(def);
+    }
+
+    this.state = new StateMachine(this, initialState, UnifiedStates);
     this.combat = new CombatController(this);
 
     this.attackCooldowns = {};

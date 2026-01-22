@@ -13,13 +13,13 @@ export class AirMovement extends MovementController {
     }
   }
 
-  moveVertical(dir) {
-    const body = this.entity.bodyLayer.body;
-    const move = this.entity.profile.move;
+  // moveVertical(dir) {
+  //   const body = this.entity.bodyLayer.body;
+  //   const move = this.entity.profile.move;
 
-    body.setAccelerationY(dir * move.airAccel);
-    body.setMaxVelocity(body.maxVelocity.x, move.maxAirSpeed);
-  }
+  //   body.setAccelerationY(dir * move.airAccel);
+  //   body.setMaxVelocity(body.maxVelocity.x, move.maxAirSpeed);
+  // }
 
   moveVertical(dir) {
     const body = this.entity.bodyLayer.body;
