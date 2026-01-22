@@ -40,6 +40,18 @@ export class Character extends Phaser.GameObjects.Container {
       this.movement.switchDomain(def);
     }
 
+    // --- movement capabilities ---
+    // 🧠 movement capability flags (USED BY UnifiedStates)
+    const mode = profile.movement?.mode;
+
+    this.canGround =
+      mode === "ground" ||
+      (mode === "multi-domain" && profile.movement.domains.includes("ground"));
+
+    this.canAir =
+      mode === "air" ||
+      (mode === "multi-domain" && profile.movement.domains.includes("air"));
+
     this.state = new StateMachine(this, initialState, UnifiedStates);
     this.combat = new CombatController(this);
 
