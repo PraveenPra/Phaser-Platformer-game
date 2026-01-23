@@ -1,5 +1,5 @@
 import { spawnImpactVFX } from "../vfx/spawnImpactVFX.js";
-
+import { doHitStop } from "/src/systems/HitStop.js";
 export function setupHitboxCollisions(scene, hitbox, targets, options = {}) {
   const { destroyOnHit = false } = options;
 
@@ -19,15 +19,19 @@ export function setupHitboxCollisions(scene, hitbox, targets, options = {}) {
       `[HIT CONFIRMED] ${hb.owner.key} → ${target.key} (${hb.damage})`,
     );
 
-    // 🔊 PLAY IMPACT SOUND
+    // =========================
+    // HIT CONFIRM FEEDBACK
+    // =========================
+    const hitStopMs = hb.hitStop ?? Math.min(80, 30 + hb.damage * 2);
+    doHitStop(scene, hitStopMs);
+
+    // 🔊 IMPACT SOUND
     scene.sound.play("sfx-blast-hit", {
       volume: 0.6,
-      rate: Phaser.Math.FloatBetween(0.95, 1.05), // tiny pitch variance
+      rate: Phaser.Math.FloatBetween(0.95, 1.05),
     });
 
-    target.takeDamage(hb.damage, hb.owner);
-
-    // ✅ IMPACT VFX (single source of truth)
+    // 💥 IMPACT VFX
     spawnImpactVFX(
       scene,
       target.x,
@@ -35,6 +39,9 @@ export function setupHitboxCollisions(scene, hitbox, targets, options = {}) {
       hb.impactVFX || "default",
       hb.damage,
     );
+
+    // 🎯 APPLY DAMAGE LAST
+    target.takeDamage(hb.damage, hb.owner);
 
     if (destroyOnHit) {
       hb.destroy();

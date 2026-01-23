@@ -12,7 +12,6 @@ export function spawnProjectile(scene, owner, attack) {
 
   p.body.allowGravity = false;
   p.setVelocityX(proj.speed * dir);
-  p.impactVFX = attack.impactVFX || "default";
 
   if (proj.anim) {
     p.play(proj.anim);
@@ -23,6 +22,9 @@ export function spawnProjectile(scene, owner, attack) {
   // =========================
   p.damage = attack.damage;
   p.owner = owner;
+  p.hitStop = attack.hitStop;
+  p.impactVFX = attack.impactVFX || "default";
+
   p._hitTargets = new Set(); // prevent multi-hit
 
   // =========================

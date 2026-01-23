@@ -99,6 +99,8 @@ export const DIGIMON_PROFILES = {
         type: "projectile",
         anim: "attack-A",
         damage: 5,
+        hitStop: 50, // 👈 light hit
+        impactVFX: "impact-hit",
         projectile: {
           texture: "big-fireball",
           speed: 260,
@@ -222,7 +224,7 @@ export const DIGIMON_PROFILES = {
 
   patamon: {
     move: {
-      speed: 80,
+      speed: 100,
       jump: 420,
     },
     movement: {
@@ -252,6 +254,8 @@ export const DIGIMON_PROFILES = {
         type: "projectile",
         anim: "attack-A",
         damage: 18,
+        hitStop: 50, // 👈 light hit
+        impactVFX: "impact-hit",
         projectile: {
           texture: "big-fireball",
           speed: 260,
@@ -303,7 +307,7 @@ export const DIGIMON_PROFILES = {
     },
 
     move: {
-      speed: 180,
+      speed: 200,
       jump: 620,
       airAccel: 600,
       maxAirSpeed: 200, // add this if missing
@@ -338,6 +342,8 @@ export const DIGIMON_PROFILES = {
         type: "projectile",
         anim: "attack-A",
         damage: 18,
+        hitStop: 110, // 👈 heavy hit
+        impactVFX: "impact-hit",
         projectile: {
           texture: "big-fireball",
           speed: 260,
@@ -384,8 +390,8 @@ export const DIGIMON_PROFILES = {
 
   magnamon: {
     move: {
-      speed: 80,
-      jump: 420,
+      speed: 180,
+      jump: 720,
     },
     movement: {
       mode: "ground",
@@ -461,9 +467,9 @@ export const DIGIMON_PROFILES = {
     },
 
     move: {
-      speed: 80,
-      jump: 420,
-      airAccel: 600,
+      speed: 200,
+      jump: 720,
+      airAccel: 800,
       maxAirSpeed: 200, // add this if missing
       airDecel: 300, // drag for air movement
     },

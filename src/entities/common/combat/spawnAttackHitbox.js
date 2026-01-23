@@ -4,7 +4,7 @@ export function spawnAttackHitbox(scene, owner, config) {
   const hitbox = scene.physics.add.sprite(
     owner.x + config.offsetX * dir,
     owner.y + config.offsetY,
-    "__hitbox"
+    "__hitbox",
   );
 
   hitbox.setTint(0xff0000);
@@ -17,6 +17,8 @@ export function spawnAttackHitbox(scene, owner, config) {
   // ownership & damage
   hitbox.owner = owner;
   hitbox.damage = config.damage;
+  hitbox.hitStop = config.hitStop;
+  hitbox.impactVFX = config.impactVFX;
   hitbox.hitTargets = new Set(); // 🔒 per-attack damage control
 
   console.log(`[HITBOX SPAWN] owner=${owner.key} dmg=${hitbox.damage}`);
