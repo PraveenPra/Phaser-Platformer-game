@@ -61,6 +61,13 @@ export class Preload extends Phaser.Scene {
       frameHeight: 17,
     });
 
+    this.load.spritesheet("impact-hit", "assets/vfx/impact-hit.png", {
+      frameWidth: 32,
+      frameHeight: 32,
+    });
+
+    // TILEMAPS ----------------  ---
+
     this.load.image("groundTile", "assets/ground-tile.png");
 
     this.load.image("level1-tileset", "assets/tilemaps/tileset_32x32.png");
@@ -77,6 +84,10 @@ export class Preload extends Phaser.Scene {
       pixelWidth: 1,
       pixelHeight: 1,
     });
+
+    // SFX ----------------------
+    this.load.audio("sfx-blast-hit", "assets/sfx/shoot.mp3");
+    this.load.audio("sfx-wing-flap", "assets/sfx/wing-flap.wav");
   }
 
   create() {

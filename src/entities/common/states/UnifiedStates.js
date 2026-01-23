@@ -1,3 +1,5 @@
+import { startWingFlap, stopWingFlap } from "/src/utils/StateMachineUtils.js";
+
 function handleAttackInputs(e) {
   if (e.isDead || e.isAttacking) return false;
 
@@ -200,6 +202,8 @@ export const UnifiedStates = {
     enter(e) {
       e.visual.play(`${e.key}_fly`, true);
       e.visual.sprite.anims.timeScale = 1;
+
+      startWingFlap(e);
     },
 
     update(e) {
@@ -237,6 +241,10 @@ export const UnifiedStates = {
         e.state.setState("airIdle");
         return;
       }
+    },
+
+    exit(e) {
+      stopWingFlap(e);
     },
   },
 

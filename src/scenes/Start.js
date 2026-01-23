@@ -28,6 +28,16 @@ export class Start extends Phaser.Scene {
       repeat: -1,
     });
 
+    this.anims.create({
+      key: "impact-hit",
+      frames: this.anims.generateFrameNumbers("impact-hit", {
+        start: 0,
+        end: 5,
+      }),
+      frameRate: 18,
+      repeat: 0,
+    });
+
     this.player = new Player(this, 200, 350, key);
     this.player.body.setCollideWorldBounds(true);
 

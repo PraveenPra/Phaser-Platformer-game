@@ -7,11 +7,12 @@ export function spawnProjectile(scene, owner, attack) {
   const p = scene.physics.add.sprite(
     owner.x + proj.offsetX * dir,
     owner.y + proj.offsetY,
-    proj.texture
+    proj.texture,
   );
 
   p.body.allowGravity = false;
   p.setVelocityX(proj.speed * dir);
+  p.impactVFX = attack.impactVFX || "default";
 
   if (proj.anim) {
     p.play(proj.anim);
