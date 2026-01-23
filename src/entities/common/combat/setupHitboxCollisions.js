@@ -32,13 +32,13 @@ export function setupHitboxCollisions(scene, hitbox, targets, options = {}) {
     });
 
     // 💥 IMPACT VFX
-    spawnImpactVFX(
-      scene,
-      target.x,
-      target.y,
-      hb.impactVFX || "default",
-      hb.damage,
-    );
+    // spawnImpactVFX(
+    //   scene,
+    //   target.x,
+    //   target.y,
+    //   hb.impactVFX || "default",
+    //   hb.damage,
+    // );
 
     // 🎯 APPLY DAMAGE LAST
     target.takeDamage(hb.damage, hb.owner);

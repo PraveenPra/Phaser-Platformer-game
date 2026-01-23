@@ -8,6 +8,7 @@ import { GroundMovement } from "../../systems/GroundMovement.js";
 import { AirMovement } from "../../systems/AirMovement.js";
 import { MultiDomainMovement } from "../../systems/MultiDomainMovement.js";
 import { UnifiedStates } from "../common/states/UnifiedStates.js";
+import { doHitFlash } from "./vfx/doHitFlash.js";
 
 export class Character extends Phaser.GameObjects.Container {
   constructor(scene, x, y, textureKey, profile, initialState) {
@@ -96,6 +97,9 @@ export class Character extends Phaser.GameObjects.Container {
 
     this.currentHp -= amount;
     this.currentHp = Math.max(0, this.currentHp);
+
+    // 💥 HIT FLASH
+    doHitFlash(this.visual.sprite);
 
     console.log(
       `[DAMAGE] ${this.key} took ${amount} dmg from ${source?.key} | HP=${this.currentHp}`,
