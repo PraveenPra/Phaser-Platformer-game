@@ -10,7 +10,6 @@ export const UnifiedStates = {
       //   e.visual.sprite.anims.timeScale = 0.3;
       //   return;
       // }
-      console.error("GROUND/HYBRID IDLE", `${e.key}_idle`);
       // ground / hybrid idle
       e.visual.play(`${e.key}_idle`);
     },
@@ -83,19 +82,30 @@ export const UnifiedStates = {
     enter(e) {
       if (!e.canGround) return;
 
-      e.visual.play(`${e.key}_jump`);
-      e.movement.jump();
+      e.jumpCount ??= 0;
+      e.jumpCount = 1;
 
-      // ONE-TIME TAKEOFF (hybrid only)
-      if (e.canAir && e.movement.switchDomain) {
-        e.movement.switchDomain("air");
-        e.state.setState("airIdle");
-      }
+      e.visual.play(`${e.key}_jump`);
+      e.movement.jump(); // normal ground jump
     },
 
     update(e) {
-      // ✅ ground-only landing recovery
-      if (!e.canAir && e.bodyLayer.body.onFloor()) {
+      const body = e.bodyLayer.body;
+
+      // SECOND JUMP → takeoff to air
+      if (e.canAir && !body.onFloor() && e.input?.jump && e.jumpCount === 1) {
+        e.jumpCount = 2;
+        e.movement.switchDomain("air");
+        e.state.setState("airIdle");
+        return;
+      }
+
+      // LAND → reset
+      if (body.onFloor()) {
+        if (e.canGround && e.movement.switchDomain) {
+          e.movement.switchDomain("ground");
+        }
+        e.jumpCount = 0;
         e.state.setState("idle");
       }
     },
@@ -187,6 +197,8 @@ export const UnifiedStates = {
       if (e.bodyLayer.body.onFloor() && e.canGround) {
         e.movement.switchDomain("ground");
         e.state.setState("idle");
+        this.jumpCount = 0;
+
         return;
       }
 

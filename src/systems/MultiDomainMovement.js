@@ -24,7 +24,6 @@ export class MultiDomainMovement extends MovementController {
           this.domains.air = new AirMovement(entity);
           break;
         default:
-          console.warn(`Unknown movement domain: ${domain}`);
       }
     }
   }
@@ -42,7 +41,6 @@ export class MultiDomainMovement extends MovementController {
       if (domain === "ground") body.setAllowGravity(true);
       else body.setAllowGravity(false);
     } else {
-      console.warn(`Domain ${domain} not found for this entity`);
     }
   }
 
@@ -57,12 +55,8 @@ export class MultiDomainMovement extends MovementController {
 
   moveVertical(dir) {
     // Only exists in air/swim movement
-    console.error("moveVertical called in MultiDomainMovement - out");
     if (this.domains[this.activeDomain].moveVertical) {
-      console.error("moveVertical called in MultiDomainMovement in1");
-
       this.domains[this.activeDomain].moveVertical(dir);
-      console.error("moveVertical called in MultiDomainMovement");
     }
   }
 

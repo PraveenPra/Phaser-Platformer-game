@@ -303,8 +303,8 @@ export const DIGIMON_PROFILES = {
     },
 
     move: {
-      speed: 80,
-      jump: 420,
+      speed: 180,
+      jump: 620,
       airAccel: 600,
       maxAirSpeed: 200, // add this if missing
       airDecel: 300, // drag for air movement

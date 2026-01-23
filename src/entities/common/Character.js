@@ -24,6 +24,7 @@ export class Character extends Phaser.GameObjects.Container {
 
     // Decide initial FSM state based on default movement domain
     let startState = initialState;
+    this.jumpCount = 0;
 
     // ✅ MUST exist before FSM
     // Determine which states to use
