@@ -226,9 +226,7 @@ export const DIGIMON_PROFILES = {
       jump: 420,
     },
     movement: {
-      mode: "multi-domain",
-      domains: ["ground", "air"],
-      default: "ground",
+      mode: "air",
     },
     visual: {
       originX: 0.5,
@@ -456,8 +454,8 @@ export const DIGIMON_PROFILES = {
   },
   birdramon: {
     body: {
-      width: 18,
-      height: 40,
+      width: 28,
+      height: 20,
     },
 
     move: {
@@ -473,10 +471,10 @@ export const DIGIMON_PROFILES = {
     visual: {
       originX: 0.5,
       originY: 1,
-      yOffset: -4,
-      xOffset: -2,
+      yOffset: -20,
+      xOffset: 2,
       anims: {
-        "attack-C": -4,
+        // "attack-A": -4,
         fly: 12,
       },
     },

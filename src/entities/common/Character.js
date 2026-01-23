@@ -6,8 +6,6 @@ import { CombatController } from "../../systems/CombatController.js";
 import { MovementController } from "../../systems/MovementController.js";
 import { GroundMovement } from "../../systems/GroundMovement.js";
 import { AirMovement } from "../../systems/AirMovement.js";
-import { AirStates } from "../common/states/airStates.js";
-import { GroundStates } from "../common/states/groundStates.js";
 import { MultiDomainMovement } from "../../systems/MultiDomainMovement.js";
 import { UnifiedStates } from "../common/states/UnifiedStates.js";
 
@@ -28,7 +26,6 @@ export class Character extends Phaser.GameObjects.Container {
 
     // ✅ MUST exist before FSM
     // Determine which states to use
-    // movement stays as-is (GroundMovement / AirMovement / MultiDomainMovement)
     if (profile.movement?.mode === "multi-domain") {
       this.movement = new MultiDomainMovement(this, profile.movement);
       const def = profile.movement.default || "ground";
@@ -43,12 +40,6 @@ export class Character extends Phaser.GameObjects.Container {
       startState = "idle";
     }
 
-    // 🔑 Initialize default movement domain
-    // if (profile.movement?.mode === "multi-domain") {
-
-    // }
-
-    // --- movement capabilities ---
     // 🧠 movement capability flags (USED BY UnifiedStates)
     const mode = profile.movement?.mode;
 
@@ -68,11 +59,6 @@ export class Character extends Phaser.GameObjects.Container {
     this.currentAttackKey = null;
     this.requestedAttack = null;
 
-    // if (this.type === "enemy") {
-    //   this.healthBar = new CharacterHealthBar(scene, this, {
-    //     visible: false,
-    //   });
-    // }
     this.healthBar = null;
 
     console.log(
@@ -128,8 +114,4 @@ export class Character extends Phaser.GameObjects.Container {
       this.state.setState("hit", { source });
     }
   }
-
-  // getAttackTargets(scene) {
-  //   return scene.enemies;
-  // }
 }

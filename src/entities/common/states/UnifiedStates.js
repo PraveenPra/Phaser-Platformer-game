@@ -1,3 +1,27 @@
+function handleAttackInputs(e) {
+  if (e.isDead || e.isAttacking) return false;
+
+  if (e.input?.attackMain) {
+    e.requestedAttack = "main";
+    e.state.setState("attack");
+    return true;
+  }
+
+  if (e.input?.attackSkill1) {
+    e.requestedAttack = "skill1";
+    e.state.setState("attack");
+    return true;
+  }
+
+  if (e.input?.attackSkill2) {
+    e.requestedAttack = "skill2";
+    e.state.setState("attack");
+    return true;
+  }
+
+  return false;
+}
+
 export const UnifiedStates = {
   idle: {
     enter(e) {
@@ -15,6 +39,8 @@ export const UnifiedStates = {
     },
 
     update(e) {
+      if (handleAttackInputs(e)) return;
+
       const body = e.bodyLayer.body;
 
       // AIR-ONLY DIGIMON
@@ -54,6 +80,8 @@ export const UnifiedStates = {
     },
 
     update(e) {
+      if (handleAttackInputs(e)) return;
+
       const body = e.bodyLayer.body;
 
       // if (!e.canGround) {
@@ -90,6 +118,7 @@ export const UnifiedStates = {
     },
 
     update(e) {
+      if (handleAttackInputs(e)) return;
       const body = e.bodyLayer.body;
 
       // SECOND JUMP → takeoff to air
@@ -111,9 +140,6 @@ export const UnifiedStates = {
     },
   },
 
-  /* =========================
-     AIR IDLE (HOVER)
-     ========================= */
   airIdle: {
     enter(e) {
       const body = e.bodyLayer.body;
@@ -140,6 +166,8 @@ export const UnifiedStates = {
     },
 
     update(e) {
+      if (handleAttackInputs(e)) return;
+
       const body = e.bodyLayer.body;
 
       if (e.input?.left || e.input?.right || e.input?.up || e.input?.down) {
@@ -175,6 +203,8 @@ export const UnifiedStates = {
     },
 
     update(e) {
+      if (handleAttackInputs(e)) return;
+
       let moving = false;
 
       if (e.input?.left) {
@@ -197,7 +227,7 @@ export const UnifiedStates = {
       if (e.bodyLayer.body.onFloor() && e.canGround) {
         e.movement.switchDomain("ground");
         e.state.setState("idle");
-        this.jumpCount = 0;
+        e.jumpCount = 0;
 
         return;
       }
@@ -210,10 +240,101 @@ export const UnifiedStates = {
     },
   },
 
+  attack: {
+    enter(e) {
+      if (e.isDead) return;
+
+      const attackKey = e.requestedAttack;
+      e.combat.execute(attackKey);
+    },
+
+    update(e) {
+      if (e.isDead) return;
+
+      // Wait until combat system releases control
+      if (!e.isAttacking && !e.isDead) {
+        if (e.canAir && !e.bodyLayer.body.onFloor()) {
+          e.state.setState("airIdle");
+        } else {
+          e.state.setState("idle");
+        }
+      }
+    },
+  },
+
+  hit: {
+    enter(e) {
+      if (e.isDead) return;
+
+      e.isInvincible = true;
+      e.isAttacking = false;
+
+      const body = e.bodyLayer.body;
+      body.setVelocity(0, 0);
+      body.setAcceleration(0, 0);
+      body.setDrag(1000, 1000);
+
+      e.visual.play(`${e.key}_take-hit`);
+
+      const baseStun = 300;
+      const stun = e.hitStunMultiplier
+        ? baseStun * e.hitStunMultiplier
+        : baseStun;
+
+      e.scene.time.delayedCall(stun, () => {
+        if (!e.isDead) {
+          if (e.canAir && !body.onFloor()) {
+            e.state.setState("airIdle");
+          } else {
+            e.state.setState("idle");
+          }
+        }
+      });
+    },
+
+    update() {},
+
+    exit(e) {
+      e.isInvincible = false;
+
+      const body = e.bodyLayer.body;
+      body.setDrag(0, 0);
+      body.setAcceleration(0, 0);
+    },
+  },
+
   dead: {
     enter(e) {
-      e.bodyLayer.body.moves = false;
-      e.visual.play(`${e.key}_defeated`);
+      e.isDead = true;
+      e.isInvincible = true;
+
+      const body = e.bodyLayer.body;
+
+      body.setVelocity(0, 0);
+      body.setAcceleration(0, 0);
+      body.setAllowGravity(false);
+      body.moves = false;
+
+      if (e.healthBar) {
+        e.healthBar.destroy();
+      }
+
+      const animKey = `${e.key}_defeated`;
+      e.visual.play(animKey);
+
+      e.visual.onAnimComplete(animKey, () => {
+        e.onDeathAnimationComplete?.();
+      });
+
+      // 💣 cleanup hitboxes
+      if (e._activeHitboxes) {
+        for (const hb of e._activeHitboxes) {
+          if (hb.active) hb.destroy();
+        }
+        e._activeHitboxes.clear();
+      }
     },
+
+    update() {}, // terminal
   },
 };
