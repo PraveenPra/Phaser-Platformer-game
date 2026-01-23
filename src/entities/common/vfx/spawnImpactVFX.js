@@ -1,12 +1,33 @@
-export function spawnImpactVFX(scene, x, y, type = "default", hbDamage = 0) {
+import { IMPACT_PROFILES } from "./ImpactProfiles.js";
+import { doHitStop } from "./doHitStop.js";
+
+export function spawnImpactVFX(
+  scene,
+  x,
+  y,
+  { type = "default", damage = 0, sourceRole = "player" },
+) {
+  const profile = IMPACT_PROFILES[sourceRole] ?? IMPACT_PROFILES.player;
+
   const vfx = scene.add.sprite(x, y, `impact_${type}`);
-  const scale = Phaser.Math.Clamp(hbDamage / 10, 1, 2.2);
-  vfx.setScale(scale);
+
+  const baseScale = Phaser.Math.Clamp(damage / 10, 1, 2.2);
+  vfx.setScale(baseScale * profile.scaleMultiplier);
 
   vfx.play("impact-hit");
 
-  //use only on heavy attacks, boss, skillLevel2-3
-  scene.cameras.main.shake(80, 0.004);
+  // Camera shake (controlled)
+  if (profile.cameraShake) {
+    scene.cameras.main.shake(
+      profile.cameraShake.duration,
+      profile.cameraShake.intensity,
+    );
+  }
+
+  // Hit stop (short & safe)
+  if (profile.hitStop) {
+    doHitStop(scene, profile.hitStop);
+  }
 
   vfx.once(Phaser.Animations.Events.ANIMATION_COMPLETE, () => {
     vfx.destroy();
