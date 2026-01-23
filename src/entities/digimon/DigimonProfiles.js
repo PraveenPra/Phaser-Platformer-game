@@ -228,7 +228,7 @@ export const DIGIMON_PROFILES = {
     movement: {
       mode: "multi-domain",
       domains: ["ground", "air"],
-      default: "air",
+      default: "ground",
     },
     visual: {
       originX: 0.5,
@@ -310,7 +310,9 @@ export const DIGIMON_PROFILES = {
       airDecel: 300, // drag for air movement
     },
     movement: {
-      mode: "air",
+      mode: "multi-domain",
+      domains: ["ground", "air"],
+      default: "air",
     },
     visual: {
       originX: 0.5,

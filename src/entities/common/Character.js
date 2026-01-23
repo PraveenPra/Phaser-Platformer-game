@@ -22,6 +22,9 @@ export class Character extends Phaser.GameObjects.Container {
     this.bodyLayer = new CharacterBody(scene, this, profile);
     this.visual = new CharacterVisual(scene, this, textureKey, profile);
 
+    // Decide initial FSM state based on default movement domain
+    let startState = initialState;
+
     // ✅ MUST exist before FSM
     // Determine which states to use
     // movement stays as-is (GroundMovement / AirMovement / MultiDomainMovement)
@@ -29,11 +32,14 @@ export class Character extends Phaser.GameObjects.Container {
       this.movement = new MultiDomainMovement(this, profile.movement);
       const def = profile.movement.default || "ground";
       this.movement.switchDomain(def);
+      startState = def === "air" ? "airIdle" : "idle";
     } else if (profile.movement?.mode === "air") {
       this.movement = new AirMovement(this);
       this.bodyLayer.body.setAllowGravity(false);
+      startState = "airIdle";
     } else {
       this.movement = new GroundMovement(this);
+      startState = "idle";
     }
 
     // 🔑 Initialize default movement domain
@@ -53,13 +59,6 @@ export class Character extends Phaser.GameObjects.Container {
       mode === "air" ||
       (mode === "multi-domain" && profile.movement.domains.includes("air"));
 
-    // Decide initial FSM state based on default movement domain
-    let startState = initialState;
-
-    if (profile.movement?.mode === "multi-domain") {
-      const def = profile.movement.default || "ground";
-      startState = def === "air" ? "airIdle" : "idle";
-    }
     this.state = new StateMachine(this, startState, UnifiedStates);
     this.combat = new CombatController(this);
 
