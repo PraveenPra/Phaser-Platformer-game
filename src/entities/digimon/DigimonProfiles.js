@@ -499,7 +499,7 @@ export const DIGIMON_PROFILES = {
           offsetY: 0,
           lifetime: 1200,
         },
-        fireFrame: 7,
+        fireFrame: 4,
         cooldown: 800,
       },
       skill1: {
@@ -513,7 +513,7 @@ export const DIGIMON_PROFILES = {
           offsetY: -10,
           lifetime: 1200,
         },
-        fireFrame: 7,
+        fireFrame: 2,
         cooldown: 800,
       },
     },

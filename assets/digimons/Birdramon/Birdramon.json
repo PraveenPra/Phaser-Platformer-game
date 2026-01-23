@@ -89,7 +89,7 @@
         },
         {
           "pivot": { "x": 0.5, "y": 0.5 },
-          "filename": "take-hit1",
+          "filename": "take-hit-1",
           "rotated": false,
           "trimmed": false,
           "sourceSize": { "w": 45, "h": 43 },
@@ -152,7 +152,7 @@
         },
         {
           "pivot": { "x": 0.5, "y": 0.5 },
-          "filename": "take-hit2",
+          "filename": "take-hit-2",
           "rotated": false,
           "trimmed": false,
           "sourceSize": { "w": 45, "h": 43 },
@@ -161,7 +161,7 @@
         },
         {
           "pivot": { "x": 0.5, "y": 0.5 },
-          "filename": "take-hit3",
+          "filename": "take-hit-3",
           "rotated": false,
           "trimmed": false,
           "sourceSize": { "w": 45, "h": 43 },
