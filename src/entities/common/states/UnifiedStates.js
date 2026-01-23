@@ -184,7 +184,7 @@ export const UnifiedStates = {
       }
 
       // 🔻 ONE-TIME LAND
-      if (e.input?.jump && e.input?.down && e.canGround) {
+      if (e.bodyLayer.body.onFloor() && e.canGround) {
         e.movement.switchDomain("ground");
         e.state.setState("idle");
         return;
