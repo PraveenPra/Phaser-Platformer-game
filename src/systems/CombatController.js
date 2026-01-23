@@ -20,7 +20,7 @@ export class CombatController {
     const attack = entity.profile.attacks?.[attackKey];
 
     if (!attack || !this.canAttack(attackKey)) {
-      entity.state.setState("idle");
+      entity.isAttacking = false;
       return;
     }
 
@@ -105,10 +105,6 @@ export class CombatController {
 
         if (entity.role === "enemy" && entity.ai) {
           entity.ai.postAttackTimer = entity.ai.postAttackPause;
-        }
-
-        if (!entity.isDead) {
-          entity.state.setState("idle");
         }
       },
     );

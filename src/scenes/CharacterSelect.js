@@ -7,42 +7,42 @@ export class CharacterSelect extends Phaser.Scene {
   }
 
   create() {
-    createAnimations(this, "agumon");
-    createAnimations(this, "gabumon");
-    createAnimations(this, "chivmon");
-    createAnimations(this, "patamon");
-    createAnimations(this, "seraphimon");
+    const characters = [
+      "seraphimon",
+      "agumon",
+      "chivmon",
+      "gabumon",
+      "magnamon",
+      "patamon",
+      "birdramon",
+    ];
 
-    const agumon = this.add
-      .sprite(300, 320, "agumon")
-      .play("agumon_idle")
-      .setInteractive();
+    const sprites = [];
 
-    const gabumon = this.add
-      .sprite(660, 320, "gabumon")
-      .play("gabumon_idle")
-      .setInteractive();
+    characters.forEach((key) => {
+      createAnimations(this, key);
+      const sprite = this.add
+        .sprite(0, 0, key)
+        // .play(`${key}_idle` ?? `${key}_fly`)
+        .setInteractive();
 
-    const chivmon = this.add
-      .sprite(460, 320, "chivmon")
-      .play("chivmon_idle")
-      .setInteractive();
+      const idleKey = `${key}_idle`;
+      const flyKey = `${key}_fly`;
 
-    const patamon = this.add
-      .sprite(860, 320, "patamon")
-      .play("patamon_idle")
-      .setInteractive();
+      const animKey = this.anims.exists(idleKey) ? idleKey : flyKey;
 
-    const seraphimon = this.add
-      .sprite(120, 320, "seraphimon")
-      .play("seraphimon_idle")
-      .setInteractive();
+      sprite.anims.play(animKey, true);
+      sprite.on("pointerdown", () => this.select(key));
+      sprites.push(sprite);
+    });
 
-    agumon.on("pointerdown", () => this.select("agumon"));
-    gabumon.on("pointerdown", () => this.select("gabumon"));
-    chivmon.on("pointerdown", () => this.select("chivmon"));
-    patamon.on("pointerdown", () => this.select("patamon"));
-    seraphimon.on("pointerdown", () => this.select("seraphimon"));
+    Phaser.Actions.GridAlign(sprites, {
+      width: 10,
+      cellWidth: 64,
+      cellHeight: 100,
+      x: this.cameras.main.centerX - 270,
+      y: 150,
+    });
 
     this.add
       .text(480, 100, "SELECT DIGIMON", {

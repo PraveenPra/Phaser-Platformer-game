@@ -6,15 +6,13 @@ import { CombatController } from "../../systems/CombatController.js";
 import { MovementController } from "../../systems/MovementController.js";
 import { GroundMovement } from "../../systems/GroundMovement.js";
 import { AirMovement } from "../../systems/AirMovement.js";
-import { AirStates } from "../common/states/airStates.js";
-import { GroundStates } from "../common/states/groundStates.js";
+import { MultiDomainMovement } from "../../systems/MultiDomainMovement.js";
+import { UnifiedStates } from "../common/states/UnifiedStates.js";
 
 export class Character extends Phaser.GameObjects.Container {
   constructor(scene, x, y, textureKey, profile, initialState) {
     super(scene, x, y);
     scene.add.existing(this);
-
-    let states = null;
 
     this.key = textureKey;
     this.profile = profile;
@@ -22,18 +20,38 @@ export class Character extends Phaser.GameObjects.Container {
     this.bodyLayer = new CharacterBody(scene, this, profile);
     this.visual = new CharacterVisual(scene, this, textureKey, profile);
 
-    // ✅ MUST exist before FSM
+    // Decide initial FSM state based on default movement domain
+    let startState = initialState;
+    this.jumpCount = 0;
 
-    if (profile.movement?.mode == "air") {
+    // ✅ MUST exist before FSM
+    // Determine which states to use
+    if (profile.movement?.mode === "multi-domain") {
+      this.movement = new MultiDomainMovement(this, profile.movement);
+      const def = profile.movement.default || "ground";
+      this.movement.switchDomain(def);
+      startState = def === "air" ? "airIdle" : "idle";
+    } else if (profile.movement?.mode === "air") {
       this.movement = new AirMovement(this);
       this.bodyLayer.body.setAllowGravity(false);
-      states = AirStates;
+      startState = "airIdle";
     } else {
       this.movement = new GroundMovement(this);
-      states = GroundStates;
+      startState = "idle";
     }
 
-    this.state = new StateMachine(this, initialState, states);
+    // 🧠 movement capability flags (USED BY UnifiedStates)
+    const mode = profile.movement?.mode;
+
+    this.canGround =
+      mode === "ground" ||
+      (mode === "multi-domain" && profile.movement.domains.includes("ground"));
+
+    this.canAir =
+      mode === "air" ||
+      (mode === "multi-domain" && profile.movement.domains.includes("air"));
+
+    this.state = new StateMachine(this, startState, UnifiedStates);
     this.combat = new CombatController(this);
 
     this.attackCooldowns = {};
@@ -41,11 +59,6 @@ export class Character extends Phaser.GameObjects.Container {
     this.currentAttackKey = null;
     this.requestedAttack = null;
 
-    // if (this.type === "enemy") {
-    //   this.healthBar = new CharacterHealthBar(scene, this, {
-    //     visible: false,
-    //   });
-    // }
     this.healthBar = null;
 
     console.log(
@@ -101,8 +114,4 @@ export class Character extends Phaser.GameObjects.Container {
       this.state.setState("hit", { source });
     }
   }
-
-  // getAttackTargets(scene) {
-  //   return scene.enemies;
-  // }
 }

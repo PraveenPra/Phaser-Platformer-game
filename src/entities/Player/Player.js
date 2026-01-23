@@ -1,10 +1,6 @@
 import { resolveProfile } from "../digimon/resolveProfile.js";
 import { Character } from "../common/Character.js";
 import { PlayerInput } from "./PlayerInput.js";
-import { GroundStates } from "../common/states/groundStates.js";
-import { AirMovement } from "../../systems/AirMovement.js";
-import { AirStates } from "../common/states/airStates.js";
-import { GroundMovement } from "../../systems/GroundMovement.js";
 
 export class Player extends Character {
   constructor(scene, x, y, textureKey) {

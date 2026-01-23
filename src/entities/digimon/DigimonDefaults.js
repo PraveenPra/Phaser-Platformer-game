@@ -11,6 +11,7 @@ export const DIGIMON_DEFAULTS = {
     originX: 0.5,
     originY: 1,
     yOffset: -2,
+    xOffset: 0,
   },
 
   move: {
