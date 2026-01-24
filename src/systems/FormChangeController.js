@@ -10,6 +10,9 @@ import { GameState } from "/src/GameState.js";
  */
 export function changeForm({ scene, entity, targetKey, reason = "switch" }) {
   if (!scene || !entity || !targetKey) return;
+  if (entity.isDead || entity.state?.current === "dead") {
+    return;
+  }
 
   // =================================================
   // VALIDATION

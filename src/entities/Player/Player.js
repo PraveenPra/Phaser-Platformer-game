@@ -30,6 +30,8 @@ export class Player extends Character {
   update(dt) {
     this.inputHandler.update(this);
 
+    if (this.isDead || this.state?.current === "dead") return;
+
     if (this.input.switchForm) {
       // cycle base forms (simple version)
       const forms = Array.from(GameState.unlockedBaseForms);
@@ -66,6 +68,7 @@ export class Player extends Character {
     // - respawn
     // - game over screen
     // - fade out
+    this.scene.events.emit("player-dead");
   }
 
   getAttackTargets(scene) {
