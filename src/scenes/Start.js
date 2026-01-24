@@ -14,13 +14,37 @@ export class Start extends Phaser.Scene {
   preload() {}
 
   create() {
+    // =================================================
+    // SCENE CONTROLS
+    // =================================================
     this.controls = new SceneControls(this, {
       keyPause: "ESC",
     });
 
-    const key = GameState.selectedDigimon;
-    createAnimations(this, key);
+    // =================================================
+    // TILEMAP + WORLD (MUST COME FIRST)
+    // =================================================
+    const map = this.make.tilemap({
+      key: "level1-map",
+      tileWidth: 32,
+      tileHeight: 32,
+    });
 
+    const tileset = map.addTilesetImage("Tileset1", "level1-tileset");
+    map.addTilesetImage("Tileset2", "level1-tileset-enemies"); // placeholder
+
+    this.groundLayer = map.createLayer("GroundLayer", tileset, 0, 0);
+    this.groundLayer.setCollisionByProperty({ collides: true });
+
+    // World bounds = tilemap size
+    this.physics.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+
+    // Camera bounds
+    this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+
+    // =================================================
+    // SHARED ANIMATIONS (GLOBAL)
+    // =================================================
     this.anims.create({
       key: "fireball_fly",
       frames: this.anims.generateFrameNumbers("fireball", { start: 0, end: 1 }),
@@ -38,150 +62,94 @@ export class Start extends Phaser.Scene {
       repeat: 0,
     });
 
-    this.player = new Player(this, 200, 350, key);
-    this.player.body.setCollideWorldBounds(true);
-
-    this.playerHealthUI = new PlayerHealthUI(this, this.player);
-
-    // // =====================
-    // // TILEMAP GROUND
-    // // =====================
-    this.physics.add.collider(this.player, this.enemies);
-
     // =================================================
-    const map = this.make.tilemap({
-      key: "level1-map",
-      tileWidth: 32,
-      tileHeight: 32,
-    });
-    const tileset = map.addTilesetImage("Tileset1", "level1-tileset");
-    const tilesetEnemies = map.addTilesetImage(
-      "Tileset2",
-      "level1-tileset-enemies",
-    ); //dummy placeholder tileset fr enemies
-    this.groundLayer = map.createLayer("GroundLayer", tileset, 0, 0);
-
-    // World bounds = full tilemap size
-    this.physics.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
-
-    this.groundLayer.setCollisionByProperty({ collides: true });
-    this.physics.add.collider(this.player, this.groundLayer);
-
-    // Camera follow player
-    this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
-    this.cameras.main.startFollow(this.player, true, 0.1, 0.1);
-    // this.cameras.main.setZoom(1.2);
-
+    // ENEMIES GROUP (BEFORE PLAYER)
+    // =================================================
     this.enemies = this.physics.add.group({
       runChildUpdate: true,
     });
 
-    // Register enemy class (decouples manager)
+    // Register enemy class for spawner
     this.registry.set("EnemyClass", Enemy);
+
+    // Enemies ↔ ground
+    this.physics.add.collider(this.enemies, this.groundLayer);
 
     // Enemy spawn manager
     this.enemySpawner = new EnemySpawnManager(this, map, this.enemies);
 
-    // Enemies collide with ground
-    this.physics.add.collider(this.enemies, this.groundLayer);
-    this.physics.add.collider(this.player, this.enemies);
+    // =================================================
+    // PLAYER (AFTER WORLD + GROUPS)
+    // =================================================
+    const key = GameState.selectedDigimon;
+    this.player = this.spawnPlayer(200, 350, key);
 
-    // const enemy = new Enemy(this, 650, 350, "gabumon");
-    // this.enemies.add(enemy);
-
-    // this.enemiesLayer = map.getObjectLayer("EnemiesLayer");
-    // console.log("enemiesLayer", this.enemiesLayer);
-    // this.enemiesLayer.objects.forEach((obj) => {
-    //   const x = obj.x;
-    //   const y = obj.y - obj.height; // IMPORTANT
-
-    //   const enemy = new Enemy(this, x, y, "chivmon");
-    //   this.enemies.add(enemy);
-    // });
-
-    // this.physics.add.collider(this.enemies, this.groundLayer);
-    // =====================
+    // =================================================
     // PARALLAX BACKGROUNDS
-    // =====================
+    // =================================================
     const cam = this.cameras.main;
     const baseW = 320;
-    const baseH = 180;
-
-    // integer scale only (important for pixel art)
     const scale = Math.ceil(cam.width / baseW);
-
     this.bgScale = scale;
 
-    function createParallax(scene, key, depth, factor) {
-      const cam = scene.cameras.main;
-      const img = scene.textures.get(key).getSourceImage();
-
-      const bg = scene.add.tileSprite(
+    const createParallax = (key, depth, factor) => {
+      const img = this.textures.get(key).getSourceImage();
+      const bg = this.add.tileSprite(
         0,
-        cam.height - img.height * scene.bgScale,
+        cam.height - img.height * scale,
         cam.width,
-        img.height * scene.bgScale,
+        img.height * scale,
         key,
       );
 
-      bg.setOrigin(0, 0)
-        .setScrollFactor(0)
-        .setScale(scene.bgScale)
-        .setDepth(depth);
+      bg.setOrigin(0, 0).setScrollFactor(0).setScale(scale).setDepth(depth);
 
       bg.parallaxFactor = factor;
       return bg;
-    }
+    };
 
-    this.bgSky = createParallax(this, "bg4", -50, 0.05);
-    this.bgMountains = createParallax(this, "bg3", -40, 0.04);
-    this.bgForest = createParallax(this, "bg2", -30, 0.02);
-    this.bgTrees = createParallax(this, "bg1", -20, 0.01);
-
-    // function createBg(scene, key, depth) {
-    //   const { width, height } = scene.scale;
-    //   const img = scene.textures.get(key).getSourceImage();
-
-    //   const bg = scene.add
-    //     .tileSprite(0, map.heightInPixels - img.height, width, img.height, key)
-    //     .setOrigin(0, 0)
-    //     .setScrollFactor(0)
-    //     .setDepth(depth);
-
-    //   return bg;
-    // }
-
-    // this.bg4 = createBg(this, "bg4", -40).setScale(1700, 1200);
-    // this.bg3 = createBg(this, "bg3", -30);
-    // this.bg2 = createBg(this, "bg2", -20);
-    // this.bg1 = createBg(this, "bg1", -10);
-
-    // this.scale.on("resize", (gameSize) => {
-    //   const { width, height } = gameSize;
-
-    //   this.bg4.setSize(width, height);
-    //   this.bg3.setSize(width, height);
-    //   this.bg2.setSize(width, height);
-    //   this.bg1.setSize(width, height);
-    // });
+    this.bgSky = createParallax("bg4", -50, 0.05);
+    this.bgMountains = createParallax("bg3", -40, 0.04);
+    this.bgForest = createParallax("bg2", -30, 0.02);
+    this.bgTrees = createParallax("bg1", -20, 0.01);
   }
 
   update(time, delta) {
     this.player.update(delta);
     this.playerHealthUI.draw();
-
-    // this.enemies.children.iterate((enemy) => {
-    //   if (enemy && enemy.update) {
-    //     enemy.update(delta);
-    //   }
-    // });
     this.enemySpawner.update();
 
     const camX = this.cameras.main.scrollX;
-
     this.bgSky.tilePositionX = camX * this.bgSky.parallaxFactor;
     this.bgMountains.tilePositionX = camX * this.bgMountains.parallaxFactor;
     this.bgForest.tilePositionX = camX * this.bgForest.parallaxFactor;
     this.bgTrees.tilePositionX = camX * this.bgTrees.parallaxFactor;
+  }
+
+  // =================================================
+  // PLAYER SPAWNER (USED BY EVOLUTION / SWITCH)
+  // =================================================
+  spawnPlayer(x, y, key) {
+    // ensure animations exist for this form
+    createAnimations(this, key);
+
+    const player = new Player(this, x, y, key);
+    player.body.setCollideWorldBounds(true);
+
+    // Player ↔ ground
+    this.physics.add.collider(player, this.groundLayer);
+
+    // Player ↔ enemies
+    this.physics.add.collider(player, this.enemies);
+
+    // Camera follow
+    this.cameras.main.startFollow(player, true, 0.1, 0.1);
+
+    // UI
+    this.playerHealthUI?.destroy();
+    this.playerHealthUI = new PlayerHealthUI(this, player);
+
+    this.player = player;
+    return player;
   }
 }
