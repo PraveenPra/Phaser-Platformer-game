@@ -21,14 +21,14 @@ export const DIGIMON_DEFAULTS = {
     decel: 1600, // how fast you slow down
     airAccel: 800,
     airDecel: 600,
-
     maxAirSpeed: 180,
   },
 
   combat: {
     maxHp: 100,
-    attack: 10,
-    defense: 5,
-    attackCooldown: 300, // ms
+  },
+
+  movement: {
+    mode: "ground",
   },
 };
