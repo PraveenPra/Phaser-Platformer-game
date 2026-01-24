@@ -1,7 +1,7 @@
 export const GameState = {
   // currently active digimon key
-  selectedDigimon: null,
-
+  selectedDigimon: null, // base form at checkpoint
+  currentForm: null, // runtime only (DO NOT persist on death)
   checkpoint: {
     scene: "Start",
     x: 200,

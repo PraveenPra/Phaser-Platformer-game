@@ -80,7 +80,7 @@ export function changeForm({ scene, entity, targetKey, reason = "switch" }) {
   // =================================================
   // GLOBAL STATE
   // =================================================
-  GameState.selectedDigimon = targetKey;
+  GameState.currentForm = targetKey;
 
   return newEntity;
 }

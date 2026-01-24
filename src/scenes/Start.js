@@ -82,6 +82,8 @@ export class Start extends Phaser.Scene {
     // PLAYER (AFTER WORLD + GROUPS)
     // =================================================
     const key = GameState.selectedDigimon;
+    GameState.currentForm = key;
+
     const { checkpoint } = GameState;
     const playerSpawnX = checkpoint?.x ?? 200;
     const playerSpawnY = checkpoint?.y ?? 350;

@@ -68,6 +68,8 @@ export class Player extends Character {
     // - respawn
     // - game over screen
     // - fade out
+    GameState.currentForm = GameState.selectedDigimon;
+
     this.scene.events.emit("player-dead");
   }
 
