@@ -7,6 +7,12 @@ export const GameState = {
     x: 200,
     y: 350,
   },
+
+  playerStats: {
+    maxHp: 100,
+    hp: 100,
+  },
+
   // base forms the player can switch to
   unlockedBaseForms: new Set(["agumon", "gabumon", "patamon"]),
 

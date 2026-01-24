@@ -18,12 +18,9 @@ export class Player extends Character {
     super(scene, x, y, textureKey, profile, "idle");
 
     this.type = "player";
-    // if (profile.movement?.mode == "air") {
-    //   this.bodyLayer.body.setAllowGravity(false);
-    // }
+    this.isInvincible = false;
+    this.isDead = false;
 
-    // Swap movement controller to air movement
-    // this.movement = new AirMovement(this);
     this.inputHandler = new PlayerInput(scene);
   }
 
@@ -61,6 +58,10 @@ export class Player extends Character {
     }
 
     super.update(dt);
+  }
+
+  getHpStore() {
+    return GameState.playerStats;
   }
 
   onDeathAnimationComplete() {

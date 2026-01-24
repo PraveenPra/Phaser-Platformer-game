@@ -164,7 +164,7 @@ export class Start extends Phaser.Scene {
   }
 
   restartFromCheckpoint() {
-    // Full clean restart
+    GameState.playerStats.hp = GameState.playerStats.maxHp;
     this.scene.restart();
   }
 }
