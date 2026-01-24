@@ -11,6 +11,7 @@ import { GameState } from "/src/GameState.js";
 export function changeForm({ scene, entity, targetKey, reason = "switch" }) {
   if (!scene || !entity || !targetKey) return;
   if (entity.isDead || entity.state?.current === "dead") return;
+  if (entity._isChangingForm) return;
 
   // =================================================
   // VALIDATION
@@ -25,77 +26,76 @@ export function changeForm({ scene, entity, targetKey, reason = "switch" }) {
     if (!GameState.unlockedEvolutions?.has(targetKey)) return;
   }
 
-  // =================================================
-  // 🔊 SFX (ONE CLEAN PLAY)
-  // =================================================
-  scene.sound.play("sfx-evolution", {
-    volume: reason === "evolution" ? 1 : 0.5,
-    rate: reason === "evolution" ? 1 : 1.15,
-  });
+  entity._isChangingForm = true;
 
   // =================================================
-  // 💥 VFX (impact-hit, auto cleanup)
-  // =================================================
-  const vfx = scene.add.sprite(entity.x, entity.y, "impact-hit");
-  vfx.setDepth(2000);
-  vfx.play("impact-hit");
-
-  vfx.once("animationcomplete", () => {
-    vfx.destroy(); // ✅ fixes last-frame ghost
-  });
-
-  // =================================================
-  // SNAPSHOT RUNTIME STATE (UNCHANGED)
+  // SNAPSHOT RUNTIME STATE (SAFE ONLY)
   // =================================================
   const snapshot = {
     x: entity.x,
     y: entity.y,
     flipX: entity.visual.sprite.flipX,
-    hpRatio: entity.hp / entity.maxHp,
-    velocityY: entity.bodyLayer.body.velocity.y,
+    hpRatio: entity.currentHp / entity.profile.combat.maxHp,
     wasInAir:
       entity.movement?.activeDomain === "air" ||
       entity.bodyLayer.body.velocity.y !== 0,
   };
 
   // =================================================
-  // DESTROY OLD ENTITY
+  // PLAY SFX
   // =================================================
-  entity.destroy();
+  scene.sound.play(reason === "evolution" ? "sfx-evolution" : "sfx-blast-hit", {
+    volume: reason === "evolution" ? 0.9 : 0.6,
+    rate: Phaser.Math.FloatBetween(0.95, 1.05),
+  });
 
   // =================================================
-  // SPAWN NEW ENTITY VIA SCENE (CRITICAL)
+  // PLAY VFX (impact-hit)
   // =================================================
-  const newEntity = scene.spawnPlayer(snapshot.x, snapshot.y, targetKey);
-  if (!newEntity) return;
+  const vfx = scene.add.sprite(snapshot.x, snapshot.y, "impact-hit");
+  vfx.setDepth(9999);
+  vfx.play("impact-hit");
+
+  vfx.once(Phaser.Animations.Events.ANIMATION_COMPLETE, () => vfx.destroy());
 
   // =================================================
-  // RESTORE SAFE STATE
+  // DELAY → FORM SWAP
   // =================================================
-  newEntity.visual.sprite.setFlipX(snapshot.flipX);
+  const delay = reason === "evolution" ? 700 : 250;
 
-  // HP scaling
-  newEntity.hp = Math.floor(newEntity.maxHp * snapshot.hpRatio);
+  scene.time.delayedCall(delay, () => {
+    // destroy old entity AFTER VFX
+    entity.destroy();
 
-  // =================================================
-  // DOMAIN RULE (UNCHANGED, SAFE)
-  // =================================================
-  const profile = resolveProfile(targetKey);
-  const movement = profile.movement;
+    // spawn new via scene (CRITICAL)
+    const newEntity = scene.spawnPlayer(snapshot.x, snapshot.y, targetKey);
 
-  if (movement.mode === "air") {
-    newEntity.movement.switchDomain?.("air");
-  }
+    if (!newEntity) return;
 
-  if (movement.mode === "multi-domain") {
-    const preferred = snapshot.wasInAir ? "air" : movement.default;
-    newEntity.movement.switchDomain(preferred);
-  }
+    // restore facing
+    newEntity.visual.sprite.setFlipX(snapshot.flipX);
 
-  // =================================================
-  // GLOBAL STATE
-  // =================================================
-  GameState.currentForm = targetKey;
+    // restore HP proportion
+    newEntity.currentHp = Math.floor(
+      newEntity.profile.combat.maxHp * snapshot.hpRatio,
+    );
 
-  return newEntity;
+    // restore domain preference
+    const profile = resolveProfile(targetKey);
+    const movement = profile.movement;
+
+    if (movement.mode === "air") {
+      newEntity.movement.switchDomain?.("air");
+    }
+
+    if (movement.mode === "multi-domain") {
+      const preferred = snapshot.wasInAir ? "air" : movement.default;
+      newEntity.movement.switchDomain(preferred);
+    }
+
+    // global state
+    GameState.currentForm = targetKey;
+
+    newEntity._isChangingForm = false;
+  });
 }
