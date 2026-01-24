@@ -9,6 +9,7 @@ import { AirMovement } from "../../systems/AirMovement.js";
 import { MultiDomainMovement } from "../../systems/MultiDomainMovement.js";
 import { UnifiedStates } from "../common/states/UnifiedStates.js";
 import { doHitFlash } from "./vfx/doHitFlash.js";
+import { GameState } from "/src/GameState.js";
 
 export class Character extends Phaser.GameObjects.Container {
   constructor(scene, x, y, textureKey, profile, initialState) {
@@ -95,17 +96,35 @@ export class Character extends Phaser.GameObjects.Container {
   takeDamage(amount, source) {
     if (this.isDead || this.isInvincible) return;
 
+    // ======================
+    // PLAYER DAMAGE
+    // ======================
+    if (this.type === "player") {
+      const stats = GameState.playerStats;
+
+      stats.hp -= amount;
+      stats.hp = Math.max(0, stats.hp);
+
+      doHitFlash(this.visual.sprite);
+
+      if (stats.hp <= 0) {
+        this.isDead = true;
+        this.state.setState("dead");
+      } else {
+        this.state.setState("hit", { source });
+      }
+
+      return;
+    }
+
+    // ======================
+    // ENEMY DAMAGE
+    // ======================
     this.currentHp -= amount;
     this.currentHp = Math.max(0, this.currentHp);
 
-    // 💥 HIT FLASH
     doHitFlash(this.visual.sprite);
 
-    console.log(
-      `[DAMAGE] ${this.key} took ${amount} dmg from ${source?.key} | HP=${this.currentHp}`,
-    );
-
-    // 🔥 SHOW bar only when hit
     if (this.healthBar && !this.healthBar.graphics.visible) {
       this.healthBar.show();
     }

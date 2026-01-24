@@ -20,6 +20,9 @@ export class CharacterVisual {
   }
 
   play(key) {
+    if (!this.sprite.anims) return;
+    if (!this.sprite.anims.animationManager.exists(key)) return;
+
     if (this.sprite.anims.currentAnim?.key === key) return;
 
     const animName = key.replace(`${this.textureKey}_`, "");

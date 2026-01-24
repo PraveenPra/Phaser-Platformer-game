@@ -10,14 +10,6 @@ export const DIGIMON_PROFILES = {
         "attack-C": -5,
       },
     },
-    movement: {
-      mode: "ground", //air,hybrid
-    },
-    stats: {
-      hp: 100,
-      attack: 40,
-      defense: 5,
-    },
 
     attacks: {
       main: {
@@ -68,17 +60,17 @@ export const DIGIMON_PROFILES = {
       },
     },
 
-    evolution: "greymon",
+    evolution: {
+      prev: null,
+      next: "birdramon",
+    },
   },
 
   gabumon: {
     move: {
       speed: 80,
-      jump: 420,
     },
-    movement: {
-      mode: "ground",
-    },
+
     visual: {
       originX: 0.5,
       originY: 1,
@@ -86,12 +78,6 @@ export const DIGIMON_PROFILES = {
       anims: {
         "attack-C": -4,
       },
-    },
-
-    stats: {
-      hp: 90,
-      attack: 12,
-      defense: 4,
     },
 
     attacks: {
@@ -143,17 +129,17 @@ export const DIGIMON_PROFILES = {
       },
     },
 
-    evolution: "garurumon",
+    evolution: {
+      prev: null,
+      next: "greymon",
+    },
   },
 
   chivmon: {
     move: {
       speed: 80,
-      jump: 420,
     },
-    movement: {
-      mode: "ground",
-    },
+
     visual: {
       originX: 0.5,
       originY: 1,
@@ -161,14 +147,6 @@ export const DIGIMON_PROFILES = {
       anims: {
         "attack-C": -4,
       },
-    },
-
-    stats: {
-      hp: 90,
-      attack: 12,
-      defense: 4,
-      speed: 2,
-      jump: 410,
     },
 
     attacks: {
@@ -219,14 +197,13 @@ export const DIGIMON_PROFILES = {
       },
     },
 
-    evolution: "garurumon",
+    evolution: {
+      prev: null,
+      next: null,
+    },
   },
 
   patamon: {
-    move: {
-      speed: 100,
-      jump: 420,
-    },
     movement: {
       mode: "multi-domain",
       domains: ["ground", "air"],
@@ -239,14 +216,6 @@ export const DIGIMON_PROFILES = {
       anims: {
         "attack-C": -4,
       },
-    },
-
-    stats: {
-      hp: 90,
-      attack: 12,
-      defense: 4,
-      speed: 2,
-      jump: 410,
     },
 
     attacks: {
@@ -297,7 +266,10 @@ export const DIGIMON_PROFILES = {
         cooldown: 1500,
       },
     },
-    evolution: "garurumon",
+    evolution: {
+      prev: null,
+      next: "greymon",
+    },
   },
 
   seraphimon: {
@@ -306,13 +278,6 @@ export const DIGIMON_PROFILES = {
       height: 40,
     },
 
-    move: {
-      speed: 200,
-      jump: 620,
-      airAccel: 600,
-      maxAirSpeed: 200, // add this if missing
-      airDecel: 300, // drag for air movement
-    },
     movement: {
       mode: "multi-domain",
       domains: ["ground", "air"],
@@ -327,14 +292,6 @@ export const DIGIMON_PROFILES = {
         "attack-C": -4,
         fly: 12,
       },
-    },
-
-    stats: {
-      hp: 90,
-      attack: 12,
-      defense: 4,
-      speed: 2,
-      jump: 410,
     },
 
     attacks: {
@@ -385,17 +342,17 @@ export const DIGIMON_PROFILES = {
         cooldown: 1500,
       },
     },
-    evolution: "garurumon",
+    evolution: {
+      prev: null,
+      next: "patamon",
+    },
   },
 
   magnamon: {
     move: {
       speed: 180,
-      jump: 720,
     },
-    movement: {
-      mode: "ground",
-    },
+
     visual: {
       originX: 0.5,
       originY: 1,
@@ -403,12 +360,6 @@ export const DIGIMON_PROFILES = {
       anims: {
         "attack-C": -4,
       },
-    },
-
-    stats: {
-      hp: 90,
-      attack: 12,
-      defense: 4,
     },
 
     attacks: {
@@ -458,7 +409,10 @@ export const DIGIMON_PROFILES = {
       },
     },
 
-    evolution: "garurumon",
+    evolution: {
+      prev: null,
+      next: null,
+    },
   },
   birdramon: {
     body: {
@@ -466,13 +420,6 @@ export const DIGIMON_PROFILES = {
       height: 20,
     },
 
-    move: {
-      speed: 200,
-      jump: 720,
-      airAccel: 800,
-      maxAirSpeed: 200, // add this if missing
-      airDecel: 300, // drag for air movement
-    },
     movement: {
       mode: "air",
     },
@@ -485,14 +432,6 @@ export const DIGIMON_PROFILES = {
         // "attack-A": -4,
         fly: 12,
       },
-    },
-
-    stats: {
-      hp: 90,
-      attack: 12,
-      defense: 4,
-      speed: 2,
-      jump: 410,
     },
 
     attacks: {
@@ -525,6 +464,9 @@ export const DIGIMON_PROFILES = {
         cooldown: 800,
       },
     },
-    evolution: "garurumon",
+    evolution: {
+      prev: null,
+      next: "seraphimon",
+    },
   },
 };

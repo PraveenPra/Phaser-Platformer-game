@@ -88,6 +88,7 @@ export class Preload extends Phaser.Scene {
     // SFX ----------------------
     this.load.audio("sfx-blast-hit", "assets/sfx/shoot.mp3");
     this.load.audio("sfx-wing-flap", "assets/sfx/wing-flap.wav");
+    this.load.audio("sfx-evolution", "assets/sfx/evolution.wav");
   }
 
   create() {

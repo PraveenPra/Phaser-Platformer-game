@@ -1,3 +1,5 @@
+import { GameState } from "/src/GameState.js";
+
 export class PlayerHealthUI {
   constructor(scene, player) {
     this.scene = scene;
@@ -25,7 +27,7 @@ export class PlayerHealthUI {
         fontSize: "12px",
         color: "#ffffff",
         fontFamily: "Arial",
-      }
+      },
     );
 
     this.text.setOrigin(0.5, 0);
@@ -36,8 +38,8 @@ export class PlayerHealthUI {
   }
 
   draw() {
-    const maxHp = this.player.profile.combat.maxHp;
-    const hp = this.player.currentHp;
+    const { hp, maxHp } = GameState.playerStats;
+
     const ratio = hp / maxHp;
     const color = ratio <= 0.4 ? this.red : this.green;
 
@@ -53,10 +55,9 @@ export class PlayerHealthUI {
       this.x,
       this.y,
       this.width * Phaser.Math.Clamp(ratio, 0, 1),
-      this.height
+      this.height,
     );
 
-    // 🔢 text
     this.text.setText(`${hp} / ${maxHp}`);
   }
 
