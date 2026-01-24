@@ -345,4 +345,64 @@ export const UnifiedStates = {
 
     update() {}, // terminal
   },
+
+  preEvolution: {
+    enter(e) {
+      const body = e.bodyLayer.body;
+
+      e._lockedY = e.y;
+
+      body.setVelocity(0, 0);
+      body.setAcceleration(0, 0);
+      body.setDrag(0, 0);
+      body.setAllowGravity(false);
+
+      e.movement.stop();
+      e.visual.sprite.anims.pause();
+
+      if (e._hoverTween) {
+        e._hoverTween.stop();
+        e._hoverTween = null;
+      }
+
+      e.isInvincible = true;
+    },
+
+    update(e) {
+      e.y = e._lockedY;
+    },
+
+    exit(e) {
+      delete e._lockedY;
+    },
+  },
+
+  postEvolution: {
+    enter(e) {
+      const body = e.bodyLayer.body;
+
+      e._lockedY = e.y;
+
+      body.setVelocity(0, 0);
+      body.setAcceleration(0, 0);
+      body.setAllowGravity(false);
+
+      e.movement.stop();
+      e.visual.sprite.anims.pause();
+    },
+
+    update(e) {
+      e.y = e._lockedY;
+    },
+
+    exit(e) {
+      const body = e.bodyLayer.body;
+
+      body.setAllowGravity(true);
+      e.visual.sprite.anims.resume();
+      e.isInvincible = false;
+
+      delete e._lockedY;
+    },
+  },
 };

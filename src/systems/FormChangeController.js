@@ -2,6 +2,7 @@ import { resolveProfile } from "/src/entities/digimon/resolveProfile.js";
 import { GameState } from "/src/GameState.js";
 import { playFreezeFlash } from "/src/entities/common/vfx/FormTransitionFX.js";
 import { playDataScanFX } from "/src/entities/common/vfx/DigimonDataScanFX.js";
+
 /**
  * @param {object} params
  * @param {Phaser.Scene} params.scene
@@ -30,62 +31,76 @@ export function changeForm({ scene, entity, targetKey, reason = "switch" }) {
   entity._isChangingForm = true;
 
   // =================================================
-  // SNAPSHOT RUNTIME STATE (SAFE ONLY)
+  // SNAPSHOT RUNTIME STATE
   // =================================================
   const snapshot = {
     x: entity.x,
     y: entity.y,
     flipX: entity.visual.sprite.flipX,
     hpRatio: entity.currentHp / entity.profile.combat.maxHp,
-    wasInAir:
-      entity.movement?.activeDomain === "air" ||
-      entity.bodyLayer.body.velocity.y !== 0,
+    velocity: {
+      x: entity.bodyLayer.body.velocity.x,
+      y: entity.bodyLayer.body.velocity.y,
+    },
+
+    // 👇 THIS IS THE KEY FIX
+    // ✅ FINAL SOURCE OF TRUTH
+    wasFlyingIntent:
+      entity.canAir &&
+      (!entity.canGround || // air-only Digimon
+        entity.movement?.activeDomain === "air"),
   };
 
-  // =================================================
-  // FREEZE + WHITE FLASH (PRE-TRANSITION)
-  // =================================================
-  playFreezeFlash(entity.visual.sprite, 400);
+  entity.state.setState("preEvolution");
 
   // =================================================
-  // PLAY SFX
+  // FREEZE COMPLETELY (physics + animation + position)
+  // =================================================
+  const frozenY = snapshot.y;
+
+  entity.bodyLayer.body.setVelocity(0, 0);
+  entity.bodyLayer.body.allowGravity = false;
+  entity.visual.sprite.anims.pause();
+
+  playFreezeFlash(entity.visual.sprite);
+
+  // =================================================
+  // SFX
   // =================================================
   scene.sound.play(reason === "evolution" ? "sfx-evolution" : "sfx-blast-hit", {
     volume: reason === "evolution" ? 0.9 : 0.6,
     rate: Phaser.Math.FloatBetween(0.95, 1.05),
   });
 
-  // =================================================
-  // PLAY VFX (impact-hit)
-  // =================================================
-  //   const vfx = scene.add.sprite(snapshot.x, snapshot.y, "impact-hit");
-  //   vfx.setDepth(9999);
-  //   vfx.play("impact-hit");
-
-  //   vfx.once(Phaser.Animations.Events.ANIMATION_COMPLETE, () => vfx.destroy());
+  const OUT_DURATION = reason === "evolution" ? 1500 : 900;
+  const IN_DURATION = reason === "evolution" ? 1500 : 900;
 
   // =================================================
-  // DELAY → FORM SWAP
+  // DATA SCAN OUT (OLD FORM)
   // =================================================
-  const delay = reason === "evolution" ? 1200 : 700;
+  playDataScanFX({
+    scene,
+    sourceSprite: entity.visual.sprite,
+    direction: "up",
+    duration: OUT_DURATION,
+  });
 
-  scene.time.delayedCall(delay, () => {
-    // =================================================
-    // DATA SCAN OUT (OLD FORM)
-    // =================================================
-    playDataScanFX({
-      scene,
-      sourceSprite: entity.visual.sprite,
-      direction: "up",
-      duration: reason === "evolution" ? 1000 : 700,
-    });
-    // destroy old entity AFTER VFX
+  // =================================================
+  // AFTER SCAN OUT → DESTROY + SPAWN NEW
+  // =================================================
+  scene.time.delayedCall(OUT_DURATION, () => {
     entity.destroy();
 
-    // spawn new via scene (CRITICAL)
-    const newEntity = scene.spawnPlayer(snapshot.x, snapshot.y, targetKey);
-
+    const newEntity = scene.spawnPlayer(snapshot.x, frozenY, targetKey);
     if (!newEntity) return;
+
+    newEntity.state.setState("postEvolution");
+
+    // freeze new form immediately
+    newEntity.visual.sprite.setTintFill(0xffffff);
+    newEntity.visual.sprite.anims.pause();
+    newEntity.bodyLayer.body.setVelocity(0, 0);
+    newEntity.bodyLayer.body.allowGravity = false;
 
     // restore facing
     newEntity.visual.sprite.setFlipX(snapshot.flipX);
@@ -95,20 +110,16 @@ export function changeForm({ scene, entity, targetKey, reason = "switch" }) {
       newEntity.profile.combat.maxHp * snapshot.hpRatio,
     );
 
-    // restore domain preference
+    // domain decision (but no movement yet)
     const profile = resolveProfile(targetKey);
-    const movement = profile.movement;
-
-    if (movement.mode === "air") {
+    if (profile.movement.mode === "air") {
       newEntity.movement.switchDomain?.("air");
+    } else if (profile.movement.mode === "multi-domain") {
+      newEntity.movement.switchDomain(
+        snapshot.wasInAir ? "air" : profile.movement.default,
+      );
     }
 
-    if (movement.mode === "multi-domain") {
-      const preferred = snapshot.wasInAir ? "air" : movement.default;
-      newEntity.movement.switchDomain(preferred);
-    }
-
-    // global state
     GameState.currentForm = targetKey;
 
     // =================================================
@@ -118,9 +129,41 @@ export function changeForm({ scene, entity, targetKey, reason = "switch" }) {
       scene,
       sourceSprite: newEntity.visual.sprite,
       direction: "down",
-      duration: reason === "evolution" ? 360 : 220,
+      duration: IN_DURATION,
     });
 
-    newEntity._isChangingForm = false;
+    // =================================================
+    // FINAL REVEAL
+    // =================================================
+    scene.time.delayedCall(IN_DURATION, () => {
+      newEntity.visual.sprite.clearTint();
+
+      const newProfile = resolveProfile(targetKey);
+      const moveMode = newProfile.movement.mode;
+
+      // AIR-ONLY → always fly
+      if (moveMode === "air") {
+        newEntity.y -= 8; // subtle lift
+        newEntity.state.setState("airIdle");
+      }
+
+      // HYBRID → preserve previous domain
+      else if (moveMode === "multi-domain") {
+        console.log("wasFlyingIntent aft:", snapshot.wasFlyingIntent);
+
+        if (snapshot.wasFlyingIntent) {
+          newEntity.state.setState("airIdle");
+        } else {
+          newEntity.state.setState("idle");
+        }
+      }
+
+      // GROUND-ONLY
+      else {
+        newEntity.state.setState("idle");
+      }
+
+      newEntity._isChangingForm = false;
+    });
   });
 }

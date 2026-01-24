@@ -5,11 +5,4 @@ export function playFreezeFlash(sprite, duration = 120) {
 
   // white flash
   sprite.setTintFill(0xffffff);
-
-  sprite.scene.time.delayedCall(duration, () => {
-    sprite.clearTint();
-    if (prevAnim) {
-      sprite.anims.resume();
-    }
-  });
 }

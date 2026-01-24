@@ -19,7 +19,8 @@ export const GameState = {
   // evolutions the player has unlocked
   unlockedEvolutions: new Set([
     // "greymon",
-    // "birdramon",
+    "birdramon",
     "seraphimon",
+    "patamon",
   ]),
 };

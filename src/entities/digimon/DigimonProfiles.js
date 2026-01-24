@@ -62,7 +62,7 @@ export const DIGIMON_PROFILES = {
 
     evolution: {
       prev: null,
-      next: "greymon",
+      next: "birdramon",
     },
   },
 
@@ -344,7 +344,7 @@ export const DIGIMON_PROFILES = {
     },
     evolution: {
       prev: null,
-      next: null,
+      next: "patamon",
     },
   },
 
