@@ -10,9 +10,7 @@ import { GameState } from "/src/GameState.js";
  */
 export function changeForm({ scene, entity, targetKey, reason = "switch" }) {
   if (!scene || !entity || !targetKey) return;
-  if (entity.isDead || entity.state?.current === "dead") {
-    return;
-  }
+  if (entity.isDead || entity.state?.current === "dead") return;
 
   // =================================================
   // VALIDATION
@@ -28,7 +26,26 @@ export function changeForm({ scene, entity, targetKey, reason = "switch" }) {
   }
 
   // =================================================
-  // SNAPSHOT RUNTIME STATE (ONLY WHAT MAKES SENSE)
+  // 🔊 SFX (ONE CLEAN PLAY)
+  // =================================================
+  scene.sound.play("sfx-evolution", {
+    volume: reason === "evolution" ? 1 : 0.5,
+    rate: reason === "evolution" ? 1 : 1.15,
+  });
+
+  // =================================================
+  // 💥 VFX (impact-hit, auto cleanup)
+  // =================================================
+  const vfx = scene.add.sprite(entity.x, entity.y, "impact-hit");
+  vfx.setDepth(2000);
+  vfx.play("impact-hit");
+
+  vfx.once("animationcomplete", () => {
+    vfx.destroy(); // ✅ fixes last-frame ghost
+  });
+
+  // =================================================
+  // SNAPSHOT RUNTIME STATE (UNCHANGED)
   // =================================================
   const snapshot = {
     x: entity.x,
@@ -50,7 +67,6 @@ export function changeForm({ scene, entity, targetKey, reason = "switch" }) {
   // SPAWN NEW ENTITY VIA SCENE (CRITICAL)
   // =================================================
   const newEntity = scene.spawnPlayer(snapshot.x, snapshot.y, targetKey);
-
   if (!newEntity) return;
 
   // =================================================
@@ -62,7 +78,7 @@ export function changeForm({ scene, entity, targetKey, reason = "switch" }) {
   newEntity.hp = Math.floor(newEntity.maxHp * snapshot.hpRatio);
 
   // =================================================
-  // DOMAIN RULE (VERY IMPORTANT)
+  // DOMAIN RULE (UNCHANGED, SAFE)
   // =================================================
   const profile = resolveProfile(targetKey);
   const movement = profile.movement;
@@ -73,7 +89,6 @@ export function changeForm({ scene, entity, targetKey, reason = "switch" }) {
 
   if (movement.mode === "multi-domain") {
     const preferred = snapshot.wasInAir ? "air" : movement.default;
-
     newEntity.movement.switchDomain(preferred);
   }
 
