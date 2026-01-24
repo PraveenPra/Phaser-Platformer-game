@@ -43,6 +43,30 @@ export class Start extends Phaser.Scene {
     this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
 
     // =================================================
+    // LEVEL GOAL  - Reach to complete level
+    // =================================================
+
+    const goalX = this.physics.world.bounds.width - 200;
+    const goalY = this.physics.world.bounds.height - 300;
+    const goalW = 200;
+    const goalH = 300;
+
+    // create zone
+    this.levelGoal = this.add.zone(goalX, goalY, goalW, goalH);
+
+    // add static physics body
+    this.physics.add.existing(this.levelGoal, true);
+
+    // DEV VISUAL (rectangle outline) - remove later
+    this.goalDebug = this.add
+      .rectangle(goalX, goalY, goalW, goalH)
+      .setStrokeStyle(2, 0x00ff00)
+      .setDepth(999);
+
+    // keep debug rect aligned - remove later
+    this.goalDebug.setOrigin(0.5);
+
+    // =================================================
     // SHARED ANIMATIONS (GLOBAL)
     // =================================================
     this.anims.create({
@@ -94,6 +118,14 @@ export class Start extends Phaser.Scene {
       this.restartFromCheckpoint();
     });
 
+    this.physics.add.overlap(
+      this.player,
+      this.levelGoal,
+      this.onLevelComplete,
+      null,
+      this,
+    );
+
     // =================================================
     // PARALLAX BACKGROUNDS
     // =================================================
@@ -122,6 +154,11 @@ export class Start extends Phaser.Scene {
     this.bgMountains = createParallax("bg3", -40, 0.04);
     this.bgForest = createParallax("bg2", -30, 0.02);
     this.bgTrees = createParallax("bg1", -20, 0.01);
+
+    // =================================================
+    // INTRO NARRATION
+    // =================================================
+    this.showIntroNarration();
   }
 
   update(time, delta) {
@@ -166,5 +203,84 @@ export class Start extends Phaser.Scene {
   restartFromCheckpoint() {
     GameState.playerStats.hp = GameState.playerStats.maxHp;
     this.scene.restart();
+  }
+
+  showIntroNarration() {
+    // lock player input temporarily
+    this.player.inputLocked = true;
+
+    const cam = this.cameras.main;
+
+    const overlay = this.add
+      .rectangle(0, 0, cam.width, cam.height, 0x000000, 0.6)
+      .setOrigin(0)
+      .setScrollFactor(0)
+      .setDepth(100);
+
+    const text = this.add
+      .text(
+        cam.centerX,
+        cam.centerY,
+        "The Digital World evolves endlessly...\n\nBut something new is watching.",
+        {
+          fontSize: "20px",
+          color: "#ffffff",
+          align: "center",
+          wordWrap: { width: cam.width * 0.8 },
+        },
+      )
+      .setOrigin(0.5)
+      .setScrollFactor(0)
+      .setDepth(101)
+      .setAlpha(0);
+
+    this.tweens.add({
+      targets: text,
+      alpha: 1,
+      duration: 800,
+    });
+
+    const closeNarration = () => {
+      overlay.destroy();
+      text.destroy();
+      this.player.inputLocked = false;
+    };
+
+    // auto close after few seconds
+    this.time.delayedCall(5000, closeNarration);
+
+    // allow skip
+    this.input.keyboard.once("keydown-SPACE", closeNarration);
+  }
+
+  onLevelComplete() {
+    if (this.levelEnding) return;
+    this.levelEnding = true;
+
+    this.player.inputLocked = true;
+
+    const cam = this.cameras.main;
+
+    const text = this.add
+      .text(
+        cam.centerX,
+        cam.centerY,
+        "Signal detected...\n\nData analysis in progress.",
+        {
+          fontSize: "20px",
+          color: "#ffffff",
+          align: "center",
+        },
+      )
+      .setOrigin(0.5)
+      .setScrollFactor(0)
+      .setDepth(200);
+
+    cam.fadeOut(1500, 0, 0, 0);
+
+    cam.once("camerafadeoutcomplete", () => {
+      // later: transition to next scene / story scene
+      this.scene.restart(); // TEMP placeholder
+    });
   }
 }
