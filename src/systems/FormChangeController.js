@@ -1,6 +1,7 @@
 import { resolveProfile } from "/src/entities/digimon/resolveProfile.js";
 import { GameState } from "/src/GameState.js";
-
+import { playFreezeFlash } from "/src/entities/common/vfx/FormTransitionFX.js";
+import { playDataScanFX } from "/src/entities/common/vfx/DigimonDataScanFX.js";
 /**
  * @param {object} params
  * @param {Phaser.Scene} params.scene
@@ -42,6 +43,11 @@ export function changeForm({ scene, entity, targetKey, reason = "switch" }) {
   };
 
   // =================================================
+  // FREEZE + WHITE FLASH (PRE-TRANSITION)
+  // =================================================
+  playFreezeFlash(entity.visual.sprite, 400);
+
+  // =================================================
   // PLAY SFX
   // =================================================
   scene.sound.play(reason === "evolution" ? "sfx-evolution" : "sfx-blast-hit", {
@@ -52,18 +58,27 @@ export function changeForm({ scene, entity, targetKey, reason = "switch" }) {
   // =================================================
   // PLAY VFX (impact-hit)
   // =================================================
-  const vfx = scene.add.sprite(snapshot.x, snapshot.y, "impact-hit");
-  vfx.setDepth(9999);
-  vfx.play("impact-hit");
+  //   const vfx = scene.add.sprite(snapshot.x, snapshot.y, "impact-hit");
+  //   vfx.setDepth(9999);
+  //   vfx.play("impact-hit");
 
-  vfx.once(Phaser.Animations.Events.ANIMATION_COMPLETE, () => vfx.destroy());
+  //   vfx.once(Phaser.Animations.Events.ANIMATION_COMPLETE, () => vfx.destroy());
 
   // =================================================
   // DELAY → FORM SWAP
   // =================================================
-  const delay = reason === "evolution" ? 700 : 250;
+  const delay = reason === "evolution" ? 1200 : 700;
 
   scene.time.delayedCall(delay, () => {
+    // =================================================
+    // DATA SCAN OUT (OLD FORM)
+    // =================================================
+    playDataScanFX({
+      scene,
+      sourceSprite: entity.visual.sprite,
+      direction: "up",
+      duration: reason === "evolution" ? 1000 : 700,
+    });
     // destroy old entity AFTER VFX
     entity.destroy();
 
@@ -95,6 +110,16 @@ export function changeForm({ scene, entity, targetKey, reason = "switch" }) {
 
     // global state
     GameState.currentForm = targetKey;
+
+    // =================================================
+    // DATA SCAN IN (NEW FORM)
+    // =================================================
+    playDataScanFX({
+      scene,
+      sourceSprite: newEntity.visual.sprite,
+      direction: "down",
+      duration: reason === "evolution" ? 360 : 220,
+    });
 
     newEntity._isChangingForm = false;
   });
