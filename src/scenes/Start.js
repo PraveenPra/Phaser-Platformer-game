@@ -133,9 +133,18 @@ export class Start extends Phaser.Scene {
         { key: "traps", frame: "Spike-up-1" },
         { key: "traps", frame: "Spike-up-2" },
         { key: "traps", frame: "Spike-up-3" },
+
+        // hold at peak
         { key: "traps", frame: "Spike-up-4" },
+        { key: "traps", frame: "Spike-up-4" },
+        { key: "traps", frame: "Spike-up-4" },
+
+        // retract
+        { key: "traps", frame: "Spike-up-3" },
+        { key: "traps", frame: "Spike-up-2" },
+        { key: "traps", frame: "Spike-up-1" },
       ],
-      frameRate: 10,
+      frameRate: 6,
       repeat: -1,
     });
 
@@ -235,6 +244,11 @@ export class Start extends Phaser.Scene {
       null,
       this,
     );
+
+    // =================================================
+    // BACKGROUND MUSIC
+    // =================================================
+    this.playBackgroundMusic();
 
     // =================================================
     // INTRO NARRATION
@@ -439,5 +453,19 @@ export class Start extends Phaser.Scene {
     this.time.delayedCall(800, () => {
       player.isInvulnerable = false;
     });
+  }
+
+  playBackgroundMusic() {
+    // prevent duplicate music when restarting scene
+    if (this.sound.get("sfx-bg-music-1")) return;
+
+    this.bgMusic = this.sound.add("sfx-bg-music-1", {
+      loop: true,
+      volume: GameState.audio.musicVolume,
+    });
+
+    if (GameState.audio.musicEnabled) {
+      this.bgMusic.play();
+    }
   }
 }

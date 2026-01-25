@@ -23,4 +23,11 @@ export const GameState = {
     "seraphimon",
     "patamon",
   ]),
+
+  audio: {
+    musicEnabled: true,
+    sfxEnabled: true,
+    musicVolume: 0.5,
+    sfxVolume: 0.7,
+  },
 };
