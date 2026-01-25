@@ -67,6 +67,19 @@ export class Start extends Phaser.Scene {
     this.goalDebug.setOrigin(0.5);
 
     // =================================================
+    // DATA SHARDS (COLLECTIBLES)
+    // =================================================
+    this.dataShards = this.physics.add.group({
+      allowGravity: false,
+      immovable: true,
+    });
+
+    // =================================================
+    // ENVIRONMENTAL TRAPS
+    // =================================================
+    this.traps = this.physics.add.staticGroup();
+
+    // =================================================
     // SHARED ANIMATIONS (GLOBAL)
     // =================================================
     this.anims.create({
@@ -154,6 +167,36 @@ export class Start extends Phaser.Scene {
     this.bgMountains = createParallax("bg3", -40, 0.04);
     this.bgForest = createParallax("bg2", -30, 0.02);
     this.bgTrees = createParallax("bg1", -20, 0.01);
+
+    // =================================================
+    // DATA SHARDS - spawn some for demo
+    // =================================================
+    this.spawnDataShard(300, 300);
+    this.spawnDataShard(380, 260);
+    this.spawnDataShard(460, 300);
+
+    this.physics.add.overlap(
+      this.player,
+      this.dataShards,
+      this.collectDataShard,
+      null,
+      this,
+    );
+
+    // =================================================
+    // ENVIRONMENTAL TRAPS - spawn some for demo
+    // =================================================
+    this.spawnTrap(500, 380, 64, 32);
+    this.spawnTrap(600, 380, 64, 32);
+    this.spawnTrap(700, 380, 64, 32);
+
+    this.physics.add.overlap(
+      this.player,
+      this.traps,
+      this.onTrapHit,
+      null,
+      this,
+    );
 
     // =================================================
     // INTRO NARRATION
@@ -281,6 +324,60 @@ export class Start extends Phaser.Scene {
     cam.once("camerafadeoutcomplete", () => {
       // later: transition to next scene / story scene
       this.scene.restart(); // TEMP placeholder
+    });
+  }
+
+  spawnDataShard(x, y) {
+    const shard = this.dataShards.create(x, y, "__hitbox");
+
+    shard.setDisplaySize(16, 16);
+    shard.setTint(0x00ffff);
+    shard.setAlpha(0.9);
+
+    // floating animation
+    this.tweens.add({
+      targets: shard,
+      y: y - 6,
+      duration: 800,
+      yoyo: true,
+      repeat: -1,
+      ease: "Sine.easeInOut",
+    });
+
+    return shard;
+  }
+
+  collectDataShard(player, shard) {
+    shard.destroy();
+
+    GameState.dataShards = (GameState.dataShards ?? 0) + 1;
+
+    console.log("Data Shards:", GameState.dataShards);
+  }
+
+  spawnTrap(x, y, w = 32, h = 32) {
+    const trap = this.traps.create(x, y, "__hitbox");
+
+    trap.setDisplaySize(w, h);
+
+    // DEV VISUAL
+    trap.debugRect = this.add
+      .rectangle(x, y, w, h)
+      .setStrokeStyle(2, 0xff0000)
+      .setDepth(998);
+
+    return trap;
+  }
+
+  onTrapHit(player, trap) {
+    if (player.isInvulnerable) return;
+
+    player.takeDamage(10);
+
+    player.isInvulnerable = true;
+
+    this.time.delayedCall(800, () => {
+      player.isInvulnerable = false;
     });
   }
 }
