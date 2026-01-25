@@ -24,7 +24,7 @@ export class Start extends Phaser.Scene {
     // =================================================
     // TILEMAP + WORLD (MUST COME FIRST)
     // =================================================
-    const map = this.make.tilemap({
+    this.map = this.make.tilemap({
       key: "level1-map",
       tileWidth: 32,
       tileHeight: 32,
@@ -32,15 +32,25 @@ export class Start extends Phaser.Scene {
 
     // map.addTilesetImage("EnemiesTileset2", "level1-tileset-enemies"); // placeholder
 
-    const tileset = map.addTilesetImage("Terrain", "level1-tileset");
-    this.groundLayer = map.createLayer("GroundLayer", tileset, 0, 0);
+    const tileset = this.map.addTilesetImage("Terrain", "level1-tileset");
+    this.groundLayer = this.map.createLayer("GroundLayer", tileset, 0, 0);
     this.groundLayer.setCollisionByProperty({ collides: true });
 
     // World bounds = tilemap size
-    this.physics.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+    this.physics.world.setBounds(
+      0,
+      0,
+      this.map.widthInPixels,
+      this.map.heightInPixels,
+    );
 
     // Camera bounds
-    this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+    this.cameras.main.setBounds(
+      0,
+      0,
+      this.map.widthInPixels,
+      this.map.heightInPixels,
+    );
 
     // =================================================
     // LEVEL GOAL  - Reach to complete level
@@ -113,7 +123,7 @@ export class Start extends Phaser.Scene {
     this.physics.add.collider(this.enemies, this.groundLayer);
 
     // Enemy spawn manager
-    this.enemySpawner = new EnemySpawnManager(this, map, this.enemies);
+    this.enemySpawner = new EnemySpawnManager(this, this.map, this.enemies);
 
     // =================================================
     // PLAYER (AFTER WORLD + GROUPS)
@@ -171,10 +181,18 @@ export class Start extends Phaser.Scene {
     // =================================================
     // DATA SHARDS - spawn some for demo
     // =================================================
-    this.spawnDataShard(300, 300);
-    this.spawnDataShard(380, 260);
-    this.spawnDataShard(460, 300);
+    // this.spawnDataShard(300, 300);
+    // this.spawnDataShard(380, 260);
+    // this.spawnDataShard(460, 300);
+    this.spawnDataShard();
 
+    // this.physics.add.overlap(
+    //   this.player,
+    //   this.dataShards,
+    //   this.collectDataShard,
+    //   null,
+    //   this,
+    // );
     this.physics.add.overlap(
       this.player,
       this.dataShards,
@@ -186,13 +204,20 @@ export class Start extends Phaser.Scene {
     // =================================================
     // ENVIRONMENTAL TRAPS - spawn some for demo
     // =================================================
-    this.spawnTrap(500, 380, 64, 32);
-    this.spawnTrap(600, 380, 64, 32);
-    this.spawnTrap(700, 380, 64, 32);
+    // this.spawnTrap(500, 380, 64, 32);
+    // this.spawnTrap(600, 380, 64, 32);
+    this.spawnTrap();
 
+    // this.physics.add.overlap(
+    //   this.player,
+    //   this.traps,
+    //   this.onTrapHit,
+    //   null,
+    //   this,
+    // );
     this.physics.add.overlap(
       this.player,
-      this.traps,
+      this.spikes,
       this.onTrapHit,
       null,
       this,
@@ -327,52 +352,101 @@ export class Start extends Phaser.Scene {
     });
   }
 
-  spawnDataShard(x, y) {
-    const shard = this.dataShards.create(x, y, "__hitbox");
+  spawnDataShard() {
+    // const shard = this.dataShards.create(x, y, "__hitbox");
 
-    shard.setDisplaySize(16, 16);
-    shard.setTint(0x00ffff);
-    shard.setAlpha(0.9);
+    // shard.setDisplaySize(16, 16);
+    // shard.setTint(0x00ffff);
+    // shard.setAlpha(0.9);
 
-    // floating animation
-    this.tweens.add({
-      targets: shard,
-      y: y - 6,
-      duration: 800,
-      yoyo: true,
-      repeat: -1,
-      ease: "Sine.easeInOut",
+    // // floating animation
+    // this.tweens.add({
+    //   targets: shard,
+    //   y: y - 6,
+    //   duration: 800,
+    //   yoyo: true,
+    //   repeat: -1,
+    //   ease: "Sine.easeInOut",
+    // });
+
+    // return shard;
+
+    const layer = this.map.getObjectLayer("CollectiblesLayer");
+    if (!layer) return;
+
+    this.dataShards = this.physics.add.staticGroup();
+
+    layer.objects.forEach((obj) => {
+      // Tiled object origin is bottom-left
+      const x = obj.x + obj.width / 2;
+      const y = obj.y - obj.height / 2;
+
+      const shard = this.dataShards.create(x, y, "collectibles", 0);
+      shard.setData("value", 1);
+      shard.body.setSize(16, 16);
+
+      // floating animation
+      this.tweens.add({
+        targets: shard,
+        y: y - 6,
+        duration: 800,
+        yoyo: true,
+        repeat: -1,
+        ease: "Sine.easeInOut",
+      });
     });
-
-    return shard;
   }
 
   collectDataShard(player, shard) {
+    const value = shard.getData("value") || 1;
     shard.destroy();
 
-    GameState.dataShards = (GameState.dataShards ?? 0) + 1;
+    GameState.dataShards = (GameState.dataShards ?? 0) + value;
 
     console.log("Data Shards:", GameState.dataShards);
   }
 
   spawnTrap(x, y, w = 32, h = 32) {
-    const trap = this.traps.create(x, y, "__hitbox");
+    // const trap = this.traps.create(x, y, "__hitbox");
 
-    trap.setDisplaySize(w, h);
+    // trap.setDisplaySize(w, h);
 
-    // DEV VISUAL
-    trap.debugRect = this.add
-      .rectangle(x, y, w, h)
-      .setStrokeStyle(2, 0xff0000)
-      .setDepth(998);
+    // // DEV VISUAL
+    // trap.debugRect = this.add
+    //   .rectangle(x, y, w, h)
+    //   .setStrokeStyle(2, 0xff0000)
+    //   .setDepth(998);
 
-    return trap;
+    // return trap;
+
+    const layer = this.map.getObjectLayer("TrapsLayer");
+    if (!layer) return;
+
+    this.spikes = this.physics.add.staticGroup();
+
+    layer.objects.forEach((obj) => {
+      const x = obj.x + obj.width / 2;
+      const y = obj.y - obj.height / 2;
+
+      const spike = this.spikes.create(x, y, "collectibles", 1);
+
+      spike.setData(
+        "damage",
+        obj.properties?.find((p) => p.name === "damage")?.value ?? 1,
+      );
+      spike.setData(
+        "knockback",
+        obj.properties?.find((p) => p.name === "knockback")?.value ?? true,
+      );
+
+      spike.body.setSize(16, 16);
+    });
   }
 
   onTrapHit(player, trap) {
     if (player.isInvulnerable) return;
 
-    player.takeDamage(10);
+    player.takeDamage(trap.getData("damage") || 1, trap);
 
     player.isInvulnerable = true;
 
