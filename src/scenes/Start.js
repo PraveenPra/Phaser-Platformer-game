@@ -254,7 +254,7 @@ export class Start extends Phaser.Scene {
     // =================================================
     // BACKGROUND MUSIC
     // =================================================
-    // AudioManager.playMusic(this, "sfx-bg-music-1");
+    AudioManager.playMusic(this, "sfx-bg-music-1");
 
     // =================================================
     // INTRO NARRATION
@@ -377,6 +377,8 @@ export class Start extends Phaser.Scene {
       .setScrollFactor(0)
       .setDepth(200);
 
+    AudioManager.playSFX(this, "sfx-level-complete");
+
     cam.fadeOut(1500, 0, 0, 0);
 
     cam.once("camerafadeoutcomplete", () => {
@@ -415,7 +417,7 @@ export class Start extends Phaser.Scene {
   collectDataShard(player, shard) {
     const value = shard.getData("value") || 1;
     shard.destroy();
-
+    AudioManager.playSFX(this, "sfx-collect-shard");
     GameState.dataShards = (GameState.dataShards ?? 0) + value;
 
     console.log("Data Shards:", GameState.dataShards);
