@@ -27,7 +27,7 @@ export const GameState = {
   audio: {
     musicEnabled: true,
     sfxEnabled: true,
-    musicVolume: 0.3,
+    musicVolume: 0.1,
     sfxVolume: 0.7,
   },
 };
