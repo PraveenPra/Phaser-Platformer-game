@@ -1,11 +1,14 @@
 import { GameState } from "/src/GameState.js";
 
-let currentMusic = null;
-let currentMusicKey = null;
+let persistentMusic = null; // Persistent game-level music
+let persistentKey = null;
+
+let activeSceneMusic = null; // Scene or situation-specific music
+let activeSceneKey = null;
 
 export class AudioManager {
   // =================================================
-  // SFX (fire-and-forget)
+  // SFX (fire-and-forget, respects SFX settings)
   // =================================================
   static playSFX(scene, key, config = {}) {
     if (!GameState.audio.sfxEnabled) return;
@@ -18,63 +21,126 @@ export class AudioManager {
   }
 
   // =================================================
-  // MUSIC (persistent + resumable)
+  // Persistent Game Music (background music)
   // =================================================
-  static playMusic(scene, key) {
-    currentMusicKey = key;
+  static playPersistentMusic(scene, key) {
+    persistentKey = key;
 
-    // IMPORTANT: resume sound system if paused
-    scene.sound.resumeAll();
-
-    if (!currentMusic) {
-      currentMusic = scene.sound.add(key, {
+    if (!persistentMusic || persistentMusic.destroyed) {
+      persistentMusic = scene.sound.add(key, {
         loop: true,
         volume: GameState.audio.musicVolume,
       });
     }
 
-    currentMusic.setVolume(GameState.audio.musicVolume);
-
     if (GameState.audio.musicEnabled) {
-      if (!currentMusic.isPlaying) {
-        currentMusic.play();
-      }
+      if (!persistentMusic.isPlaying) persistentMusic.play();
     } else {
-      if (currentMusic.isPlaying) {
-        currentMusic.stop();
-      }
+      if (persistentMusic.isPlaying) persistentMusic.stop();
     }
 
-    return currentMusic;
+    persistentMusic.setVolume(GameState.audio.musicVolume);
+    return persistentMusic;
   }
 
-  // =================================================
-  // Stop music (explicit)
-  // =================================================
-  static stopMusic(scene) {
-    if (!currentMusic) return;
+  static stopPersistentMusic(fadeOutMs = 0) {
+    if (!persistentMusic || persistentMusic.destroyed) return;
 
-    currentMusic.stop();
+    if (fadeOutMs > 0) {
+      persistentMusic.stop(fadeOutMs);
+    } else {
+      persistentMusic.stop();
+    }
   }
 
-  // =================================================
-  // Toggles (used by Settings)
-  // =================================================
-  static toggleMusic(scene, key) {
-    GameState.audio.musicEnabled = !GameState.audio.musicEnabled;
-
-    // Always re-sync state
-    this.playMusic(scene, key);
-  }
-
-  static setMusicVolume(scene, volume) {
+  static setPersistentVolume(volume) {
     GameState.audio.musicVolume = Phaser.Math.Clamp(volume, 0, 1);
-    if (currentMusic) {
-      currentMusic.setVolume(GameState.audio.musicVolume);
+    if (persistentMusic && !persistentMusic.destroyed) {
+      persistentMusic.setVolume(GameState.audio.musicVolume);
     }
   }
 
+  static togglePersistentMusic(scene) {
+    GameState.audio.musicEnabled = !GameState.audio.musicEnabled;
+    if (persistentKey) this.playPersistentMusic(scene, persistentKey);
+  }
+
+  // =================================================
+  // Scene or Situation Music (temporary, can overlay)
+  // =================================================
+  static playSceneMusic(
+    scene,
+    key,
+    { volume = 1, loop = true, fadeInMs = 500 } = {},
+  ) {
+    // Stop previous scene music
+    if (activeSceneMusic && !activeSceneMusic.destroyed) {
+      activeSceneMusic.stop();
+    }
+
+    activeSceneKey = key;
+    activeSceneMusic = scene.sound.add(key, { loop, volume: 0 });
+
+    // Fade in scene music
+    activeSceneMusic.play();
+    scene.tweens.add({
+      targets: activeSceneMusic,
+      volume: volume * GameState.audio.musicVolume,
+      duration: fadeInMs,
+    });
+
+    return activeSceneMusic;
+  }
+
+  static stopSceneMusic(scene, fadeOutMs = 500) {
+    if (!activeSceneMusic || activeSceneMusic.destroyed) return;
+
+    if (fadeOutMs > 0) {
+      scene.tweens.add({
+        targets: activeSceneMusic,
+        volume: 0,
+        duration: fadeOutMs,
+        onComplete: () => activeSceneMusic.stop(),
+      });
+    } else {
+      activeSceneMusic.stop();
+    }
+
+    activeSceneMusic = null;
+    activeSceneKey = null;
+  }
+
+  // =================================================
+  // Resync persistent music on scene change
+  // =================================================
+  static syncPersistentMusic(scene) {
+    if (persistentKey) this.playPersistentMusic(scene, persistentKey);
+  }
+
+  // =================================================
+  // Global SFX & Music volume
+  // =================================================
   static setSFXVolume(volume) {
     GameState.audio.sfxVolume = Phaser.Math.Clamp(volume, 0, 1);
+  }
+
+  static setMusicVolume(volume) {
+    GameState.audio.musicVolume = Phaser.Math.Clamp(volume, 0, 1);
+    if (persistentMusic && !persistentMusic.destroyed) {
+      persistentMusic.setVolume(GameState.audio.musicVolume);
+    }
+    if (activeSceneMusic && !activeSceneMusic.destroyed) {
+      activeSceneMusic.setVolume(GameState.audio.musicVolume);
+    }
+  }
+
+  static toggleSFX() {
+    GameState.audio.sfxEnabled = !GameState.audio.sfxEnabled;
+  }
+
+  static toggleMusic(scene) {
+    GameState.audio.musicEnabled = !GameState.audio.musicEnabled;
+    if (persistentKey) this.playPersistentMusic(scene, persistentKey);
+    if (activeSceneKey) this.playSceneMusic(scene, activeSceneKey);
   }
 }

@@ -131,6 +131,8 @@ export class Preload extends Phaser.Scene {
     this.load.audio("sfx-evolution", "assets/sfx/evolution.wav");
     this.load.audio("sfx-collect-shard", "assets/sfx/pick-a-coin.wav");
     this.load.audio("sfx-level-complete", "assets/sfx/level-completion.wav");
+    this.load.audio("sfx-hurt", "assets/sfx/hurt-flinch.mp3");
+    this.load.audio("sfx-gameover", "assets/sfx/game-over.wav");
     this.load.audio("sfx-bg-music-1", "assets/sfx/BG-MUSIC3.wav");
   }
 

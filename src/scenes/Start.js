@@ -254,7 +254,8 @@ export class Start extends Phaser.Scene {
     // =================================================
     // BACKGROUND MUSIC
     // =================================================
-    AudioManager.playMusic(this, "sfx-bg-music-1");
+    AudioManager.syncPersistentMusic(this);
+    AudioManager.playPersistentMusic(this, "sfx-bg-music-1");
 
     // =================================================
     // INTRO NARRATION
