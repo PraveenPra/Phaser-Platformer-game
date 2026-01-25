@@ -66,6 +66,19 @@ export class Preload extends Phaser.Scene {
       frameHeight: 32,
     });
 
+    // COLLECTIBLES -------------
+    this.load.atlas(
+      "collectables",
+      "assets/collectables/collectables.png",
+      "assets/collectables/collectables.json",
+    );
+
+    //TRAPS ------------------
+    this.load.atlas(
+      "traps",
+      "assets/traps/traps.png",
+      "assets/traps/traps.json",
+    );
     // TILEMAPS ----------------  ---
 
     this.load.image("groundTile", "assets/ground-tile.png");

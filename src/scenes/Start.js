@@ -110,6 +110,36 @@ export class Start extends Phaser.Scene {
     });
 
     // =================================================
+    // COLLECTIBLE + TRAP ANIMATIONS
+    // =================================================
+
+    // Data Shard rotate
+    this.anims.create({
+      key: "data-shard-spin",
+      frames: [
+        { key: "collectables", frame: "data-shard-rotate-1" },
+        { key: "collectables", frame: "data-shard-rotate-2" },
+        { key: "collectables", frame: "data-shard-rotate-3" },
+        { key: "collectables", frame: "data-shard-rotate-4" },
+      ],
+      frameRate: 8,
+      repeat: -1,
+    });
+
+    // Spike (up)
+    this.anims.create({
+      key: "spike-up-anim",
+      frames: [
+        { key: "traps", frame: "Spike-up-1" },
+        { key: "traps", frame: "Spike-up-2" },
+        { key: "traps", frame: "Spike-up-3" },
+        { key: "traps", frame: "Spike-up-4" },
+      ],
+      frameRate: 10,
+      repeat: -1,
+    });
+
+    // =================================================
     // ENEMIES GROUP (BEFORE PLAYER)
     // =================================================
     this.enemies = this.physics.add.group({
@@ -181,18 +211,9 @@ export class Start extends Phaser.Scene {
     // =================================================
     // DATA SHARDS - spawn some for demo
     // =================================================
-    // this.spawnDataShard(300, 300);
-    // this.spawnDataShard(380, 260);
-    // this.spawnDataShard(460, 300);
-    this.spawnDataShard();
 
-    // this.physics.add.overlap(
-    //   this.player,
-    //   this.dataShards,
-    //   this.collectDataShard,
-    //   null,
-    //   this,
-    // );
+    this.spawnDataShards();
+
     this.physics.add.overlap(
       this.player,
       this.dataShards,
@@ -204,20 +225,12 @@ export class Start extends Phaser.Scene {
     // =================================================
     // ENVIRONMENTAL TRAPS - spawn some for demo
     // =================================================
-    // this.spawnTrap(500, 380, 64, 32);
-    // this.spawnTrap(600, 380, 64, 32);
+
     this.spawnTrap();
 
-    // this.physics.add.overlap(
-    //   this.player,
-    //   this.traps,
-    //   this.onTrapHit,
-    //   null,
-    //   this,
-    // );
     this.physics.add.overlap(
       this.player,
-      this.spikes,
+      this.traps,
       this.onTrapHit,
       null,
       this,
@@ -352,38 +365,20 @@ export class Start extends Phaser.Scene {
     });
   }
 
-  spawnDataShard() {
-    // const shard = this.dataShards.create(x, y, "__hitbox");
-
-    // shard.setDisplaySize(16, 16);
-    // shard.setTint(0x00ffff);
-    // shard.setAlpha(0.9);
-
-    // // floating animation
-    // this.tweens.add({
-    //   targets: shard,
-    //   y: y - 6,
-    //   duration: 800,
-    //   yoyo: true,
-    //   repeat: -1,
-    //   ease: "Sine.easeInOut",
-    // });
-
-    // return shard;
-
+  spawnDataShards() {
     const layer = this.map.getObjectLayer("CollectiblesLayer");
     if (!layer) return;
 
-    this.dataShards = this.physics.add.staticGroup();
+    this.dataShards.clear(true, true);
 
     layer.objects.forEach((obj) => {
-      // Tiled object origin is bottom-left
       const x = obj.x + obj.width / 2;
       const y = obj.y - obj.height / 2;
 
-      const shard = this.dataShards.create(x, y, "collectibles", 0);
+      const shard = this.dataShards.create(x, y, "collectables");
+      shard.play("data-shard-spin");
+
       shard.setData("value", 1);
-      shard.body.setSize(16, 16);
 
       // floating animation
       this.tweens.add({
@@ -406,29 +401,18 @@ export class Start extends Phaser.Scene {
     console.log("Data Shards:", GameState.dataShards);
   }
 
-  spawnTrap(x, y, w = 32, h = 32) {
-    // const trap = this.traps.create(x, y, "__hitbox");
-
-    // trap.setDisplaySize(w, h);
-
-    // // DEV VISUAL
-    // trap.debugRect = this.add
-    //   .rectangle(x, y, w, h)
-    //   .setStrokeStyle(2, 0xff0000)
-    //   .setDepth(998);
-
-    // return trap;
-
+  spawnTrap() {
     const layer = this.map.getObjectLayer("TrapsLayer");
     if (!layer) return;
 
-    this.spikes = this.physics.add.staticGroup();
+    this.traps.clear(true, true);
 
     layer.objects.forEach((obj) => {
       const x = obj.x + obj.width / 2;
       const y = obj.y - obj.height / 2;
 
-      const spike = this.spikes.create(x, y, "collectibles", 1);
+      const spike = this.traps.create(x, y, "traps");
+      spike.play("spike-up-anim");
 
       spike.setData(
         "damage",
@@ -439,7 +423,9 @@ export class Start extends Phaser.Scene {
         obj.properties?.find((p) => p.name === "knockback")?.value ?? true,
       );
 
-      spike.body.setSize(16, 16);
+      // match 64x16 spike art
+      spike.body.setSize(60, 12);
+      spike.body.setOffset(2, 2);
     });
   }
 
