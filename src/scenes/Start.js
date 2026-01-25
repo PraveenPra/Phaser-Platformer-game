@@ -5,6 +5,7 @@ import { Enemy } from "../entities/enemy/Enemy.js";
 import { PlayerHealthUI } from "../ui/PlayerHealthUI.js";
 import { EnemySpawnManager } from "../systems/EnemySpawnManager.js";
 import { SceneControls } from "../utils/SceneControls.js";
+import { AudioManager } from "../systems/AudioManager.js";
 
 export class Start extends Phaser.Scene {
   constructor() {
@@ -19,6 +20,11 @@ export class Start extends Phaser.Scene {
     // =================================================
     this.controls = new SceneControls(this, {
       keyPause: "ESC",
+    });
+
+    this.input.keyboard.on("keydown-O", () => {
+      this.scene.pause();
+      this.scene.launch("Settings");
     });
 
     // =================================================
@@ -248,7 +254,7 @@ export class Start extends Phaser.Scene {
     // =================================================
     // BACKGROUND MUSIC
     // =================================================
-    this.playBackgroundMusic();
+    // AudioManager.playMusic(this, "sfx-bg-music-1");
 
     // =================================================
     // INTRO NARRATION
@@ -453,19 +459,5 @@ export class Start extends Phaser.Scene {
     this.time.delayedCall(800, () => {
       player.isInvulnerable = false;
     });
-  }
-
-  playBackgroundMusic() {
-    // prevent duplicate music when restarting scene
-    if (this.sound.get("sfx-bg-music-1")) return;
-
-    this.bgMusic = this.sound.add("sfx-bg-music-1", {
-      loop: true,
-      volume: GameState.audio.musicVolume,
-    });
-
-    if (GameState.audio.musicEnabled) {
-      this.bgMusic.play();
-    }
   }
 }
