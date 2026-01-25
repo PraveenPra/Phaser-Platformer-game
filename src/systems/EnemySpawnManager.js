@@ -1,14 +1,3 @@
-const ENEMY_TYPE_MAP = {
-  Patrol: {
-    texture: "gabumon",
-    ai: "patrol",
-  },
-  Guard: {
-    texture: "chivmon",
-    ai: "guard",
-  },
-};
-
 export class EnemySpawnManager {
   constructor(scene, map, enemyGroup) {
     this.scene = scene;
@@ -26,7 +15,7 @@ export class EnemySpawnManager {
 
   _loadSpawnPoints() {
     const layer = this.map.getObjectLayer("EnemiesLayer");
-
+    console.log(layer);
     if (!layer) {
       console.warn("EnemiesLayer not found");
       return;
@@ -37,7 +26,7 @@ export class EnemySpawnManager {
         id: obj.id,
         x: obj.x,
         y: obj.y - obj.height, // Tiled → Phaser fix
-        type: obj.type || "Default",
+        name: obj.name || "agumon",
         spawned: false,
       });
     });
@@ -65,11 +54,10 @@ export class EnemySpawnManager {
   _spawnEnemy(point) {
     const EnemyClass = this.scene.registry.get("EnemyClass");
 
-    const config = ENEMY_TYPE_MAP[point.type] || ENEMY_TYPE_MAP.Patrol;
+    const digimon = point.name || "agumon";
 
-    const enemy = new EnemyClass(this.scene, point.x, point.y, config.texture, {
-      ai: config.ai,
-      spawnType: point.type,
+    const enemy = new EnemyClass(this.scene, point.x, point.y, digimon, {
+      //later add aiType: 'patrol'
     });
 
     enemy.spawnId = point.id;

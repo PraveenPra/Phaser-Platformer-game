@@ -30,9 +30,9 @@ export class Start extends Phaser.Scene {
       tileHeight: 32,
     });
 
-    const tileset = map.addTilesetImage("Tileset1", "level1-tileset");
-    map.addTilesetImage("Tileset2", "level1-tileset-enemies"); // placeholder
+    // map.addTilesetImage("EnemiesTileset2", "level1-tileset-enemies"); // placeholder
 
+    const tileset = map.addTilesetImage("Terrain", "level1-tileset");
     this.groundLayer = map.createLayer("GroundLayer", tileset, 0, 0);
     this.groundLayer.setCollisionByProperty({ collides: true });
 

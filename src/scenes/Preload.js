@@ -70,13 +70,34 @@ export class Preload extends Phaser.Scene {
 
     this.load.image("groundTile", "assets/ground-tile.png");
 
-    this.load.image("level1-tileset", "assets/tilemaps/tileset_32x32.png");
+    // this.load.image("level1-tileset", "assets/tilemaps/tileset_32x32.png");
+    // this.load.image(
+    //   "level1-tileset-enemies",
+    //   "assets/tilemaps/goblin_spritesheet.png",
+    // ); //dummy placeholder tileset fr enemies
+    // this.load.tilemapTiledJSON("level1-map", "assets/tilemaps/Tilemap1.json");
+
+    // LEVEL 1 TILEMAPS ----------
+    this.load.image(
+      "level1-tileset",
+      "assets/tilemaps/Level1-Tutorial/Terrain_32x32.png",
+    );
     this.load.image(
       "level1-tileset-enemies",
-      "assets/tilemaps/goblin_spritesheet.png",
+      "assets/tilemaps/Level1-Tutorial/Enemies_32x32.png",
     ); //dummy placeholder tileset fr enemies
-    this.load.tilemapTiledJSON("level1-map", "assets/tilemaps/Tilemap1.json");
-    // This generates a 1×1 white texture in memory.
+
+    this.load.image(
+      "level1-tileset-misc",
+      "assets/tilemaps/Level1-Tutorial/Collectables_16x16.png",
+    ); //dummy placeholder tileset fr traps, collectables
+
+    this.load.tilemapTiledJSON(
+      "level1-map",
+      "assets/tilemaps/Level1-Tutorial/Level1Tutorial.json",
+    );
+
+    // SYSTEM TEXTURES ----------// This generates a 1×1 white texture in memory.
     // No asset file needed. Perfect for systems.
     // To be used for attack hitboxes.
     this.textures.generate("__hitbox", {
