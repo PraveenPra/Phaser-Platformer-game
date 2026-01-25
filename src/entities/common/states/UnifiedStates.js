@@ -1,5 +1,6 @@
 import { startWingFlap, stopWingFlap } from "/src/utils/StateMachineUtils.js";
 import { AudioManager } from "/src/systems/AudioManager.js";
+import { GameState } from "/src/GameState.js";
 
 function handleAttackInputs(e) {
   if (e.isDead || e.isAttacking) return false;
@@ -326,12 +327,14 @@ export const UnifiedStates = {
 
       if (e.healthBar) e.healthBar.destroy();
 
-      // Add SFX instead of play() directly, so we can wait for it
+      // Only play gameover SFX for the player
       let sfx = null;
-      sfx = e.scene.sound.add("sfx-gameover", {
-        volume: 0.9,
-      });
-      sfx.play();
+      if (e.type === "player" && GameState.audio.sfxEnabled) {
+        sfx = e.scene.sound.add("sfx-gameover", {
+          volume: 0.9,
+        });
+        sfx.play();
+      }
 
       const animKey = `${e.key}_defeated`;
       e.visual.play(animKey);
@@ -339,7 +342,6 @@ export const UnifiedStates = {
       let animDone = false;
       let sfxDone = !sfx; // if no SFX, treat as already done
 
-      // Helper to check if both finished
       const tryFinishDeath = () => {
         if (animDone && sfxDone) {
           e.onDeathAnimationComplete?.();
