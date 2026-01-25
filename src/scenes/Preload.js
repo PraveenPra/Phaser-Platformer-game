@@ -6,6 +6,12 @@ export class Preload extends Phaser.Scene {
   }
 
   preload() {
+    this.loadingScreen();
+
+    // ================================
+    // ASSETS (YOUR EXISTING CODE)
+    // ================================
+
     this.load.atlas(
       "agumon",
       "assets/digimons/Agumon/Agumon.png",
@@ -134,5 +140,62 @@ export class Preload extends Phaser.Scene {
     this.scene.start("CharacterSelect");
     // GameState.selectedDigimon = "agumon";
     // this.scene.start("Start");
+  }
+
+  loadingScreen() {
+    const { width, height } = this.cameras.main;
+
+    // ================================
+    // LOADING SCREEN UI (FIRST!)
+    // ================================
+    const bg = this.add.rectangle(
+      width / 2,
+      height / 2,
+      width,
+      height,
+      0x000000,
+    );
+
+    const loadingText = this.add
+      .text(width / 2, height / 2 - 50, "Loading...", {
+        fontSize: "20px",
+        color: "#ffffff",
+      })
+      .setOrigin(0.5);
+
+    const progressBox = this.add.rectangle(
+      width / 2,
+      height / 2,
+      320,
+      30,
+      0x222222,
+    );
+
+    const progressBar = this.add
+      .rectangle(width / 2 - 160, height / 2, 0, 24, 0xffffff)
+      .setOrigin(0, 0.5);
+
+    const percentText = this.add
+      .text(width / 2, height / 2 + 40, "0%", {
+        fontSize: "16px",
+        color: "#ffffff",
+      })
+      .setOrigin(0.5);
+
+    // ================================
+    // LOADER EVENTS
+    // ================================
+    this.load.on("progress", (value) => {
+      progressBar.width = 300 * value;
+      percentText.setText(`${Math.floor(value * 100)}%`);
+    });
+
+    this.load.on("complete", () => {
+      bg.destroy();
+      loadingText.destroy();
+      progressBox.destroy();
+      progressBar.destroy();
+      percentText.destroy();
+    });
   }
 }
