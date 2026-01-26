@@ -1,50 +1,52 @@
+import { UIFactory } from "/src/ui/UIFactory.js";
 export class UIScene extends Phaser.Scene {
   constructor() {
     super({ key: "UIScene" });
   }
 
   create() {
-    // UI should NOT scroll with the world
     this.cameras.main.setScroll(0, 0);
 
-    // Root container for HUD
     this.ui = this.add.container(0, 0);
     this.ui.setScrollFactor(0);
 
-    // =================================================
-    // TEST PANEL (9-slice built manually)
-    // =================================================
-    this.createGreenPanel(40, 40, 8, 4);
+    this.uiFactory = new UIFactory(this);
 
-    this.add
-      .bitmapText(
-        80, // x
-        60, // y
-        "bigFont", // font key
-        "PAUSED", // text
-        32, // font size (important!)
-      )
+    // Dark overlay
+    const overlay = this.add
+      .rectangle(0, 0, this.scale.width, this.scale.height, 0x000000, 0.6)
       .setOrigin(0)
       .setScrollFactor(0);
 
-    this.add
-      .bitmapText(80, 110, "smallFont", "Press ESC to Resume", 16)
-      .setOrigin(0)
-      .setScrollFactor(0);
+    this.ui.add(overlay);
 
-    // =================================================
-    // TEST BUTTON
-    // =================================================
+    // Main pause panel
+    const panel = this.uiFactory.panel(120, 80, 8, 6, "green");
+    this.ui.add(panel.container);
 
-    this.createGreenButton(200, 140, "Resume", () => {
-      this.scene.resume("Start");
-      this.scene.stop();
-    });
+    // Title
+    panel.add(this.uiFactory.title(32, -20, "PAUSED"));
 
-    this.createGreenButton(200, 180, "Quit", () => {
-      this.scene.stop("Start");
-      this.scene.start("CharacterSelect");
-    });
+    // Buttons
+    panel.add(
+      this.uiFactory.button(128, 96, "Resume", () => {
+        this.scene.resume("Start");
+        this.scene.stop();
+      }).container,
+    );
+
+    panel.add(
+      this.uiFactory.button(128, 136, "Settings", () => {
+        console.log("Open settings");
+      }).container,
+    );
+
+    panel.add(
+      this.uiFactory.button(128, 176, "Quit", () => {
+        this.scene.stop("Start");
+        this.scene.start("CharacterSelect");
+      }).container,
+    );
   }
 
   // =================================================

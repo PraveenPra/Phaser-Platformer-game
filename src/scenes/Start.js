@@ -18,14 +18,17 @@ export class Start extends Phaser.Scene {
     // =================================================
     // SCENE CONTROLS
     // =================================================
+
+    this.input.addPointer(2);
+
     this.controls = new SceneControls(this, {
       keyPause: "ESC",
     });
 
-    this.input.keyboard.on("keydown-O", () => {
-      this.scene.pause();
-      this.scene.launch("Settings");
-    });
+    if (!this.scene.isActive("UIScene")) {
+      this.scene.launch("UIScene");
+      this.scene.bringToTop("UIScene");
+    }
 
     // =================================================
     // TILEMAP + WORLD (MUST COME FIRST)

@@ -1,19 +1,18 @@
 import { Start } from "./scenes/Start.js";
 import { Preload } from "./scenes/Preload.js";
 import { CharacterSelect } from "./scenes/CharacterSelect.js";
-import { SettingsScene } from "./scenes/SettingsScene.js";
-import { UIScene } from "./scenes/UIScene.js";
+import { UIScene } from "/src/ui/UIScene.js";
 
 const config = {
   type: Phaser.AUTO,
   title: "Overlord Rising",
   description: "",
   parent: "game-container",
-  width: 960,
-  height: 544,
+  // width: 960,
+  // height: 544,
   backgroundColor: "#1e1e1e",
   pixelArt: true,
-  scene: [Preload, CharacterSelect, Start, SettingsScene, UIScene],
+  scene: [Preload, CharacterSelect, Start, UIScene],
   physics: {
     default: "arcade",
     arcade: {
@@ -26,6 +25,8 @@ const config = {
   scale: {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
+    width: 960,
+    height: 544,
   },
 };
 

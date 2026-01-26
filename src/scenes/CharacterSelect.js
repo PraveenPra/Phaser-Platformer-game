@@ -50,9 +50,6 @@ export class CharacterSelect extends Phaser.Scene {
         color: "#ffffff",
       })
       .setOrigin(0.5);
-
-    this.scene.launch("UIScene");
-    this.scene.bringToTop("UIScene");
   }
 
   select(key) {
