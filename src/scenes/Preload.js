@@ -134,6 +134,21 @@ export class Preload extends Phaser.Scene {
     this.load.audio("sfx-hurt", "assets/sfx/hurt-flinch.mp3");
     this.load.audio("sfx-gameover", "assets/sfx/game-over.wav");
     this.load.audio("sfx-bg-music-1", "assets/sfx/BG-MUSIC3.wav");
+
+    // UI ATLAS -----------------
+    this.load.atlas("ui", "assets/ui/ui.png", "assets/ui/ui.json");
+
+    // Load bitmap fonts
+    this.load.bitmapFont(
+      "bigFont",
+      "assets/ui/fonts/Big-font1.png",
+      "assets/ui/fonts/Big-font1.xml",
+    );
+    this.load.bitmapFont(
+      "smallFont",
+      "assets/ui/fonts/Small-font1.png",
+      "assets/ui/fonts/Small-font1.xml",
+    );
   }
 
   create() {
