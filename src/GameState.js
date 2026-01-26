@@ -11,6 +11,52 @@ export const GameState = {
   playerStats: {
     maxHp: 100,
     hp: 100,
+    _listeners: new Set(),
+
+    _notify() {
+      this._listeners.forEach((cb) => cb(this.hp, this.maxHp));
+    },
+
+    subscribe(cb) {
+      this._listeners.add(cb);
+    },
+
+    // helper to mutate hp safely
+    changeHp(delta) {
+      this.hp = Math.max(0, this.hp + delta);
+      this._notify();
+    },
+
+    // optional helper for maxHp
+    setMaxHp(v) {
+      this.maxHp = v;
+      this._notify();
+    },
+  },
+
+  dataShards: {
+    count: 0,
+    _listeners: new Set(),
+
+    _notify() {
+      this._listeners.forEach((cb) => cb(this.count));
+    },
+
+    subscribe(cb) {
+      this._listeners.add(cb);
+    },
+
+    // helper to increment
+    add(value = 1) {
+      this.count += value;
+      this._notify();
+    },
+
+    // optional helper to set absolute value
+    set(value) {
+      this.count = value;
+      this._notify();
+    },
   },
 
   // base forms the player can switch to

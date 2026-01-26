@@ -422,9 +422,9 @@ export class Start extends Phaser.Scene {
     const value = shard.getData("value") || 1;
     shard.destroy();
     AudioManager.playSFX(this, "sfx-collect-shard");
-    GameState.dataShards = (GameState.dataShards ?? 0) + value;
+    // GameState.dataShards = (GameState.dataShards ?? 0) + value;
 
-    console.log("Data Shards:", GameState.dataShards);
+    GameState.dataShards.add(value);
   }
 
   spawnTrap() {
