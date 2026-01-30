@@ -13,6 +13,8 @@ export class DevCalibrationScene extends Phaser.Scene {
   create() {
     // 🔴 VISUAL CONTEXT
     this.cameras.main.setBackgroundColor("#ff9dad"); // light gray
+    this.physics.world.drawDebug = false;
+
     // ─────────────────────────────────────────────
     // UI CAMERA (screen space, no zoom)
     // ─────────────────────────────────────────────
@@ -92,9 +94,13 @@ export class DevCalibrationScene extends Phaser.Scene {
       this.playAnim("run");
     });
 
-    // this.input.keyboard.on("keydown-D", () => {
-    //   this.playAnim("attack");
-    // });
+    this.input.keyboard.on("keydown-D", () => {
+      this.playAnim("jump");
+    });
+
+    this.input.keyboard.on("keydown-F", () => {
+      this.playAnim("fly");
+    });
 
     // ─────────────────────────────────────────────
     // STEP 5: Pause / resume animation
@@ -129,13 +135,22 @@ export class DevCalibrationScene extends Phaser.Scene {
     // ─────────────────────────────────────────────
     // Cycle attacks
     // ─────────────────────────────────────────────
-    this.input.keyboard.on("keydown-D", () => {
-      if (this.attackKeys.length === 0) return;
 
-      this.attackIndex = (this.attackIndex + 1) % this.attackKeys.length;
+    this.input.keyboard.on("keydown-Z", () => {
+      this.playAnim("attack-A");
+    });
 
-      const atkKey = this.attackKeys[this.attackIndex];
-      this.playAnim(`attack-${atkKey}`);
+    this.input.keyboard.on("keydown-X", () => {
+      this.playAnim("attack-B");
+    });
+    this.input.keyboard.on("keydown-C", () => {
+      this.playAnim("attack-C");
+    });
+    this.input.keyboard.on("keydown-V", () => {
+      this.playAnim("attack-D");
+    });
+    this.input.keyboard.on("keydown-B", () => {
+      this.playAnim("attack-E");
     });
 
     // ─────────────────────────────────────────────
@@ -297,11 +312,11 @@ export class DevCalibrationScene extends Phaser.Scene {
     }
     this.gridText.setText(`Grid: ${this.gridSize}px\nOrigin: (0,0)`);
 
-    const anim = sprite.anims.currentAnim;
-    const frame = sprite.anims.currentFrame;
-
-    const animName = anim ? anim.key : "none";
-    const frameIndex = frame ? frame.index : "-";
-    const totalFrames = anim ? anim.frames.length : "-";
+    if (this.showGrid) {
+      this.debugGfx.fillStyle(0x000000, 0.4);
+      for (let x = 0; x < 960; x += this.gridSize * 4) {
+        this.debugGfx.fillText?.(`${x}`, x + 2, 12);
+      }
+    }
   }
 }
