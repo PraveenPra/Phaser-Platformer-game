@@ -143,6 +143,13 @@ export const DIGIMON_PROFILES = {
   },
 
   chivmon: {
+    body: {
+      width: 11,
+      height: 14,
+      offsetX: -3,
+      offsetY: -4,
+      gravityY: 900,
+    },
     move: {
       speed: 100,
     },
@@ -160,13 +167,13 @@ export const DIGIMON_PROFILES = {
       main: {
         type: "melee",
         anim: "attack-A",
-        damage: 10,
-        fireFrames: [3, 4, 5], // active hit window
+        damage: 6,
+        fireFrames: [3, 5], // active hit window
         hitbox: {
-          width: 20,
-          height: 18,
+          width: 11,
+          height: 11,
           offsetX: 16,
-          offsetY: -8,
+          offsetY: 5,
           duration: 80, // per-frame lifetime
           // duration: 320,//ms
         },
@@ -190,13 +197,13 @@ export const DIGIMON_PROFILES = {
       skill2: {
         type: "melee",
         anim: "attack-C",
-        damage: 30,
-        fireFrames: [3, 4, 5], // active hit window
+        damage: 10,
+        fireFrames: [2], // active hit window
         hitbox: {
-          width: 20,
-          height: 18,
-          offsetX: 16,
-          offsetY: -8,
+          width: 11,
+          height: 10,
+          offsetX: 19,
+          offsetY: 4,
           duration: 80, // per-frame lifetime
           // duration: 320,
         },
@@ -528,11 +535,11 @@ export const DIGIMON_PROFILES = {
         projectile: {
           texture: "big-fireball",
           speed: 260,
-          offsetX: 28,
-          offsetY: 0,
+          offsetX: 36,
+          offsetY: 17,
           lifetime: 1200,
         },
-        fireFrame: 5,
+        fireFrame: 4,
         cooldown: 800,
       },
       skill1: {
@@ -542,11 +549,11 @@ export const DIGIMON_PROFILES = {
         projectile: {
           texture: "big-fireball",
           speed: 260,
-          offsetX: 18,
-          offsetY: -10,
+          offsetX: 28,
+          offsetY: 12,
           lifetime: 1200,
         },
-        fireFrame: 9,
+        fireFrame: 11,
         cooldown: 800,
       },
 
@@ -556,10 +563,10 @@ export const DIGIMON_PROFILES = {
         damage: 30,
         fireFrames: [4], // active hit window
         hitbox: {
-          width: 20,
-          height: 18,
-          offsetX: 16,
-          offsetY: -8,
+          width: 23,
+          height: 24,
+          offsetX: 24,
+          offsetY: 35,
           duration: 80, // per-frame lifetime
           // duration: 320,
         },

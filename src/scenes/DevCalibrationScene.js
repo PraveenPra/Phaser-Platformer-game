@@ -290,6 +290,8 @@ export class DevCalibrationScene extends Phaser.Scene {
     if (!this.currentAnimKey) return;
 
     const sprite = this.character.visual.sprite;
+    sprite.setInteractive();
+    sprite.on("pointerdown", () => this.scene.start("Start"));
     const anim = this.anims.get(this.currentAnimKey);
     if (!anim) return;
 
@@ -393,39 +395,83 @@ export class DevCalibrationScene extends Phaser.Scene {
 
     // const body = this.character.body;
     const profileBody = this.character.profile.body || {};
-
+    const projectile = atk?.projectile;
+    const hitbox = atk?.hitbox;
     this.debugText.setText([
-      `EDIT MODE:`,
-      ` Arrows      → move body`,
-      ` Shift+Arrows→ resize body`,
-      ` Ctrl        → fine adjust`,
+      `EDIT MODE:PHYSICS BODY`,
+      ` Alt + Arrows      → move body`,
+      ` Shift+ Alt + Arrows→ resize body`,
       ` Enter       → log profile`,
-      ` G           → toggle grid`,
       ``,
 
       `ANIM: ${this.currentAnimKey}`,
       `FRAME: ${this.frameCursor}`,
       ``,
       `BODY (PROFILE):`,
-      `  width : ${profileBody.width}`,
-      `  height: ${profileBody.height}`,
-      `  offsetX: ${profileBody.offsetX}`,
-      `  offsetY: ${profileBody.offsetY}`,
+      `  width : ${profileBody.width} |height: ${profileBody.height}| offsetX: ${profileBody.offsetX}| offsetY: ${profileBody.offsetY}`,
       ``,
       `BODY (LIVE):`,
-      `  x: ${body.x.toFixed(1)}`,
-      `  y: ${body.y.toFixed(1)}`,
-      `  w: ${body.width}`,
-      `  h: ${body.height}`,
+      `  x: ${body.x.toFixed(1)} y: ${body.y.toFixed(1)}`,
+      `  w: ${body.width}  h: ${body.height}`,
       "",
       "EDIT MODE:",
       "CTRL + Arrows        → move muzzle / hitbox",
       "CTRL + SHIFT + Arrows→ resize hitbox",
-      "",
-      `ATTACK: ${this.currentAttackKey ?? "none"}`,
+      `------------------------`,
+      `FRAME: ${this.frameCursor}`,
+      ``,
+
+      `ATTACK: ${this.currentAttackKey ?? "-"}`,
       `TYPE: ${atk?.type ?? "-"}`,
+      ``,
+
+      atk?.type === "projectile"
+        ? `MUZZLE (PROJECTILE):`
+        : `MUZZLE (PROJECTILE): -`,
+      projectile ? `  x: ${projectile.offsetX}` : ``,
+      projectile ? `  y: ${projectile.offsetY}` : ``,
+      ``,
+
+      atk?.type === "melee" ? `HITBOX (MELEE):` : `HITBOX (MELEE): -`,
+      hitbox ? `  x: ${hitbox.offsetX}` : ``,
+      hitbox ? `  y: ${hitbox.offsetY}` : ``,
+      hitbox ? `  w: ${hitbox.width}` : ``,
+      hitbox ? `  h: ${hitbox.height}` : ``,
+      ``,
+
+      `EDIT:`,
+      `CTRL + Arrows        → move`,
+      `CTRL + SHIFT + Arrows→ resize (hitbox)`,
     ]);
 
+    // this.debugText.setText([
+    //   `DIGIMON: ${this.character.key}`,
+    //   `ANIM: ${this.currentAnimKey ?? "-"}`,
+    //   `FRAME: ${this.frameCursor}`,
+    //   ``,
+
+    //   `ATTACK: ${this.currentAttackKey ?? "-"}`,
+    //   `TYPE: ${atk?.type ?? "-"}`,
+    //   ``,
+
+    //   atk?.type === "projectile"
+    //     ? `MUZZLE (PROJECTILE):`
+    //     : `MUZZLE (PROJECTILE): -`,
+    //   projectile ? `  x: ${projectile.offsetX}` : ``,
+    //   projectile ? `  y: ${projectile.offsetY}` : ``,
+    //   ``,
+
+    //   atk?.type === "melee" ? `HITBOX (MELEE):` : `HITBOX (MELEE): -`,
+    //   hitbox ? `  x: ${hitbox.offsetX}` : ``,
+    //   hitbox ? `  y: ${hitbox.offsetY}` : ``,
+    //   hitbox ? `  w: ${hitbox.width}` : ``,
+    //   hitbox ? `  h: ${hitbox.height}` : ``,
+    //   ``,
+
+    //   `EDIT:`,
+    //   `CTRL + Arrows        → move`,
+    //   `CTRL + SHIFT + Arrows→ resize (hitbox)`,
+    // ]);
     if (profileBody.width) {
       this.debugGfx.lineStyle(1, 0x0000ff, 0.8);
       this.debugGfx.strokeRect(
@@ -449,6 +495,7 @@ export class DevCalibrationScene extends Phaser.Scene {
     if (!projectile) return;
 
     const sprite = this.character.visual.sprite;
+
     const m = sprite.getWorldTransformMatrix();
 
     const x = m.tx + projectile.offsetX * sprite.scaleX;
