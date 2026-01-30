@@ -92,9 +92,9 @@ export class DevCalibrationScene extends Phaser.Scene {
       this.playAnim("run");
     });
 
-    this.input.keyboard.on("keydown-D", () => {
-      this.playAnim("attack");
-    });
+    // this.input.keyboard.on("keydown-D", () => {
+    //   this.playAnim("attack");
+    // });
 
     // ─────────────────────────────────────────────
     // STEP 5: Pause / resume animation
@@ -141,6 +141,7 @@ export class DevCalibrationScene extends Phaser.Scene {
     // ─────────────────────────────────────────────
     // Debug text (profile values)
     // ─────────────────────────────────────────────
+
     this.debugText = this.add
       .text(10, 10, "", {
         fontFamily: "monospace",
@@ -161,14 +162,6 @@ export class DevCalibrationScene extends Phaser.Scene {
       .setDepth(999)
       .setAlpha(0.6);
 
-    this.debugText = this.add.text(10, 10, "", {
-      fontFamily: "monospace",
-      fontSize: "14px",
-      color: "#000000",
-      backgroundColor: "#ffffff",
-      padding: { x: 6, y: 4 },
-    });
-
     this.debugText.setDepth(10000);
 
     // 🔑 THIS IS THE KEY LINE
@@ -184,6 +177,8 @@ export class DevCalibrationScene extends Phaser.Scene {
 
     test.setDepth(99999);
     this.cameras.main.ignore(test);
+
+    this.playAnim("idle");
   }
   stepFrame(dir) {
     if (!this.currentAnimKey) return;
