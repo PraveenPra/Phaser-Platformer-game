@@ -57,7 +57,7 @@ export class Preload extends Phaser.Scene {
     this.load.image("bg1", "assets/background_layer1.png");
     this.load.image("bg2", "assets/background_layer2.png");
     this.load.image("bg3", "assets/background_layer3.png");
-    this.load.image("bg4", "assets/background_layer4.png");
+    this.load.image("bg4", "assets/bg1.jpeg");
 
     this.load.image("big-fireball", "assets/vfx/big-fireball.png");
 
@@ -136,6 +136,11 @@ export class Preload extends Phaser.Scene {
 
     // UI ATLAS -----------------
     this.load.atlas("ui", "assets/ui/ui.png", "assets/ui/ui.json");
+    this.load.atlas(
+      "mobile-buttons",
+      "assets/ui/mobile-buttons.png",
+      "assets/ui/mobile-buttons.json",
+    );
 
     // Load bitmap fonts
     this.load.bitmapFont(

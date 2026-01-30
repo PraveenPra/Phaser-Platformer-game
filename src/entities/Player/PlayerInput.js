@@ -1,7 +1,9 @@
 export class PlayerInput {
   constructor(scene) {
-    this.cursors = scene.input.keyboard.createCursorKeys();
+    this.scene = scene;
 
+    // keyboard
+    this.cursors = scene.input.keyboard.createCursorKeys();
     this.attackMain = scene.input.keyboard.addKey(
       Phaser.Input.Keyboard.KeyCodes.Z,
     );
@@ -14,24 +16,45 @@ export class PlayerInput {
     this.switchKey = scene.input.keyboard.addKey(
       Phaser.Input.Keyboard.KeyCodes.V,
     );
-
     this.evolveKey = scene.input.keyboard.addKey(
       Phaser.Input.Keyboard.KeyCodes.B,
     );
+
+    // mobile virtual buttons
+    this.virtual = {
+      left: false,
+      right: false,
+      jump: false,
+      attackMain: false,
+    };
   }
 
   update(entity) {
+    console.log("Virtual state:", this.virtual);
+
     entity.input = {
-      left: this.cursors.left.isDown,
-      right: this.cursors.right.isDown,
+      left: this.cursors.left.isDown || this.virtual.left,
+      right: this.cursors.right.isDown || this.virtual.right,
       up: this.cursors.up.isDown,
       down: this.cursors.down.isDown,
-      jump: Phaser.Input.Keyboard.JustDown(this.cursors.space),
-      attackMain: Phaser.Input.Keyboard.JustDown(this.attackMain),
+      jump:
+        Phaser.Input.Keyboard.JustDown(this.cursors.space) ||
+        this.consumeVirtual("jump"),
+      attackMain:
+        Phaser.Input.Keyboard.JustDown(this.attackMain) ||
+        this.consumeVirtual("attackMain"),
       attackSkill1: Phaser.Input.Keyboard.JustDown(this.attackSkill1),
       attackSkill2: Phaser.Input.Keyboard.JustDown(this.attackSkill2),
       switchForm: Phaser.Input.Keyboard.JustDown(this.switchKey),
       evolve: Phaser.Input.Keyboard.JustDown(this.evolveKey),
     };
+  }
+
+  consumeVirtual(key) {
+    if (this.virtual[key]) {
+      this.virtual[key] = false;
+      return true;
+    }
+    return false;
   }
 }

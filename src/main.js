@@ -8,8 +8,8 @@ const config = {
   title: "Overlord Rising",
   description: "",
   parent: "game-container",
-  // width: 960,
-  // height: 544,
+  width: 960, //640,
+  height: 544, //360,
   backgroundColor: "#1e1e1e",
   pixelArt: true,
   scene: [Preload, CharacterSelect, Start, UIScene],
@@ -25,8 +25,8 @@ const config = {
   scale: {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
-    width: 960,
-    height: 544,
+    // width: 960,
+    // height: 544,
   },
 };
 
