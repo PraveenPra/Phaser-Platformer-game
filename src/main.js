@@ -2,6 +2,7 @@ import { Start } from "./scenes/Start.js";
 import { Preload } from "./scenes/Preload.js";
 import { CharacterSelect } from "./scenes/CharacterSelect.js";
 import { UIScene } from "/src/ui/UIScene.js";
+import { DevCalibrationScene } from "./scenes/DevCalibrationScene.js";
 
 const config = {
   type: Phaser.AUTO,
@@ -12,13 +13,13 @@ const config = {
   height: 544, //360,
   backgroundColor: "#1e1e1e",
   pixelArt: true,
-  scene: [Preload, CharacterSelect, Start, UIScene],
+  scene: [Preload, CharacterSelect, Start, UIScene, DevCalibrationScene],
   physics: {
     default: "arcade",
     arcade: {
       gravity: { y: 900 },
-      debug: false,
-      debugShowBody: false,
+      debug: true,
+      debugShowBody: true,
       debugShowVelocity: false,
     },
   },
