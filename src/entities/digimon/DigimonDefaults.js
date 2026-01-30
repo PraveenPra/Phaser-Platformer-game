@@ -1,9 +1,9 @@
 export const DIGIMON_DEFAULTS = {
   body: {
-    width: 18,
-    height: 24,
-    offsetX: -9,
-    offsetY: -12,
+    width: 11,
+    height: 14,
+    offsetX: -6,
+    offsetY: -4,
     gravityY: 900,
   },
 

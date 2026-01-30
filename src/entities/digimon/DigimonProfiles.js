@@ -67,6 +67,13 @@ export const DIGIMON_PROFILES = {
   },
 
   gabumon: {
+    body: {
+      width: 11,
+      height: 14,
+      offsetX: -3,
+      offsetY: -4,
+      gravityY: 900,
+    },
     move: {
       speed: 90,
     },
@@ -208,6 +215,13 @@ export const DIGIMON_PROFILES = {
   },
 
   patamon: {
+    body: {
+      width: 15,
+      height: 14,
+      offsetX: -4,
+      offsetY: -2,
+      gravityY: 900,
+    },
     movement: {
       mode: "multi-domain",
       domains: ["ground", "air"],
@@ -353,6 +367,13 @@ export const DIGIMON_PROFILES = {
   },
 
   magnamon: {
+    body: {
+      width: 11,
+      height: 18,
+      offsetX: -5,
+      offsetY: -4,
+      gravityY: 900,
+    },
     move: {
       speed: 180,
     },
