@@ -8,6 +8,7 @@ export class DevCalibrationScene extends Phaser.Scene {
     super("DevCalibrationScene");
     this.frameCursor = 0;
     this.currentAnimKey = null;
+    this.editStep = 1; // base step size
   }
 
   create() {
@@ -153,6 +154,35 @@ export class DevCalibrationScene extends Phaser.Scene {
       this.playAnim("attack-E");
     });
 
+    this.input.keyboard.on("keydown", (e) => {
+      if (!e.altKey) return; // 🔑 ALT is mandatory for editing
+
+      const b = this.editBody;
+      const step = e.ctrlKey || e.metaKey ? 1 : this.editStep;
+
+      // ── OFFSET EDIT ─────────────────────────
+      if (!e.shiftKey) {
+        if (e.key === "ArrowLeft") b.offsetX -= step;
+        if (e.key === "ArrowRight") b.offsetX += step;
+        if (e.key === "ArrowUp") b.offsetY -= step;
+        if (e.key === "ArrowDown") b.offsetY += step;
+      }
+
+      // ── SIZE EDIT ───────────────────────────
+      if (e.shiftKey) {
+        if (e.key === "ArrowLeft") b.width = Math.max(2, b.width - step);
+        if (e.key === "ArrowRight") b.width += step;
+        if (e.key === "ArrowUp") b.height = Math.max(2, b.height - step);
+        if (e.key === "ArrowDown") b.height += step;
+      }
+
+      // ── SAVE PROFILE ────────────────────────
+      if (e.key === "Enter") {
+        console.log("✅ BODY PROFILE SAVE:");
+        console.log(JSON.stringify(this.character.profile.body, null, 2));
+      }
+    });
+
     // ─────────────────────────────────────────────
     // Debug text (profile values)
     // ─────────────────────────────────────────────
@@ -285,6 +315,14 @@ export class DevCalibrationScene extends Phaser.Scene {
     const profileBody = this.character.profile.body || {};
 
     this.debugText.setText([
+      `EDIT MODE:`,
+      ` Arrows      → move body`,
+      ` Shift+Arrows→ resize body`,
+      ` Ctrl        → fine adjust`,
+      ` Enter       → log profile`,
+      ` G           → toggle grid`,
+      ``,
+
       `ANIM: ${this.currentAnimKey}`,
       `FRAME: ${this.frameCursor}`,
       ``,
