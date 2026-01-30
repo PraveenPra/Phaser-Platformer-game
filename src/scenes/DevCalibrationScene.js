@@ -6,11 +6,19 @@ import { Character } from "../entities/common/Character.js";
 export class DevCalibrationScene extends Phaser.Scene {
   constructor() {
     super("DevCalibrationScene");
+    this.frameCursor = 0;
+    this.currentAnimKey = null;
   }
 
   create() {
     // 🔴 VISUAL CONTEXT
-    this.cameras.main.setBackgroundColor("#2b2b2b");
+    this.cameras.main.setBackgroundColor("#ff9dad"); // light gray
+    // ─────────────────────────────────────────────
+    // UI CAMERA (screen space, no zoom)
+    // ─────────────────────────────────────────────
+    this.uiCam = this.cameras.add(0, 0, 960, 540);
+    this.uiCam.setScroll(0, 0);
+    this.uiCam.setZoom(1);
 
     // 🔴 HARD-CODE FIRST (remove uncertainty)
     const key = GameState.selectedDigimon ?? "agumon";
@@ -46,9 +54,259 @@ export class DevCalibrationScene extends Phaser.Scene {
     originDot.setDepth(1000);
 
     console.log("DevCalibrationScene ready:", key);
+
+    // ─────────────────────────────────────────────
+    // STEP 1: Freeze physics (stable calibration)
+    // ─────────────────────────────────────────────
+    this.character.body.setAllowGravity(false);
+    this.character.body.setVelocity(0, 0);
+    this.character.body.moves = false;
+    // ─────────────────────────────────────────────
+    // Editable BODY profile (source of truth)
+    // ─────────────────────────────────────────────
+    this.editBody = this.character.profile.body;
+
+    // safety defaults
+    this.editBody.width ??= 32;
+    this.editBody.height ??= 48;
+    this.editBody.offsetX ??= 0;
+    this.editBody.offsetY ??= 0;
+    this.applyBodyFromProfile();
+
+    // ─────────────────────────────────────────────
+    // STEP 2: Debug graphics (we draw everything ourselves)
+    // ─────────────────────────────────────────────
+    this.debugGfx = this.add.graphics();
+    this.debugGfx.setDepth(1000);
+    this.gridSize = 16;
+    this.showGrid = true;
+
+    // ─────────────────────────────────────────────
+    // STEP 3: Animation switching
+    // ─────────────────────────────────────────────
+    this.input.keyboard.on("keydown-A", () => {
+      this.playAnim("idle");
+    });
+
+    this.input.keyboard.on("keydown-S", () => {
+      this.playAnim("run");
+    });
+
+    this.input.keyboard.on("keydown-D", () => {
+      this.playAnim("attack");
+    });
+
+    // ─────────────────────────────────────────────
+    // STEP 5: Pause / resume animation
+    // ─────────────────────────────────────────────
+    this.input.keyboard.on("keydown-SPACE", () => {
+      const sprite = this.character.visual.sprite;
+
+      if (sprite.anims.isPaused) {
+        sprite.anims.resume();
+      } else {
+        sprite.anims.pause();
+      }
+    });
+
+    // ─────────────────────────────────────────────
+    // STEP 6: Frame stepping
+    // ─────────────────────────────────────────────
+    this.input.keyboard.on("keydown-RIGHT", () => {
+      this.stepFrame(1);
+    });
+
+    this.input.keyboard.on("keydown-LEFT", () => {
+      this.stepFrame(-1);
+    });
+
+    // ─────────────────────────────────────────────
+    // Attack list from profile
+    // ─────────────────────────────────────────────
+    this.attackKeys = Object.keys(this.character.profile.attacks || {});
+    this.attackIndex = 0;
+
+    // ─────────────────────────────────────────────
+    // Cycle attacks
+    // ─────────────────────────────────────────────
+    this.input.keyboard.on("keydown-D", () => {
+      if (this.attackKeys.length === 0) return;
+
+      this.attackIndex = (this.attackIndex + 1) % this.attackKeys.length;
+
+      const atkKey = this.attackKeys[this.attackIndex];
+      this.playAnim(`attack-${atkKey}`);
+    });
+
+    // ─────────────────────────────────────────────
+    // Debug text (profile values)
+    // ─────────────────────────────────────────────
+    this.debugText = this.add
+      .text(10, 10, "", {
+        fontFamily: "monospace",
+        fontSize: "14px",
+        color: "#000000",
+        backgroundColor: "#ffffff",
+        padding: { x: 6, y: 4 },
+      })
+      .setScrollFactor(0) // 🔑 critical
+      .setDepth(10000); // 🔑 above everything
+
+    this.gridText = this.add
+      .text(0, 0, "", {
+        fontFamily: "monospace",
+        fontSize: "10px",
+        color: "#000000",
+      })
+      .setDepth(999)
+      .setAlpha(0.6);
+
+    this.debugText = this.add.text(10, 10, "", {
+      fontFamily: "monospace",
+      fontSize: "14px",
+      color: "#000000",
+      backgroundColor: "#ffffff",
+      padding: { x: 6, y: 4 },
+    });
+
+    this.debugText.setDepth(10000);
+
+    // 🔑 THIS IS THE KEY LINE
+    this.cameras.main.ignore(this.debugText);
+    this.uiCam.ignore(this.character);
+    this.uiCam.ignore(this.debugGfx);
+
+    const test = this.add.text(300, 200, "DEBUG TEXT OK", {
+      fontSize: "24px",
+      color: "#ff0000",
+      backgroundColor: "#ffffff",
+    });
+
+    test.setDepth(99999);
+    this.cameras.main.ignore(test);
+  }
+  stepFrame(dir) {
+    if (!this.currentAnimKey) return;
+
+    const sprite = this.character.visual.sprite;
+    const anim = this.anims.get(this.currentAnimKey);
+    if (!anim) return;
+
+    const frames = anim.frames;
+
+    this.frameCursor += dir;
+
+    if (this.frameCursor < 0) {
+      this.frameCursor = frames.length - 1;
+    }
+    if (this.frameCursor >= frames.length) {
+      this.frameCursor = 0;
+    }
+
+    sprite.anims.pause();
+    sprite.setFrame(frames[this.frameCursor].frame.name);
+  }
+
+  playAnim(animKey) {
+    const sprite = this.character.visual.sprite;
+    const fullKey = `${this.character.key}_${animKey}`;
+
+    const anim = this.anims.get(fullKey);
+    if (!anim) {
+      console.warn("Animation not found:", fullKey);
+      return;
+    }
+
+    this.currentAnimKey = fullKey;
+    this.frameCursor = 0;
+
+    sprite.anims.play(fullKey, true);
+  }
+  applyBodyFromProfile() {
+    const body = this.character.body;
+    const b = this.editBody;
+
+    body.setSize(b.width, b.height);
+    body.setOffset(b.offsetX, b.offsetY);
   }
 
   update(_, dt) {
     this.character.update(dt);
+    this.applyBodyFromProfile();
+
+    // ─────────────────────────────────────────────
+    // STEP 8: Draw calibration visuals
+    // ─────────────────────────────────────────────
+    this.debugGfx.clear();
+
+    // Physics body
+    const body = this.character.body;
+    this.debugGfx.lineStyle(2, 0x00ff00);
+    this.debugGfx.strokeRect(body.x, body.y, body.width, body.height);
+
+    // Sprite origin (pivot)
+    const sprite = this.character.visual.sprite;
+    const m = sprite.getWorldTransformMatrix();
+
+    if (this.showGrid) {
+      const cam = this.cameras.main;
+      const g = this.debugGfx;
+
+      g.lineStyle(1, 0x000000, 0.15);
+
+      for (let x = 0; x < 960; x += this.gridSize) {
+        g.strokeLineShape(new Phaser.Geom.Line(x, 0, x, 540));
+      }
+
+      for (let y = 0; y < 540; y += this.gridSize) {
+        g.strokeLineShape(new Phaser.Geom.Line(0, y, 960, y));
+      }
+    }
+
+    this.debugGfx.lineStyle(1, 0xff0000);
+    this.debugGfx.strokeLineShape(
+      new Phaser.Geom.Line(m.tx - 6, m.ty, m.tx + 6, m.ty),
+    );
+    this.debugGfx.strokeLineShape(
+      new Phaser.Geom.Line(m.tx, m.ty - 6, m.tx, m.ty + 6),
+    );
+
+    // const body = this.character.body;
+    const profileBody = this.character.profile.body || {};
+
+    this.debugText.setText([
+      `ANIM: ${this.currentAnimKey}`,
+      `FRAME: ${this.frameCursor}`,
+      ``,
+      `BODY (PROFILE):`,
+      `  width : ${profileBody.width}`,
+      `  height: ${profileBody.height}`,
+      `  offsetX: ${profileBody.offsetX}`,
+      `  offsetY: ${profileBody.offsetY}`,
+      ``,
+      `BODY (LIVE):`,
+      `  x: ${body.x.toFixed(1)}`,
+      `  y: ${body.y.toFixed(1)}`,
+      `  w: ${body.width}`,
+      `  h: ${body.height}`,
+    ]);
+
+    if (profileBody.width) {
+      this.debugGfx.lineStyle(1, 0x0000ff, 0.8);
+      this.debugGfx.strokeRect(
+        body.x + profileBody.offsetX,
+        body.y + profileBody.offsetY,
+        profileBody.width,
+        profileBody.height,
+      );
+    }
+    this.gridText.setText(`Grid: ${this.gridSize}px\nOrigin: (0,0)`);
+
+    const anim = sprite.anims.currentAnim;
+    const frame = sprite.anims.currentFrame;
+
+    const animName = anim ? anim.key : "none";
+    const frameIndex = frame ? frame.index : "-";
+    const totalFrames = anim ? anim.frames.length : "-";
   }
 }

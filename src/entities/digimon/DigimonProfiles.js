@@ -473,4 +473,81 @@ export const DIGIMON_PROFILES = {
       next: "seraphimon",
     },
   },
+
+  imperialdramon: {
+    body: {
+      width: 18,
+      height: 44,
+      offsetX: -9,
+      offsetY: 1,
+      gravityY: 900,
+    },
+
+    movement: {
+      mode: "multi-domain",
+      domains: ["ground", "air"],
+      default: "ground",
+    },
+    // visual: {
+    //   originX: 0.5,
+    //   originY: 1,
+    //   yOffset: -4,
+    //   anims: {
+    //     "attack-C": -4,
+    //   },
+    // },
+
+    attacks: {
+      main: {
+        type: "projectile",
+        anim: "attack-A",
+        damage: 18,
+        hitStop: 50, // 👈 light hit
+        impactVFX: "impact-hit",
+        projectile: {
+          texture: "big-fireball",
+          speed: 260,
+          offsetX: 28,
+          offsetY: 0,
+          lifetime: 1200,
+        },
+        fireFrame: 5,
+        cooldown: 800,
+      },
+      skill1: {
+        type: "projectile",
+        anim: "attack-B",
+        damage: 18,
+        projectile: {
+          texture: "big-fireball",
+          speed: 260,
+          offsetX: 18,
+          offsetY: -10,
+          lifetime: 1200,
+        },
+        fireFrame: 9,
+        cooldown: 800,
+      },
+
+      skill2: {
+        type: "melee",
+        anim: "attack-C",
+        damage: 30,
+        fireFrames: [4], // active hit window
+        hitbox: {
+          width: 20,
+          height: 18,
+          offsetX: 16,
+          offsetY: -8,
+          duration: 80, // per-frame lifetime
+          // duration: 320,
+        },
+        cooldown: 1500,
+      },
+    },
+    evolution: {
+      prev: null,
+      next: "greymon",
+    },
+  },
 };
