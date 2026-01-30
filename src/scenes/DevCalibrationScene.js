@@ -9,6 +9,7 @@ export class DevCalibrationScene extends Phaser.Scene {
     this.frameCursor = 0;
     this.currentAnimKey = null;
     this.editStep = 1; // base step size
+    this.currentAttackKey = null;
   }
 
   create() {
@@ -133,24 +134,41 @@ export class DevCalibrationScene extends Phaser.Scene {
     this.attackKeys = Object.keys(this.character.profile.attacks || {});
     this.attackIndex = 0;
 
+    const atk = this.character.profile.attacks[this.currentAttackKey];
+
+    if (atk?.type === "projectile") {
+      drawMuzzle(atk.projectile);
+    }
+
+    if (atk?.type === "melee") {
+      drawHitbox(atk.hitbox);
+    }
+
     // ─────────────────────────────────────────────
     // Cycle attacks
     // ─────────────────────────────────────────────
 
     this.input.keyboard.on("keydown-Z", () => {
+      this.currentAttackKey = "main";
       this.playAnim("attack-A");
     });
 
     this.input.keyboard.on("keydown-X", () => {
+      this.currentAttackKey = "skill1";
       this.playAnim("attack-B");
     });
+
     this.input.keyboard.on("keydown-C", () => {
+      this.currentAttackKey = "skill2";
       this.playAnim("attack-C");
     });
+
     this.input.keyboard.on("keydown-V", () => {
+      this.currentAttackKey = "skill3";
       this.playAnim("attack-D");
     });
     this.input.keyboard.on("keydown-B", () => {
+      this.currentAttackKey = "skill4";
       this.playAnim("attack-E");
     });
 
@@ -180,6 +198,49 @@ export class DevCalibrationScene extends Phaser.Scene {
       if (e.key === "Enter") {
         console.log("✅ BODY PROFILE SAVE:");
         console.log(JSON.stringify(this.character.profile.body, null, 2));
+      }
+    });
+
+    this.input.keyboard.on("keydown", (e) => {
+      if (!e.ctrlKey) return;
+      if (!this.currentAttackKey) return;
+
+      const atk = this.character.profile.attacks[this.currentAttackKey];
+      if (!atk) return;
+
+      const step = e.shiftKey ? this.editStep : this.editStep;
+
+      // ───────────────────────────────
+      // PROJECTILE → MUZZLE EDIT
+      // ───────────────────────────────
+      if (atk.type === "projectile" && atk.projectile) {
+        const p = atk.projectile;
+
+        if (!e.shiftKey) {
+          if (e.key === "ArrowLeft") p.offsetX -= step;
+          if (e.key === "ArrowRight") p.offsetX += step;
+          if (e.key === "ArrowUp") p.offsetY -= step;
+          if (e.key === "ArrowDown") p.offsetY += step;
+        }
+      }
+
+      // ───────────────────────────────
+      // MELEE → HITBOX EDIT
+      // ───────────────────────────────
+      if (atk.type === "melee" && atk.hitbox) {
+        const h = atk.hitbox;
+
+        if (!e.shiftKey) {
+          if (e.key === "ArrowLeft") h.offsetX -= step;
+          if (e.key === "ArrowRight") h.offsetX += step;
+          if (e.key === "ArrowUp") h.offsetY -= step;
+          if (e.key === "ArrowDown") h.offsetY += step;
+        } else {
+          if (e.key === "ArrowLeft") h.width = Math.max(2, h.width - step);
+          if (e.key === "ArrowRight") h.width += step;
+          if (e.key === "ArrowUp") h.height = Math.max(2, h.height - step);
+          if (e.key === "ArrowDown") h.height += step;
+        }
       }
     });
 
@@ -279,6 +340,25 @@ export class DevCalibrationScene extends Phaser.Scene {
     // ─────────────────────────────────────────────
     this.debugGfx.clear();
 
+    const atk =
+      this.currentAttackKey &&
+      this.character.profile.attacks[this.currentAttackKey];
+
+    if (atk?.type === "projectile") {
+      this.drawMuzzle(atk.projectile);
+    }
+
+    if (atk?.type === "melee") {
+      const fireFrames = (atk.fireFrames || []).map((f) => f - 1);
+
+      const sprite = this.character.visual.sprite;
+      const frameIndex = sprite.anims.currentFrame?.index;
+
+      const isActive = fireFrames.includes(frameIndex);
+
+      this.drawHitbox(atk.hitbox, isActive);
+    }
+
     // Physics body
     const body = this.character.body;
     this.debugGfx.lineStyle(2, 0x00ff00);
@@ -337,6 +417,13 @@ export class DevCalibrationScene extends Phaser.Scene {
       `  y: ${body.y.toFixed(1)}`,
       `  w: ${body.width}`,
       `  h: ${body.height}`,
+      "",
+      "EDIT MODE:",
+      "CTRL + Arrows        → move muzzle / hitbox",
+      "CTRL + SHIFT + Arrows→ resize hitbox",
+      "",
+      `ATTACK: ${this.currentAttackKey ?? "none"}`,
+      `TYPE: ${atk?.type ?? "-"}`,
     ]);
 
     if (profileBody.width) {
@@ -356,5 +443,41 @@ export class DevCalibrationScene extends Phaser.Scene {
         this.debugGfx.fillText?.(`${x}`, x + 2, 12);
       }
     }
+  }
+
+  drawMuzzle(projectile) {
+    if (!projectile) return;
+
+    const sprite = this.character.visual.sprite;
+    const m = sprite.getWorldTransformMatrix();
+
+    const x = m.tx + projectile.offsetX * sprite.scaleX;
+    const y = m.ty + projectile.offsetY * sprite.scaleY;
+
+    // yellow dot = muzzle
+    this.debugGfx.fillStyle(0xffd400, 1);
+    this.debugGfx.fillCircle(x, y, 3);
+
+    // line from origin to muzzle
+    this.debugGfx.lineStyle(1, 0xffd400, 0.6);
+    this.debugGfx.strokeLineShape(new Phaser.Geom.Line(m.tx, m.ty, x, y));
+  }
+
+  drawHitbox(hitbox, isActive) {
+    if (!hitbox) return;
+
+    const sprite = this.character.visual.sprite;
+    const m = sprite.getWorldTransformMatrix();
+
+    const x = m.tx + hitbox.offsetX * sprite.scaleX - hitbox.width / 2;
+    const y = m.ty + hitbox.offsetY * sprite.scaleY - hitbox.height / 2;
+
+    this.debugGfx.lineStyle(
+      2,
+      isActive ? 0xff0000 : 0xaa0000,
+      isActive ? 1 : 0.4,
+    );
+
+    this.debugGfx.strokeRect(x, y, hitbox.width, hitbox.height);
   }
 }
