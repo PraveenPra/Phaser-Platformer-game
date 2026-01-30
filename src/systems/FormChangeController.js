@@ -2,6 +2,7 @@ import { resolveProfile } from "/src/entities/digimon/resolveProfile.js";
 import { GameState } from "/src/GameState.js";
 import { playFreezeFlash } from "/src/entities/common/vfx/FormTransitionFX.js";
 import { playDataScanFX } from "/src/entities/common/vfx/DigimonDataScanFX.js";
+import { AudioManager } from "/src/systems/AudioManager.js";
 
 /**
  * @param {object} params
@@ -67,10 +68,14 @@ export function changeForm({ scene, entity, targetKey, reason = "switch" }) {
   // =================================================
   // SFX
   // =================================================
-  scene.sound.play(reason === "evolution" ? "sfx-evolution" : "sfx-blast-hit", {
-    volume: reason === "evolution" ? 0.9 : 0.6,
-    rate: Phaser.Math.FloatBetween(0.95, 1.05),
-  });
+  AudioManager.playSFX(
+    scene,
+    reason === "evolution" ? "sfx-evolution" : "sfx-blast-hit",
+    {
+      volume: reason === "evolution" ? 0.9 : 0.6,
+      rate: Phaser.Math.FloatBetween(0.95, 1.05),
+    },
+  );
 
   const OUT_DURATION = reason === "evolution" ? 1500 : 900;
   const IN_DURATION = reason === "evolution" ? 1500 : 900;

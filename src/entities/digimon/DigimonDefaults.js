@@ -16,7 +16,7 @@ export const DIGIMON_DEFAULTS = {
 
   move: {
     speed: 200,
-    jump: 920,
+    jump: 620,
     accel: 1200, // how fast you speed up
     decel: 1600, // how fast you slow down
     airAccel: 800,
@@ -25,7 +25,7 @@ export const DIGIMON_DEFAULTS = {
   },
 
   combat: {
-    maxHp: 100,
+    maxHp: 30,
   },
 
   movement: {

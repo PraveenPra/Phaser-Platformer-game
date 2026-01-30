@@ -102,8 +102,7 @@ export class Character extends Phaser.GameObjects.Container {
     if (this.type === "player") {
       const stats = GameState.playerStats;
 
-      stats.hp -= amount;
-      stats.hp = Math.max(0, stats.hp);
+      stats.changeHp(-amount); // ✅ will update HUD automatically
 
       doHitFlash(this.visual.sprite);
 

@@ -68,7 +68,7 @@ export const DIGIMON_PROFILES = {
 
   gabumon: {
     move: {
-      speed: 80,
+      speed: 90,
     },
 
     visual: {
@@ -84,7 +84,7 @@ export const DIGIMON_PROFILES = {
       main: {
         type: "projectile",
         anim: "attack-A",
-        damage: 5,
+        damage: 12,
         hitStop: 50, // 👈 light hit
         impactVFX: "impact-hit",
         projectile: {
@@ -137,7 +137,7 @@ export const DIGIMON_PROFILES = {
 
   chivmon: {
     move: {
-      speed: 80,
+      speed: 100,
     },
 
     visual: {
@@ -163,7 +163,7 @@ export const DIGIMON_PROFILES = {
           duration: 80, // per-frame lifetime
           // duration: 320,//ms
         },
-        cooldown: 300,
+        cooldown: 500,
       },
       skill1: {
         type: "projectile",
@@ -195,6 +195,10 @@ export const DIGIMON_PROFILES = {
         },
         cooldown: 1500,
       },
+    },
+
+    combat: {
+      maxHp: 40,
     },
 
     evolution: {

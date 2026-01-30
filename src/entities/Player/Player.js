@@ -7,13 +7,6 @@ import { GameState } from "/src/GameState.js";
 export class Player extends Character {
   constructor(scene, x, y, textureKey) {
     const profile = resolveProfile(textureKey);
-    // let movemt = null;
-
-    // if (profile.movement?.mode == "air") {
-    //   movemt = new AirMovement(this);
-    // } else {
-    //   movemt = new GroundMovement(this);
-    // }
 
     super(scene, x, y, textureKey, profile, "idle");
 

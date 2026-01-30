@@ -1,4 +1,6 @@
 import { startWingFlap, stopWingFlap } from "/src/utils/StateMachineUtils.js";
+import { AudioManager } from "/src/systems/AudioManager.js";
+import { GameState } from "/src/GameState.js";
 
 function handleAttackInputs(e) {
   if (e.isDead || e.isAttacking) return false;
@@ -282,6 +284,7 @@ export const UnifiedStates = {
       body.setAcceleration(0, 0);
       body.setDrag(1000, 1000);
 
+      AudioManager.playSFX(e.scene, "sfx-hurt", { volume: 0.9 });
       e.visual.play(`${e.key}_take-hit`);
 
       const baseStun = 300;
@@ -317,22 +320,47 @@ export const UnifiedStates = {
       e.isInvincible = true;
 
       const body = e.bodyLayer.body;
-
       body.setVelocity(0, 0);
       body.setAcceleration(0, 0);
       body.setAllowGravity(false);
       body.moves = false;
 
-      if (e.healthBar) {
-        e.healthBar.destroy();
+      if (e.healthBar) e.healthBar.destroy();
+
+      // Only play gameover SFX for the player
+      let sfx = null;
+      if (e.type === "player" && GameState.audio.sfxEnabled) {
+        sfx = e.scene.sound.add("sfx-gameover", {
+          volume: 0.9,
+        });
+        sfx.play();
       }
 
       const animKey = `${e.key}_defeated`;
       e.visual.play(animKey);
 
+      let animDone = false;
+      let sfxDone = !sfx; // if no SFX, treat as already done
+
+      const tryFinishDeath = () => {
+        if (animDone && sfxDone) {
+          e.onDeathAnimationComplete?.();
+        }
+      };
+
+      // Animation complete
       e.visual.onAnimComplete(animKey, () => {
-        e.onDeathAnimationComplete?.();
+        animDone = true;
+        tryFinishDeath();
       });
+
+      // SFX complete
+      if (sfx) {
+        sfx.once("complete", () => {
+          sfxDone = true;
+          tryFinishDeath();
+        });
+      }
 
       // 💣 cleanup hitboxes
       if (e._activeHitboxes) {

@@ -1,8 +1,6 @@
 import { createAnimations } from "../systems/AnimationFactory.js";
 import { GameState } from "../GameState.js";
 import { Player } from "../entities/Player/Player.js";
-import { PlayerInput } from "../entities/Player/PlayerInput.js";
-import { MobileControls } from "../entities/Player/MobileControls.js";
 import { Enemy } from "../entities/enemy/Enemy.js";
 import { PlayerHealthUI } from "../ui/PlayerHealthUI.js";
 import { EnemySpawnManager } from "../systems/EnemySpawnManager.js";
@@ -20,7 +18,9 @@ export class Start extends Phaser.Scene {
     // =================================================
     // SCENE CONTROLS
     // =================================================
-
+    if (this.scale.lockOrientation) {
+      this.scale.lockOrientation("landscape");
+    }
     this.input.addPointer(2);
 
     this.controls = new SceneControls(this, {
@@ -56,12 +56,9 @@ export class Start extends Phaser.Scene {
     );
 
     // Camera bounds
-    this.cameras.main.setBounds(
-      0,
-      0,
-      this.map.widthInPixels,
-      this.map.heightInPixels,
-    );
+    this.cameras.main
+      .setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels)
+      .setZoom(1);
 
     // =================================================
     // LEVEL GOAL  - Reach to complete level
@@ -266,10 +263,6 @@ export class Start extends Phaser.Scene {
     // INTRO NARRATION
     // =================================================
     this.showIntroNarration();
-
-    // this.playerInput = new PlayerInput(this); // keyboard + virtual
-    // this.mobileControls = new MobileControls(this, this.player.inputHandler);
-    this.createMobileControls();
   }
 
   update(time, delta) {
@@ -471,82 +464,5 @@ export class Start extends Phaser.Scene {
     this.time.delayedCall(800, () => {
       player.isInvulnerable = false;
     });
-  }
-
-  createMobileControls() {
-    const size = 64;
-    // example inside your scene's create()
-    const leftBtn = this.add
-      .sprite(
-        50,
-        this.cameras.main.height - 50,
-        "mobile-buttons",
-        "arrow-left-button",
-      )
-      .setInteractive()
-      .setScrollFactor(0)
-      .setDepth(1000)
-      .setOrigin(0.5)
-      .setDisplaySize(size, size);
-
-    const rightBtn = this.add
-      .sprite(
-        150,
-        this.cameras.main.height - 50,
-        "mobile-buttons",
-        "arrow-right-button",
-      )
-      .setInteractive()
-      .setScrollFactor(0)
-      .setDepth(1000)
-      .setOrigin(0.5)
-      .setDisplaySize(size, size);
-
-    const jumpBtn = this.add
-      .sprite(
-        this.cameras.main.width - 150,
-        this.cameras.main.height - 50,
-        "mobile-buttons",
-        "arrow-up-button",
-      )
-      .setInteractive()
-      .setScrollFactor(0)
-      .setDepth(1000)
-      .setOrigin(0.5)
-      .setDisplaySize(size, size);
-
-    const attackBtn = this.add
-      .sprite(
-        this.cameras.main.width - 50,
-        this.cameras.main.height - 50,
-        "mobile-buttons",
-        "button-A",
-      )
-      .setInteractive()
-      .setScrollFactor(0)
-      .setDepth(1000)
-      .setOrigin(0.5)
-      .setDisplaySize(size, size);
-
-    // ===== Link to virtual state =====
-    const linkButton = (btn, key) => {
-      btn.on("pointerdown", () => {
-        this.player.inputHandler.virtual[key] = true;
-        console.log(`Pointer DOWN ${key}`, this.player.inputHandler.virtual);
-      });
-      btn.on("pointerup", () => {
-        this.player.inputHandler.virtual[key] = false;
-        console.log(`Pointer UP ${key}`, this.player.inputHandler.virtual);
-      });
-      btn.on("pointerout", () => {
-        this.player.inputHandler.virtual[key] = false;
-        console.log(`Pointer OUT ${key}`, this.player.inputHandler.virtual);
-      });
-    };
-
-    linkButton(leftBtn, "left");
-    linkButton(rightBtn, "right");
-    linkButton(jumpBtn, "jump");
-    linkButton(attackBtn, "attackMain");
   }
 }
