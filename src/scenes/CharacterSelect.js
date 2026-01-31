@@ -15,6 +15,7 @@ export class CharacterSelect extends Phaser.Scene {
       "magnamon",
       "patamon",
       "birdramon",
+      "imperialdramon",
     ];
 
     const sprites = [];
@@ -54,6 +55,8 @@ export class CharacterSelect extends Phaser.Scene {
 
   select(key) {
     GameState.selectedDigimon = key;
+
     this.scene.start("DevCalibrationScene"); // temporary
+    // this.scene.start("Start");
   }
 }

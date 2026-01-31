@@ -13,11 +13,17 @@ export class PlayerInput {
     this.attackSkill2 = scene.input.keyboard.addKey(
       Phaser.Input.Keyboard.KeyCodes.C,
     );
-    this.switchKey = scene.input.keyboard.addKey(
+    this.attackSkill3 = scene.input.keyboard.addKey(
       Phaser.Input.Keyboard.KeyCodes.V,
     );
-    this.evolveKey = scene.input.keyboard.addKey(
+    this.attackSkill4 = scene.input.keyboard.addKey(
       Phaser.Input.Keyboard.KeyCodes.B,
+    );
+    this.switchKey = scene.input.keyboard.addKey(
+      Phaser.Input.Keyboard.KeyCodes.N,
+    );
+    this.evolveKey = scene.input.keyboard.addKey(
+      Phaser.Input.Keyboard.KeyCodes.M,
     );
 
     // mobile virtual buttons
@@ -45,6 +51,8 @@ export class PlayerInput {
         this.consumeVirtual("attackMain"),
       attackSkill1: Phaser.Input.Keyboard.JustDown(this.attackSkill1),
       attackSkill2: Phaser.Input.Keyboard.JustDown(this.attackSkill2),
+      attackSkill3: Phaser.Input.Keyboard.JustDown(this.attackSkill3),
+      attackSkill4: Phaser.Input.Keyboard.JustDown(this.attackSkill4),
       switchForm: Phaser.Input.Keyboard.JustDown(this.switchKey),
       evolve: Phaser.Input.Keyboard.JustDown(this.evolveKey),
     };
