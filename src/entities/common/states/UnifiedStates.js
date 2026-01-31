@@ -23,6 +23,18 @@ function handleAttackInputs(e) {
     return true;
   }
 
+  if (e.input?.attackSkill3) {
+    e.requestedAttack = "skill3";
+    e.state.setState("attack");
+    return true;
+  }
+
+  if (e.input?.attackSkill4) {
+    e.requestedAttack = "skill4";
+    e.state.setState("attack");
+    return true;
+  }
+
   return false;
 }
 

@@ -1,62 +1,98 @@
 export const DIGIMON_PROFILES = {
   agumon: {
-    visual: {
-      originX: 0.5,
-      originY: 1,
-      yOffset: -2,
-      anims: {
-        "attack-A": -6,
-        "attack-B": -3,
-        "attack-C": -5,
-      },
+    body: {
+      width: 11,
+      height: 14,
+      offsetX: -6,
+      offsetY: 16,
+      gravityY: 900,
     },
+
+    // visual: {
+    //   originX: 0.5,
+    //   originY: 1,
+    //   yOffset: -2,
+    //   anims: {
+    //     "attack-A": -6,
+    //     "attack-B": -3,
+    //     "attack-C": -5,
+    //   },
+    // },
 
     attacks: {
       main: {
         type: "melee",
         anim: "attack-A",
         damage: 10,
-        fireFrames: [3, 5], // active hit window
+        fireFrames: [4, 7], // active hit window
         hitbox: {
-          width: 20,
-          height: 18,
-          offsetX: 16,
-          offsetY: -8,
+          width: 9,
+          height: 15,
+          offsetX: 19,
+          offsetY: 19,
           // duration: 320,//ms
           duration: 80, // per-frame lifetime
         },
         cooldown: 300,
       },
       skill1: {
-        type: "projectile",
+        type: "melee",
         anim: "attack-B",
+        damage: 30,
+        fireFrames: [5], // active hit window
+        hitbox: {
+          width: 11,
+          height: 15,
+          offsetX: 11,
+          offsetY: 24,
+          // duration: 320,
+          // duration: 80, // per-frame lifetime
+        },
+        cooldown: 1500,
+      },
+      skill2: {
+        type: "projectile",
+        anim: "attack-C",
         damage: 18,
         projectile: {
           texture: "fireball",
           anim: "fireball_fly",
           speed: 220,
-          offsetX: 20,
-          offsetY: -3,
+          offsetX: 26,
+          offsetY: 20,
           lifetime: 900,
         },
-        fireFrame: 11,
+        fireFrame: 5,
         cooldown: 800,
       },
-
-      skill2: {
+      skill3: {
         type: "melee",
-        anim: "attack-C",
-        damage: 30,
-        fireFrames: [1, 2, 3, 7], // active hit window
+        anim: "attack-D",
+        damage: 10,
+        fireFrames: [3, 4, 5, 6], // active hit window
         hitbox: {
-          width: 20,
-          height: 18,
-          offsetX: 16,
-          offsetY: -8,
+          width: 33,
+          height: 30,
+          offsetX: -1,
+          offsetY: 13,
           // duration: 320,
           // duration: 80, // per-frame lifetime
         },
         cooldown: 1500,
+      },
+      skill4: {
+        type: "projectile",
+        anim: "attack-E",
+        damage: 18,
+        projectile: {
+          texture: "big-fireball",
+          speed: 220,
+          offsetX: 15,
+          offsetY: -10,
+          lifetime: 900,
+        },
+        fireFrame: 7,
+        cooldown: 800,
       },
     },
 
@@ -167,7 +203,7 @@ export const DIGIMON_PROFILES = {
       main: {
         type: "melee",
         anim: "attack-A",
-        damage: 6,
+        damage: 2,
         fireFrames: [3, 5], // active hit window
         hitbox: {
           width: 11,
@@ -179,22 +215,8 @@ export const DIGIMON_PROFILES = {
         },
         cooldown: 500,
       },
-      skill1: {
-        type: "projectile",
-        anim: "attack-B",
-        damage: 18,
-        projectile: {
-          texture: "big-fireball",
-          speed: 260,
-          offsetX: 18,
-          offsetY: -10,
-          lifetime: 1200,
-        },
-        fireFrame: 4,
-        cooldown: 800,
-      },
 
-      skill2: {
+      skill1: {
         type: "melee",
         anim: "attack-C",
         damage: 10,

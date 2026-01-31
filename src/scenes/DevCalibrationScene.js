@@ -45,7 +45,7 @@ export class DevCalibrationScene extends Phaser.Scene {
 
     // 🔴 VERY IMPORTANT: make sure body exists
     this.character.body.setCollideWorldBounds(true);
-
+    // this.character.setScale(2);
     // 🔴 CAMERA
     this.cameras.main.centerOn(480, 360);
 

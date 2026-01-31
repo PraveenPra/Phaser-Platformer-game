@@ -19,7 +19,7 @@ const config = {
     arcade: {
       gravity: { y: 900 },
       debug: true,
-      debugShowBody: false,
+      debugShowBody: true,
       debugShowVelocity: false,
     },
   },
