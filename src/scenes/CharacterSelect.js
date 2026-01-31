@@ -56,7 +56,7 @@ export class CharacterSelect extends Phaser.Scene {
   select(key) {
     GameState.selectedDigimon = key;
 
-    this.scene.start("DevCalibrationScene"); // temporary
-    // this.scene.start("Start");
+    // this.scene.start("DevCalibrationScene"); // temporary
+    this.scene.start("Start");
   }
 }

@@ -120,6 +120,25 @@ export class Start extends Phaser.Scene {
       repeat: 0,
     });
 
+    this.anims.create({
+      key: "sx-impact-hit",
+      frames: this.anims.generateFrameNumbers("sx-impact-hit", {
+        start: 2,
+        end: 4,
+      }),
+      frameRate: 24,
+      repeat: 0,
+    });
+
+    this.anims.create({
+      key: "vfx-fireblast",
+      frames: this.anims.generateFrameNumbers("vfx-fireblast", {
+        start: 2,
+        end: 5, //intentionally keeping it 1 frame short
+      }),
+      frameRate: 24,
+      repeat: 0,
+    });
     // =================================================
     // COLLECTIBLE + TRAP ANIMATIONS
     // =================================================

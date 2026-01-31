@@ -14,6 +14,10 @@ export class Player extends Character {
     this.isInvincible = false;
     this.isDead = false;
 
+    // not let others push enemy
+    this.bodyLayer.body.setImmovable(true);
+    this.bodyLayer.body.pushable = false;
+
     this.inputHandler = new PlayerInput(scene);
   }
 

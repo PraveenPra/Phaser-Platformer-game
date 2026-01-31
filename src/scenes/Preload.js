@@ -65,6 +65,7 @@ export class Preload extends Phaser.Scene {
     this.load.image("bg3", "assets/background_layer3.png");
     this.load.image("bg4", "assets/bg1.jpeg");
 
+    // VFX ----------------
     this.load.image("big-fireball", "assets/vfx/big-fireball.png");
 
     this.load.spritesheet("fireball", "assets/vfx/fireball-vfx.png", {
@@ -77,6 +78,19 @@ export class Preload extends Phaser.Scene {
       frameHeight: 32,
     });
 
+    this.load.spritesheet(
+      "sx-impact-hit",
+      "assets/vfx/small-fireball-impact.png",
+      {
+        frameWidth: 64,
+        frameHeight: 64,
+      },
+    );
+
+    this.load.spritesheet("vfx-fireblast", "assets/vfx/fireblast.png", {
+      frameWidth: 64,
+      frameHeight: 49,
+    });
     // COLLECTIBLES -------------
     this.load.atlas(
       "collectables",

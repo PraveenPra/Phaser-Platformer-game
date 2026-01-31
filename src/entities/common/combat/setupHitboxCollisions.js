@@ -30,9 +30,9 @@ export function setupHitboxCollisions(scene, hitbox, targets, options = {}) {
       volume: hb.owner.role === "player" ? 0.7 : 0.4,
       rate: Phaser.Math.FloatBetween(0.95, 1.05),
     });
-
+    console.warn("hitbox", hb);
     spawnImpactVFX(scene, target.x, target.y, {
-      type: hb.impactVFX || "default",
+      type: hb.impactVFX || "impact-hit",
       damage: hb.damage,
       sourceRole: hb.owner.role, // 🔑 THIS IS THE KEY
     });
