@@ -270,9 +270,9 @@ export const DIGIMON_PROFILES = {
       main: {
         type: "projectile",
         anim: "attack-A",
-        damage: 18,
+        damage: 12,
         hitStop: 50, // 👈 light hit
-        impactVFX: "impact-hit",
+        impactVFX: "vfx-explosion",
         projectile: {
           texture: "big-fireball",
           speed: 260,

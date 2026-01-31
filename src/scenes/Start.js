@@ -139,6 +139,16 @@ export class Start extends Phaser.Scene {
       frameRate: 24,
       repeat: 0,
     });
+
+    this.anims.create({
+      key: "vfx-explosion",
+      frames: this.anims.generateFrameNumbers("vfx-explosion", {
+        start: 0,
+        end: 5, //intentionally keeping it 1 frame short
+      }),
+      frameRate: 24,
+      repeat: 0,
+    });
     // =================================================
     // COLLECTIBLE + TRAP ANIMATIONS
     // =================================================

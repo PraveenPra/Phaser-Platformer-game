@@ -91,6 +91,11 @@ export class Preload extends Phaser.Scene {
       frameWidth: 64,
       frameHeight: 49,
     });
+
+    this.load.spritesheet("vfx-explosion", "assets/vfx/explosion.png", {
+      frameWidth: 53,
+      frameHeight: 47,
+    });
     // COLLECTIBLES -------------
     this.load.atlas(
       "collectables",
