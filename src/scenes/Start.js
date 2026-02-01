@@ -149,6 +149,16 @@ export class Start extends Phaser.Scene {
       frameRate: 24,
       repeat: 0,
     });
+
+    this.anims.create({
+      key: "vfx-windball",
+      frames: this.anims.generateFrameNumbers("vfx-windball", {
+        start: 0,
+        end: 4,
+      }),
+      frameRate: 24,
+      repeat: -1,
+    });
     // =================================================
     // COLLECTIBLE + TRAP ANIMATIONS
     // =================================================
@@ -294,7 +304,7 @@ export class Start extends Phaser.Scene {
     // =================================================
     // INTRO NARRATION
     // =================================================
-    this.showIntroNarration();
+    // this.showIntroNarration();
 
     // this.playerInput = new PlayerInput(this); // keyboard + virtual
     // this.mobileControls = new MobileControls(this, this.player.inputHandler);

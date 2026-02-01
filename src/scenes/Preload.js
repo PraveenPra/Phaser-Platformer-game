@@ -96,6 +96,11 @@ export class Preload extends Phaser.Scene {
       frameWidth: 53,
       frameHeight: 47,
     });
+
+    this.load.spritesheet("vfx-windball", "assets/vfx/windball.png", {
+      frameWidth: 96,
+      frameHeight: 96,
+    });
     // COLLECTIBLES -------------
     this.load.atlas(
       "collectables",

@@ -10,6 +10,10 @@ export function spawnProjectile(scene, owner, attack) {
     proj.texture,
   );
 
+  if (proj.scale !== undefined) {
+    p.setScale(proj.scale);
+  }
+
   p.body.allowGravity = false;
   p.setVelocityX(proj.speed * dir);
 

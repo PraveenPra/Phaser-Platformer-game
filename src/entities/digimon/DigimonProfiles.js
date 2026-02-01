@@ -87,6 +87,7 @@ export const DIGIMON_PROFILES = {
         damage: 18,
         projectile: {
           texture: "big-fireball",
+          // scale: 0.1,
           speed: 220,
           offsetX: 15,
           offsetY: -10,
@@ -106,9 +107,9 @@ export const DIGIMON_PROFILES = {
   gabumon: {
     body: {
       width: 11,
-      height: 14,
+      height: 21,
       offsetX: -3,
-      offsetY: -4,
+      offsetY: -9,
       gravityY: 900,
     },
     move: {
@@ -126,37 +127,21 @@ export const DIGIMON_PROFILES = {
 
     attacks: {
       main: {
-        type: "projectile",
-        anim: "attack-A",
-        damage: 12,
-        hitStop: 50, // 👈 light hit
-        impactVFX: "impact-hit",
-        projectile: {
-          texture: "big-fireball",
-          speed: 260,
-          offsetX: 18,
-          offsetY: -10,
-          lifetime: 1200,
+        type: "melee",
+        anim: "attack-B",
+        damage: 30,
+        fireFrames: [3, 4, 5], // active hit window
+        hitbox: {
+          width: 20,
+          height: 18,
+          offsetX: 16,
+          offsetY: -8,
+          duration: 80, // per-frame lifetime
+          // duration: 320,
         },
-        fireFrame: 4,
-        cooldown: 800,
+        cooldown: 1500,
       },
       skill1: {
-        type: "projectile",
-        anim: "attack-B",
-        damage: 18,
-        projectile: {
-          texture: "big-fireball",
-          speed: 260,
-          offsetX: 18,
-          offsetY: -10,
-          lifetime: 1200,
-        },
-        fireFrame: 4,
-        cooldown: 800,
-      },
-
-      skill2: {
         type: "melee",
         anim: "attack-C",
         damage: 30,
@@ -171,6 +156,20 @@ export const DIGIMON_PROFILES = {
         },
         cooldown: 1500,
       },
+    },
+    skill2: {
+      type: "projectile",
+      anim: "attack-B",
+      damage: 10,
+      projectile: {
+        texture: "vfx-windball",
+        speed: 260,
+        offsetX: 18,
+        offsetY: -10,
+        lifetime: 1200,
+      },
+      fireFrame: 4,
+      cooldown: 800,
     },
 
     evolution: {
@@ -270,17 +269,19 @@ export const DIGIMON_PROFILES = {
       main: {
         type: "projectile",
         anim: "attack-A",
-        damage: 12,
+        damage: 10,
         hitStop: 50, // 👈 light hit
         impactVFX: "vfx-explosion",
         projectile: {
-          texture: "big-fireball",
+          texture: "vfx-windball",
+          anim: "vfx-windball",
+          scale: 0.3,
           speed: 260,
-          offsetX: 28,
-          offsetY: 0,
+          offsetX: 25,
+          offsetY: 8,
           lifetime: 1200,
         },
-        fireFrame: 7,
+        fireFrame: 6,
         cooldown: 800,
       },
       skill1: {
