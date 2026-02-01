@@ -13,7 +13,7 @@ export class MobileControls {
         margin + size / 2,
         cam.height - margin - size / 2,
         "mobile-buttons",
-        "arrow-left-button",
+        "mb-left-button",
       )
       .setInteractive()
       .setScrollFactor(0)
@@ -26,7 +26,7 @@ export class MobileControls {
         margin + size * 1.5,
         cam.height - margin - size / 2,
         "mobile-buttons",
-        "arrow-right-button",
+        "mb-right-button",
       )
       .setInteractive()
       .setScrollFactor(0)
@@ -39,7 +39,7 @@ export class MobileControls {
         cam.width - margin - size / 2,
         cam.height - margin - size / 2,
         "mobile-buttons",
-        "arrow-up-button",
+        "mb-up-button",
       )
       .setInteractive()
       .setScrollFactor(0)

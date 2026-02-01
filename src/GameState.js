@@ -64,7 +64,7 @@ export const GameState = {
 
   // evolutions the player has unlocked
   unlockedEvolutions: new Set([
-    // "greymon",
+    "imperialdramon",
     "birdramon",
     "seraphimon",
     "patamon",
@@ -73,7 +73,7 @@ export const GameState = {
   audio: {
     musicEnabled: true,
     sfxEnabled: true,
-    musicVolume: 0.1,
+    musicVolume: 0.01,
     sfxVolume: 0.7,
   },
 };

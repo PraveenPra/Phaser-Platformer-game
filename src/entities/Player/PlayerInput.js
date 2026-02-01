@@ -32,6 +32,8 @@ export class PlayerInput {
       right: false,
       jump: false,
       attackMain: false,
+      attackSkill1: false,
+      attackSkill2: false,
     };
   }
 
@@ -49,8 +51,12 @@ export class PlayerInput {
       attackMain:
         Phaser.Input.Keyboard.JustDown(this.attackMain) ||
         this.consumeVirtual("attackMain"),
-      attackSkill1: Phaser.Input.Keyboard.JustDown(this.attackSkill1),
-      attackSkill2: Phaser.Input.Keyboard.JustDown(this.attackSkill2),
+      attackSkill1:
+        Phaser.Input.Keyboard.JustDown(this.attackSkill1) ||
+        this.consumeVirtual("attackSkill1"),
+      attackSkill2:
+        Phaser.Input.Keyboard.JustDown(this.attackSkill2) ||
+        this.consumeVirtual("attackSkill2"),
       attackSkill3: Phaser.Input.Keyboard.JustDown(this.attackSkill3),
       attackSkill4: Phaser.Input.Keyboard.JustDown(this.attackSkill4),
       switchForm: Phaser.Input.Keyboard.JustDown(this.switchKey),

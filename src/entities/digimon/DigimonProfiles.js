@@ -100,7 +100,7 @@ export const DIGIMON_PROFILES = {
 
     evolution: {
       prev: null,
-      next: "birdramon",
+      next: "imperialdramon",
     },
   },
 
@@ -247,8 +247,8 @@ export const DIGIMON_PROFILES = {
     body: {
       width: 15,
       height: 14,
-      offsetX: -4,
-      offsetY: -2,
+      offsetX: -6,
+      offsetY: 14,
       gravityY: 900,
     },
     movement: {
@@ -256,19 +256,53 @@ export const DIGIMON_PROFILES = {
       domains: ["ground", "air"],
       default: "ground",
     },
-    visual: {
-      originX: 0.5,
-      originY: 1,
-      yOffset: -4,
-      anims: {
-        "attack-C": -4,
-      },
-    },
+    // visual: {
+    //   originX: 0.5,
+    //   originY: 1,
+    //   yOffset: -4,
+    //   anims: {
+    //     "attack-C": -4,
+    //   },
+    // },
 
     attacks: {
       main: {
-        type: "projectile",
+        type: "melee",
         anim: "attack-A",
+        damage: 30,
+        fireFrames: [5, 9], // active hit window
+        hitbox: {
+          width: 20,
+          height: 11,
+          offsetX: 22,
+          offsetY: 23,
+          duration: 80, // per-frame lifetime
+          // duration: 320,
+        },
+        cooldown: 100,
+      },
+      skill1: {
+        type: "projectile",
+        anim: "attack-B",
+        damage: 10,
+        hitStop: 50, // 👈 light hit
+        impactVFX: "vfx-explosion",
+        projectile: {
+          texture: "vfx-windball",
+          anim: "vfx-windball",
+          scale: 0.3,
+          speed: 260,
+          offsetX: 19,
+          offsetY: 24,
+          lifetime: 1200,
+        },
+        fireFrame: 6,
+        cooldown: 800,
+      },
+
+      skill2: {
+        type: "projectile",
+        anim: "attack-C",
         damage: 10,
         hitStop: 50, // 👈 light hit
         impactVFX: "vfx-explosion",
@@ -278,41 +312,11 @@ export const DIGIMON_PROFILES = {
           scale: 0.3,
           speed: 260,
           offsetX: 25,
-          offsetY: 8,
+          offsetY: 20,
           lifetime: 1200,
         },
-        fireFrame: 6,
+        fireFrame: 4,
         cooldown: 800,
-      },
-      skill1: {
-        type: "projectile",
-        anim: "attack-A",
-        damage: 18,
-        projectile: {
-          texture: "big-fireball",
-          speed: 260,
-          offsetX: 18,
-          offsetY: -10,
-          lifetime: 1200,
-        },
-        fireFrame: 7,
-        cooldown: 800,
-      },
-
-      skill2: {
-        type: "melee",
-        anim: "attack-C",
-        damage: 30,
-        fireFrames: [3, 4, 5], // active hit window
-        hitbox: {
-          width: 20,
-          height: 18,
-          offsetX: 16,
-          offsetY: -8,
-          duration: 80, // per-frame lifetime
-          // duration: 320,
-        },
-        cooldown: 1500,
       },
     },
     evolution: {

@@ -259,6 +259,9 @@ export class Start extends Phaser.Scene {
       bg.setOrigin(0, 0).setScrollFactor(0).setScale(scale).setDepth(depth);
 
       bg.parallaxFactor = factor;
+
+      bg.setAlpha(0.6);
+
       return bg;
     };
 
@@ -520,7 +523,7 @@ export class Start extends Phaser.Scene {
         50,
         this.cameras.main.height - 50,
         "mobile-buttons",
-        "arrow-left-button",
+        "mb-left-button",
       )
       .setInteractive()
       .setScrollFactor(0)
@@ -533,7 +536,7 @@ export class Start extends Phaser.Scene {
         150,
         this.cameras.main.height - 50,
         "mobile-buttons",
-        "arrow-right-button",
+        "mb-right-button",
       )
       .setInteractive()
       .setScrollFactor(0)
@@ -546,7 +549,7 @@ export class Start extends Phaser.Scene {
         this.cameras.main.width - 150,
         this.cameras.main.height - 50,
         "mobile-buttons",
-        "arrow-up-button",
+        "mb-jump-button",
       )
       .setInteractive()
       .setScrollFactor(0)
@@ -559,7 +562,33 @@ export class Start extends Phaser.Scene {
         this.cameras.main.width - 50,
         this.cameras.main.height - 50,
         "mobile-buttons",
-        "button-A",
+        "mb-attack-main-button",
+      )
+      .setInteractive()
+      .setScrollFactor(0)
+      .setDepth(1000)
+      .setOrigin(0.5)
+      .setDisplaySize(size, size);
+
+    const attackSkill1Btn = this.add
+      .sprite(
+        this.cameras.main.width - 150,
+        this.cameras.main.height - 150,
+        "mobile-buttons",
+        "mb-attack-skill1",
+      )
+      .setInteractive()
+      .setScrollFactor(0)
+      .setDepth(1000)
+      .setOrigin(0.5)
+      .setDisplaySize(size, size);
+
+    const attackSkill2Btn = this.add
+      .sprite(
+        this.cameras.main.width - 50,
+        this.cameras.main.height - 150,
+        "mobile-buttons",
+        "mb-attack-skill2",
       )
       .setInteractive()
       .setScrollFactor(0)
@@ -587,5 +616,7 @@ export class Start extends Phaser.Scene {
     linkButton(rightBtn, "right");
     linkButton(jumpBtn, "jump");
     linkButton(attackBtn, "attackMain");
+    linkButton(attackSkill1Btn, "attackSkill1");
+    linkButton(attackSkill2Btn, "attackSkill2");
   }
 }
