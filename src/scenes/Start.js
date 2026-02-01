@@ -159,6 +159,16 @@ export class Start extends Phaser.Scene {
       frameRate: 24,
       repeat: -1,
     });
+
+    this.anims.create({
+      key: "vfx-leafball",
+      frames: this.anims.generateFrameNumbers("vfx-leafball", {
+        start: 0,
+        end: 2,
+      }),
+      frameRate: 24,
+      repeat: -1,
+    });
     // =================================================
     // COLLECTIBLE + TRAP ANIMATIONS
     // =================================================

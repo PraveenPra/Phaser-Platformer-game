@@ -60,6 +60,12 @@ export class Preload extends Phaser.Scene {
       "assets/digimons/Imperialdramon/Imperialdramon.json",
     );
 
+    this.load.atlas(
+      "ancientTroiamon",
+      "assets/digimons/AncientTroiamon/AncientTroiamon.png",
+      "assets/digimons/AncientTroiamon/AncientTroiamon.json",
+    );
+
     this.load.image("bg1", "assets/background_layer1.png");
     this.load.image("bg2", "assets/background_layer2.png");
     this.load.image("bg3", "assets/background_layer3.png");
@@ -100,6 +106,11 @@ export class Preload extends Phaser.Scene {
     this.load.spritesheet("vfx-windball", "assets/vfx/windball.png", {
       frameWidth: 96,
       frameHeight: 96,
+    });
+
+    this.load.spritesheet("vfx-leafball", "assets/vfx/leafball.png", {
+      frameWidth: 96,
+      frameHeight: 32,
     });
     // COLLECTIBLES -------------
     this.load.atlas(

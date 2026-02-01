@@ -606,4 +606,65 @@ export const DIGIMON_PROFILES = {
       next: "greymon",
     },
   },
+
+  ancientTroiamon: {
+    body: {
+      width: 31,
+      height: 39,
+      offsetX: -14,
+      offsetY: 23,
+      gravityY: 900,
+    },
+
+    // visual: {
+    //   originX: 0.5,
+    //   originY: 1,
+    //   yOffset: -2,
+    //   anims: {
+    //     "attack-A": -6,
+    //     "attack-B": -3,
+    //     "attack-C": -5,
+    //   },
+    // },
+
+    attacks: {
+      main: {
+        type: "projectile",
+        anim: "attack-A",
+        damage: 18,
+        impactVFX: "vfx-fireblast",
+        projectile: {
+          texture: "leafball",
+          anim: "vfx-leafball",
+          speed: 220,
+          offsetX: 26,
+          offsetY: 31,
+          lifetime: 1900,
+        },
+        fireFrame: 9,
+        cooldown: 800,
+      },
+      skill1: {
+        type: "projectile",
+        anim: "attack-B",
+        damage: 18,
+        impactVFX: "vfx-fireblast",
+        projectile: {
+          texture: "fireball",
+          anim: "fireball_fly",
+          speed: 220,
+          offsetX: 26,
+          offsetY: 20,
+          lifetime: 1900,
+        },
+        fireFrame: 6,
+        cooldown: 800,
+      },
+    },
+
+    evolution: {
+      prev: null,
+      next: "imperialdramon",
+    },
+  },
 };
