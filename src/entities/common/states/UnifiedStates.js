@@ -135,17 +135,28 @@ export const UnifiedStates = {
 
     update(e) {
       if (handleAttackInputs(e)) return;
+
       const body = e.bodyLayer.body;
 
-      // SECOND JUMP → takeoff to air
-      if (e.canAir && !body.onFloor() && e.input?.jump && e.jumpCount === 1) {
-        e.jumpCount = 2;
-        e.movement.switchDomain("air");
-        e.state.setState("airIdle");
-        return;
+      // 🟡 SECOND JUMP LOGIC
+      if (!body.onFloor() && e.input?.jump && e.jumpCount === 1) {
+        // 🟢 HYBRID: ground + fly → takeoff
+        if (e.canGround && e.canAir) {
+          e.jumpCount = 2;
+          e.movement.switchDomain("air");
+          e.state.setState("airIdle");
+          return;
+        }
+
+        // 🟢 GROUND-ONLY → DOUBLE JUMP
+        if (e.canGround && !e.canAir) {
+          e.jumpCount = 2;
+          e.movement.doubleJump(); // second impulse
+          return;
+        }
       }
 
-      // LAND → reset
+      // 🟢 LAND → reset
       if (body.onFloor()) {
         if (e.canGround && e.movement.switchDomain) {
           e.movement.switchDomain("ground");

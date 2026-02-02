@@ -34,6 +34,11 @@ export class GroundMovement {
     }
   }
 
+  doubleJump() {
+    const body = this.entity.bodyLayer.body;
+    body.setVelocityY(-this.entity.profile.move.jump);
+  }
+
   airControl(dir) {
     const body = this.entity.bodyLayer.body;
     body.setVelocityX(dir * this.speed);
