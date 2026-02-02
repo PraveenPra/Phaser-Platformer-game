@@ -252,7 +252,7 @@ export class Start extends Phaser.Scene {
     // PARALLAX BACKGROUNDS
     // =================================================
     const cam = this.cameras.main;
-    const baseW = 320;
+    const baseW = 960;
     const scale = Math.ceil(cam.width / baseW);
     this.bgScale = scale;
 
@@ -270,15 +270,15 @@ export class Start extends Phaser.Scene {
 
       bg.parallaxFactor = factor;
 
-      bg.setAlpha(0.6);
+      // bg.setAlpha(0.6);
 
       return bg;
     };
 
-    this.bgSky = createParallax("bg4", -50, 0.05);
-    this.bgMountains = createParallax("bg3", -40, 0.04);
-    this.bgForest = createParallax("bg2", -30, 0.02);
-    this.bgTrees = createParallax("bg1", -20, 0.01);
+    this.bgSky = createParallax("bg3", -50, 0.05);
+    this.bgMountains = createParallax("bg2", -40, 0.04);
+    // this.bgForest = createParallax("bg1", -30, 0.02);
+    // this.bgTrees = createParallax("bg1", -20, 0.01);
 
     // =================================================
     // DATA SHARDS - spawn some for demo
@@ -332,8 +332,8 @@ export class Start extends Phaser.Scene {
     const camX = this.cameras.main.scrollX;
     this.bgSky.tilePositionX = camX * this.bgSky.parallaxFactor;
     this.bgMountains.tilePositionX = camX * this.bgMountains.parallaxFactor;
-    this.bgForest.tilePositionX = camX * this.bgForest.parallaxFactor;
-    this.bgTrees.tilePositionX = camX * this.bgTrees.parallaxFactor;
+    // this.bgForest.tilePositionX = camX * this.bgForest.parallaxFactor;
+    // this.bgTrees.tilePositionX = camX * this.bgTrees.parallaxFactor;
   }
 
   // =================================================

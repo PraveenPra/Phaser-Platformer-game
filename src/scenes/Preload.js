@@ -66,9 +66,14 @@ export class Preload extends Phaser.Scene {
       "assets/digimons/AncientTroiamon/AncientTroiamon.json",
     );
 
-    this.load.image("bg1", "assets/background_layer1.png");
-    this.load.image("bg2", "assets/background_layer2.png");
-    this.load.image("bg3", "assets/background_layer3.png");
+    // this.load.image("bg1", "assets/background_layer1.png");
+    // this.load.image("bg2", "assets/background_layer2.png");
+    // this.load.image("bg3", "assets/background_layer3.png");
+    // this.load.image("bg4", "assets/bg1.jpeg");
+
+    this.load.image("bg1", "assets/bg-fore1.png");
+    this.load.image("bg2", "assets/bg-mid1.png");
+    this.load.image("bg3", "assets/bg-far1.png");
     this.load.image("bg4", "assets/bg1.jpeg");
 
     // VFX ----------------
