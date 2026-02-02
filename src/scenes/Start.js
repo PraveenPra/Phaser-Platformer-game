@@ -8,6 +8,8 @@ import { PlayerHealthUI } from "../ui/PlayerHealthUI.js";
 import { EnemySpawnManager } from "../systems/EnemySpawnManager.js";
 import { SceneControls } from "../utils/SceneControls.js";
 import { AudioManager } from "../systems/AudioManager.js";
+import { NarrativeSystem } from "../systems/NarrativeSystem.js";
+import { Tutorials } from "/src/data/narrative/tutorials.js";
 
 export class Start extends Phaser.Scene {
   constructor() {
@@ -31,6 +33,8 @@ export class Start extends Phaser.Scene {
       this.scene.launch("UIScene");
       this.scene.bringToTop("UIScene");
     }
+
+    this.narrative = new NarrativeSystem(this);
 
     // =================================================
     // TILEMAP + WORLD (MUST COME FIRST)
@@ -322,6 +326,15 @@ export class Start extends Phaser.Scene {
     // this.playerInput = new PlayerInput(this); // keyboard + virtual
     // this.mobileControls = new MobileControls(this, this.player.inputHandler);
     this.createMobileControls();
+
+    // Game start narration
+    // INTRO first
+    this.events.emit("narrative:trigger", Tutorials.INTRO);
+
+    // MOVE after intro ends
+    this.time.delayedCall(4000, () => {
+      this.events.emit("narrative:trigger", Tutorials.MOVE);
+    });
   }
 
   update(time, delta) {
