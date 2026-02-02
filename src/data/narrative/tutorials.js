@@ -28,4 +28,12 @@ export const Tutorials = {
     text: "Jump again in mid-air!",
     once: true,
   },
+
+  END: {
+    key: "level-end",
+    type: "narration",
+    text: "Signal detected...\n\nData analysis in progress.",
+    mode: "blocking",
+    duration: 2500,
+  },
 };
