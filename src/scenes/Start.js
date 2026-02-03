@@ -8,6 +8,8 @@ import { PlayerHealthUI } from "../ui/PlayerHealthUI.js";
 import { EnemySpawnManager } from "../systems/EnemySpawnManager.js";
 import { SceneControls } from "../utils/SceneControls.js";
 import { AudioManager } from "../systems/AudioManager.js";
+import { NarrativeSystem } from "../systems/NarrativeSystem.js";
+import { Tutorials } from "/src/data/narrative/tutorials.js";
 
 export class Start extends Phaser.Scene {
   constructor() {
@@ -31,6 +33,13 @@ export class Start extends Phaser.Scene {
       this.scene.launch("UIScene");
       this.scene.bringToTop("UIScene");
     }
+
+    this.narrative = new NarrativeSystem(this);
+
+    // 🔥 CLEANUP when scene shuts down or restarts
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+      this.narrative?.destroy();
+    });
 
     // =================================================
     // TILEMAP + WORLD (MUST COME FIRST)
@@ -317,11 +326,28 @@ export class Start extends Phaser.Scene {
     // =================================================
     // INTRO NARRATION
     // =================================================
-    // this.showIntroNarration();
 
-    // this.playerInput = new PlayerInput(this); // keyboard + virtual
-    // this.mobileControls = new MobileControls(this, this.player.inputHandler);
     this.createMobileControls();
+
+    // Game start narration
+    // INTRO first
+    this.events.emit("narrative:trigger", Tutorials.INTRO);
+
+    // MOVE after intro ends
+    this.time.delayedCall(4000, () => {
+      this.events.emit("narrative:trigger", Tutorials.MOVE);
+    });
+
+    this.physics.world.on("worldbounds", (body) => {
+      if (!this.player || this.player.isDead) return;
+
+      if (body.gameObject === this.player) {
+        // bottom only
+        if (body.blocked.down) {
+          this.player.takeDamage(9999);
+        }
+      }
+    });
   }
 
   update(time, delta) {
@@ -334,6 +360,12 @@ export class Start extends Phaser.Scene {
     this.bgMountains.tilePositionX = camX * this.bgMountains.parallaxFactor;
     // this.bgForest.tilePositionX = camX * this.bgForest.parallaxFactor;
     // this.bgTrees.tilePositionX = camX * this.bgTrees.parallaxFactor;
+
+    // inside update()
+    if (!this._jumpHintShown && Math.abs(this.player.body.velocity.x) > 5) {
+      this._jumpHintShown = true;
+      this.events.emit("narrative:trigger", Tutorials.JUMP);
+    }
   }
 
   // =================================================
@@ -364,88 +396,42 @@ export class Start extends Phaser.Scene {
   }
 
   restartFromCheckpoint() {
-    GameState.playerStats.hp = GameState.playerStats.maxHp;
-    this.scene.restart();
-  }
-
-  showIntroNarration() {
-    // lock player input temporarily
-    this.player.inputLocked = true;
-
     const cam = this.cameras.main;
 
-    const overlay = this.add
-      .rectangle(0, 0, cam.width, cam.height, 0x000000, 0.6)
-      .setOrigin(0)
-      .setScrollFactor(0)
-      .setDepth(100);
+    this.events.emit("narrative:trigger", Tutorials.GAME_OVER);
+    // short pause after death anim
+    this.time.delayedCall(800, () => {
+      cam.fadeOut(1000, 0, 0, 0);
 
-    const text = this.add
-      .text(
-        cam.centerX,
-        cam.centerY,
-        "The Digital World evolves endlessly...\n\nBut something new is watching.",
-        {
-          fontSize: "20px",
-          color: "#ffffff",
-          align: "center",
-          wordWrap: { width: cam.width * 0.8 },
-        },
-      )
-      .setOrigin(0.5)
-      .setScrollFactor(0)
-      .setDepth(101)
-      .setAlpha(0);
-
-    this.tweens.add({
-      targets: text,
-      alpha: 1,
-      duration: 800,
+      cam.once("camerafadeoutcomplete", () => {
+        GameState.playerStats.hp = GameState.playerStats.maxHp;
+        this.scene.restart();
+      });
     });
-
-    const closeNarration = () => {
-      overlay.destroy();
-      text.destroy();
-      this.player.inputLocked = false;
-    };
-
-    // auto close after few seconds
-    this.time.delayedCall(5000, closeNarration);
-
-    // allow skip
-    this.input.keyboard.once("keydown-SPACE", closeNarration);
   }
 
   onLevelComplete() {
     if (this.levelEnding) return;
     this.levelEnding = true;
 
-    this.player.inputLocked = true;
+    // stop player movement
+    // this.player.setVelocity(0, 0);
 
-    const cam = this.cameras.main;
+    // play narration
+    this.events.emit("narrative:trigger", Tutorials.END);
 
-    const text = this.add
-      .text(
-        cam.centerX,
-        cam.centerY,
-        "Signal detected...\n\nData analysis in progress.",
-        {
-          fontSize: "20px",
-          color: "#ffffff",
-          align: "center",
-        },
-      )
-      .setOrigin(0.5)
-      .setScrollFactor(0)
-      .setDepth(200);
+    // fade after narration
+    this.time.delayedCall(2600, () => {
+      const cam = this.cameras.main;
 
-    AudioManager.playSFX(this, "sfx-level-complete");
+      AudioManager.playSFX(this, "sfx-level-complete");
 
-    cam.fadeOut(1500, 0, 0, 0);
+      cam.fadeOut(1500, 0, 0, 0);
 
-    cam.once("camerafadeoutcomplete", () => {
-      // later: transition to next scene / story scene
-      this.scene.restart(); // TEMP placeholder
+      cam.once("camerafadeoutcomplete", () => {
+        // later → go to next level / story scene
+        this.scene.restart(); // TEMP
+      });
     });
   }
 

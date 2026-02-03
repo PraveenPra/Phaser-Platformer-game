@@ -17,6 +17,8 @@ export class Player extends Character {
     // not let others push enemy
     this.bodyLayer.body.setImmovable(true);
     this.bodyLayer.body.pushable = false;
+    this.bodyLayer.body.setCollideWorldBounds(true);
+    this.bodyLayer.body.onWorldBounds = true;
 
     this.inputHandler = new PlayerInput(scene);
   }
@@ -73,5 +75,12 @@ export class Player extends Character {
 
   getAttackTargets(scene) {
     return scene.enemies;
+  }
+
+  forceKill(reason = "void") {
+    if (this.isDead) return;
+
+    this.isDead = true;
+    this.state.setState("dead", { reason });
   }
 }
