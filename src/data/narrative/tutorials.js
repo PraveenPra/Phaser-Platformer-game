@@ -36,4 +36,12 @@ export const Tutorials = {
     mode: "blocking",
     duration: 2500,
   },
+
+  GAME_OVER: {
+    key: "game-over",
+    text: "GAME OVER",
+    mode: "center",
+    duration: 2000,
+    skippable: false,
+  },
 };

@@ -337,6 +337,17 @@ export class Start extends Phaser.Scene {
     this.time.delayedCall(4000, () => {
       this.events.emit("narrative:trigger", Tutorials.MOVE);
     });
+
+    this.physics.world.on("worldbounds", (body) => {
+      if (!this.player || this.player.isDead) return;
+
+      if (body.gameObject === this.player) {
+        // bottom only
+        if (body.blocked.down) {
+          this.player.takeDamage(9999);
+        }
+      }
+    });
   }
 
   update(time, delta) {
@@ -385,8 +396,18 @@ export class Start extends Phaser.Scene {
   }
 
   restartFromCheckpoint() {
-    GameState.playerStats.hp = GameState.playerStats.maxHp;
-    this.scene.restart();
+    const cam = this.cameras.main;
+
+    this.events.emit("narrative:trigger", Tutorials.GAME_OVER);
+    // short pause after death anim
+    this.time.delayedCall(800, () => {
+      cam.fadeOut(1000, 0, 0, 0);
+
+      cam.once("camerafadeoutcomplete", () => {
+        GameState.playerStats.hp = GameState.playerStats.maxHp;
+        this.scene.restart();
+      });
+    });
   }
 
   onLevelComplete() {
