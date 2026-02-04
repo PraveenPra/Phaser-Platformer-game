@@ -4,20 +4,9 @@ export const DIGIMON_PROFILES = {
       width: 11,
       height: 14,
       offsetX: -6,
-      offsetY: 16,
+      offsetY: 18,
       gravityY: 900,
     },
-
-    // visual: {
-    //   originX: 0.5,
-    //   originY: 1,
-    //   yOffset: -2,
-    //   anims: {
-    //     "attack-A": -6,
-    //     "attack-B": -3,
-    //     "attack-C": -5,
-    //   },
-    // },
 
     attacks: {
       main: {
@@ -248,7 +237,7 @@ export const DIGIMON_PROFILES = {
       width: 15,
       height: 14,
       offsetX: -6,
-      offsetY: 14,
+      offsetY: 17,
       gravityY: 900,
     },
     movement: {
@@ -403,69 +392,61 @@ export const DIGIMON_PROFILES = {
 
   magnamon: {
     body: {
-      width: 11,
+      width: 14,
       height: 18,
-      offsetX: -5,
-      offsetY: -4,
+      offsetX: -6,
+      offsetY: 13,
       gravityY: 900,
     },
     move: {
       speed: 180,
     },
 
-    visual: {
-      originX: 0.5,
-      originY: 1,
-      yOffset: -5,
-      anims: {
-        "attack-C": -4,
-      },
-    },
-
     attacks: {
       main: {
-        type: "projectile",
-        anim: "attack-A",
-        damage: 5,
-        projectile: {
-          texture: "big-fireball",
-          speed: 260,
-          offsetX: 18,
-          offsetY: -10,
-          lifetime: 1200,
-        },
-        fireFrame: 4,
-        cooldown: 800,
-      },
-      skill1: {
-        type: "projectile",
-        anim: "attack-B",
-        damage: 18,
-        projectile: {
-          texture: "big-fireball",
-          speed: 260,
-          offsetX: 18,
-          offsetY: -10,
-          lifetime: 1200,
-        },
-        fireFrame: 4,
-        cooldown: 800,
-      },
-
-      skill2: {
         type: "melee",
-        anim: "attack-C",
+        anim: "attack-A",
         damage: 30,
-        fireFrames: [3, 4, 5], // active hit window
+        fireFrames: [5, 6], // active hit window
         hitbox: {
           width: 20,
-          height: 18,
-          offsetX: 16,
-          offsetY: -8,
+          height: 27,
+          offsetX: 6,
+          offsetY: 16,
           duration: 80, // per-frame lifetime
           // duration: 320,
         },
         cooldown: 1500,
+      },
+      skill1: {
+        type: "melee",
+        anim: "attack-B",
+        damage: 2,
+        fireFrames: [4, 5, 6, 7, 8, 9, 10], // active hit window
+        hitbox: {
+          width: 25,
+          height: 24,
+          offsetX: 0,
+          offsetY: 11,
+          duration: 80, // per-frame lifetime
+          // duration: 320,
+        },
+        cooldown: 1500,
+      },
+
+      skill2: {
+        type: "projectile",
+        anim: "attack-C",
+        damage: 5,
+        projectile: {
+          texture: "big-fireball",
+          speed: 260,
+          offsetX: 13,
+          offsetY: 7,
+          lifetime: 1200,
+        },
+        fireFrame: 3,
+        cooldown: 800,
       },
     },
 
@@ -535,7 +516,7 @@ export const DIGIMON_PROFILES = {
       width: 18,
       height: 44,
       offsetX: -9,
-      offsetY: 1,
+      offsetY: 4,
       gravityY: 900,
     },
 
@@ -612,7 +593,7 @@ export const DIGIMON_PROFILES = {
       width: 31,
       height: 39,
       offsetX: -14,
-      offsetY: 23,
+      offsetY: 25,
       gravityY: 900,
     },
 
@@ -665,6 +646,77 @@ export const DIGIMON_PROFILES = {
     evolution: {
       prev: null,
       next: "imperialdramon",
+    },
+  },
+
+  ophanimon: {
+    body: {
+      width: 18,
+      height: 40,
+      offsetX: -9,
+      offsetY: 7,
+      gravityY: 900,
+    },
+
+    movement: {
+      mode: "multi-domain",
+      domains: ["ground", "air"],
+      default: "ground",
+    },
+
+    attacks: {
+      main: {
+        type: "melee",
+        anim: "attack-A",
+        damage: 30,
+        fireFrames: [4, 6], // active hit window
+        hitbox: {
+          width: 10,
+          height: 26,
+          offsetX: 36,
+          offsetY: 26,
+          duration: 80, // per-frame lifetime
+          // duration: 320,
+        },
+        cooldown: 1500,
+      },
+      skill1: {
+        type: "projectile",
+        anim: "attack-B",
+        damage: 18,
+        projectile: {
+          texture: "vfx-rainbowball",
+          anim: "vfx-rainbowball",
+          speed: 260,
+          offsetX: 47,
+          offsetY: 35,
+          lifetime: 1200,
+        },
+        fireFrame: 8,
+        cooldown: 800,
+      },
+
+      skill2: {
+        type: "projectile",
+        anim: "attack-C",
+        damage: 18,
+        hitStop: 110, // 👈 heavy hit
+        impactVFX: "impact-hit",
+        projectile: {
+          texture: "vfx-rainbowball",
+          anim: "vfx-rainbowball",
+          speed: 260,
+          offsetX: 33,
+          offsetY: 50,
+          lifetime: 1200,
+        },
+        fireFrame: 5,
+        cooldown: 800,
+      },
+    },
+    evolution: {
+      prev: null,
+      next: "patamon",
     },
   },
 };

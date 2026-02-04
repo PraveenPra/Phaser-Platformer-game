@@ -178,6 +178,16 @@ export class Start extends Phaser.Scene {
       frameRate: 24,
       repeat: -1,
     });
+
+    this.anims.create({
+      key: "vfx-rainbowball",
+      frames: this.anims.generateFrameNumbers("vfx-rainbowball", {
+        start: 0,
+        end: 3,
+      }),
+      frameRate: 24,
+      repeat: -1,
+    });
     // =================================================
     // COLLECTIBLE + TRAP ANIMATIONS
     // =================================================
@@ -331,12 +341,12 @@ export class Start extends Phaser.Scene {
 
     // Game start narration
     // INTRO first
-    this.events.emit("narrative:trigger", Tutorials.INTRO);
+    // this.events.emit("narrative:trigger", Tutorials.INTRO);
 
     // MOVE after intro ends
-    this.time.delayedCall(4000, () => {
-      this.events.emit("narrative:trigger", Tutorials.MOVE);
-    });
+    // this.time.delayedCall(4000, () => {
+    //   this.events.emit("narrative:trigger", Tutorials.MOVE);
+    // });
 
     this.physics.world.on("worldbounds", (body) => {
       if (!this.player || this.player.isDead) return;
@@ -362,10 +372,10 @@ export class Start extends Phaser.Scene {
     // this.bgTrees.tilePositionX = camX * this.bgTrees.parallaxFactor;
 
     // inside update()
-    if (!this._jumpHintShown && Math.abs(this.player.body.velocity.x) > 5) {
-      this._jumpHintShown = true;
-      this.events.emit("narrative:trigger", Tutorials.JUMP);
-    }
+    // if (!this._jumpHintShown && Math.abs(this.player.body.velocity.x) > 5) {
+    //   this._jumpHintShown = true;
+    //   this.events.emit("narrative:trigger", Tutorials.JUMP);
+    // }
   }
 
   // =================================================

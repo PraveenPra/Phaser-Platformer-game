@@ -17,6 +17,7 @@ export class CharacterSelect extends Phaser.Scene {
       "birdramon",
       "imperialdramon",
       "ancientTroiamon",
+      "ophanimon",
     ];
 
     const sprites = [];
