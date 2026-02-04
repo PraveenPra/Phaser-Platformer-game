@@ -42,12 +42,18 @@ export class UIScene extends Phaser.Scene {
   }
 
   pauseGame() {
-    this.scene.pause("Start");
+    const key = GameState.activeGameplayScene;
+    if (!key) return;
+
+    this.scene.pause(key);
     this.uiState.show("pause");
   }
 
   resumeGame() {
+    const key = GameState.activeGameplayScene;
+    if (!key) return;
+
     this.uiState.hide();
-    this.scene.resume("Start");
+    this.scene.resume(key);
   }
 }

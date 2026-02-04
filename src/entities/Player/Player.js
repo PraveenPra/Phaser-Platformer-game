@@ -30,7 +30,6 @@ export class Player extends Character {
         defense: 5,
       },
       GameState.playerProgression,
-      scene,
     );
   }
 
@@ -80,6 +79,8 @@ export class Player extends Character {
     // - game over screen
     // - fade out
     GameState.currentForm = GameState.selectedDigimon;
+
+    this.stats.resetHp();
 
     this.scene.events.emit("player-dead");
   }

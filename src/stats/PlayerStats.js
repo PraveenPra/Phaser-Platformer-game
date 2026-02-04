@@ -1,11 +1,16 @@
-export class PlayerStats {
-  constructor(base, progression, scene) {
+export class PlayerStats extends Phaser.Events.EventEmitter {
+  constructor(base, progression) {
+    super();
+
     this.base = base;
     this.progression = progression;
-    this.scene = scene;
+
     this.runtime = {
       currentHp: this.maxHp,
     };
+
+    // 🔥 IMPORTANT: emit initial state so HUD shows values immediately
+    this.emit("hp-changed", this.runtime.currentHp, this.maxHp);
   }
 
   get maxHp() {
@@ -23,11 +28,15 @@ export class PlayerStats {
   changeHp(delta) {
     this.runtime.currentHp = Math.max(0, this.runtime.currentHp + delta);
 
-    // notify UI
-    this.scene.events.emit(
-      "player-hp-changed",
-      this.runtime.currentHp,
-      this.maxHp,
-    );
+    this.emit("hp-changed", this.runtime.currentHp, this.maxHp);
+  }
+
+  setHp(value) {
+    this.runtime.currentHp = Phaser.Math.Clamp(value, 0, this.maxHp);
+    this.emit("hp-changed", this.runtime.currentHp, this.maxHp);
+  }
+
+  resetHp() {
+    this.setHp(this.maxHp);
   }
 }

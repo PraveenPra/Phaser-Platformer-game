@@ -15,22 +15,32 @@ export class HUDPanel extends BasePanel {
     super(scene);
 
     // Player health
-    const startScene = scene.scene.get("Start");
-    const player = scene.registry.get("player");
+    // const startScene = scene.scene.get("Start");
+    // const player = GameState.player;
 
     // this.healthUI = new PlayerHealthUI(scene, scene.scene.get("Start")?.player);
     this.healthbar = new UIText(scene, {
-      text: `HP: ${player?.stats.runtime.currentHp} / ${player?.stats.maxHp}`,
+      text: "HP: -- / --",
       anchor: "top-left",
-      font: "bigFont",
-      margin: { top: 100, left: 150 },
+      margin: { top: 50, left: 50 },
     });
 
     this.container.add(this.healthbar.container);
+
     // Subscribe to changes
-    startScene.events.on("player-hp-changed", (hp, maxHp) => {
-      this.healthbar.setText(`HP: ${Math.ceil(hp)} / ${maxHp}`);
+    // 🔥 Subscribe when player is available
+    const player = GameState.player;
+
+    if (player?.stats) {
+      this.bindPlayer(player);
+    }
+
+    // 🔁 Handle player swap / scene restart
+    GameState.events.on("player-set", (player) => {
+      this.bindPlayer(player);
     });
+
+    // this.show();
 
     // this.container.add(this.healthbar.container);
 
@@ -68,5 +78,25 @@ export class HUDPanel extends BasePanel {
     });
 
     this.show();
+  }
+
+  bindPlayer(player) {
+    // cleanup old binding
+    this._unbindStats?.();
+
+    const stats = player.stats;
+
+    const onHpChanged = (hp, maxHp) => {
+      this.healthbar.setText(`HP: ${hp} / ${maxHp}`);
+    };
+
+    stats.on("hp-changed", onHpChanged);
+
+    // force refresh immediately
+    onHpChanged(stats.runtime.currentHp, stats.maxHp);
+
+    this._unbindStats = () => {
+      stats.off("hp-changed", onHpChanged);
+    };
   }
 }
