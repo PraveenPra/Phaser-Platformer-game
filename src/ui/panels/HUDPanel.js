@@ -14,18 +14,25 @@ export class HUDPanel extends BasePanel {
   constructor(scene) {
     super(scene);
 
-    // Player health (legacy component, top-left)
+    // Player health
+    const startScene = scene.scene.get("Start");
+    const player = scene.registry.get("player");
+
     // this.healthUI = new PlayerHealthUI(scene, scene.scene.get("Start")?.player);
     this.healthbar = new UIText(scene, {
-      text: `hp: ${GameState.playerStats.hp} / ${GameState.playerStats.maxHp}`,
+      text: `HP: ${player?.stats.runtime.currentHp} / ${player?.stats.maxHp}`,
       anchor: "top-left",
-      margin: { top: 50, left: 50 },
+      font: "bigFont",
+      margin: { top: 100, left: 150 },
     });
-    // Subscribe to changes
-    GameState.playerStats.subscribe((hp, maxHp) => {
-      this.healthbar.setText(`hp: ${hp} / ${maxHp}`);
-    });
+
     this.container.add(this.healthbar.container);
+    // Subscribe to changes
+    startScene.events.on("player-hp-changed", (hp, maxHp) => {
+      this.healthbar.setText(`HP: ${Math.ceil(hp)} / ${maxHp}`);
+    });
+
+    // this.container.add(this.healthbar.container);
 
     // Pause button (icon only)
     this.pauseBtn = new UIButton(scene, {

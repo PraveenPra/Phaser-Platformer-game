@@ -8,30 +8,11 @@ export const GameState = {
     y: 350,
   },
 
-  playerStats: {
-    maxHp: 100,
-    hp: 100,
-    _listeners: new Set(),
-
-    _notify() {
-      this._listeners.forEach((cb) => cb(this.hp, this.maxHp));
-    },
-
-    subscribe(cb) {
-      this._listeners.add(cb);
-    },
-
-    // helper to mutate hp safely
-    changeHp(delta) {
-      this.hp = Math.max(0, this.hp + delta);
-      this._notify();
-    },
-
-    // optional helper for maxHp
-    setMaxHp(v) {
-      this.maxHp = v;
-      this._notify();
-    },
+  playerProgression: {
+    level: 1,
+    maxHpBonus: 0,
+    attackBonus: 0,
+    defenseBonus: 0,
   },
 
   dataShards: {

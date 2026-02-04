@@ -38,7 +38,8 @@ export class PlayerHealthUI {
   }
 
   draw() {
-    const { hp, maxHp } = GameState.playerStats;
+    const hp = this.player.stats.runtime.currentHp;
+    const maxHp = this.player.stats.maxHp;
 
     const ratio = hp / maxHp;
     const color = ratio <= 0.4 ? this.red : this.green;
@@ -58,7 +59,7 @@ export class PlayerHealthUI {
       this.height,
     );
 
-    this.text.setText(`${hp} / ${maxHp}`);
+    this.text.setText(`${Math.ceil(hp)} / ${maxHp}`);
   }
 
   destroy() {

@@ -9,6 +9,8 @@ export class Enemy extends Character {
     super(scene, x, y, textureKey, profile, "idle");
 
     this.role = "enemy";
+    this.currentHp = profile.combat.maxHp;
+
     this.healthBar = new CharacterHealthBar(scene, this, {
       visible: false, // show only on hit
     });

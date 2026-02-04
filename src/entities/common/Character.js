@@ -73,7 +73,7 @@ export class Character extends Phaser.GameObjects.Container {
     );
 
     // combat runtime state
-    this.currentHp = profile.combat.maxHp;
+    // this.currentHp = profile.combat.maxHp;
     this.isInvincible = false;
     this.isDead = false;
   }
@@ -100,13 +100,13 @@ export class Character extends Phaser.GameObjects.Container {
     // PLAYER DAMAGE
     // ======================
     if (this.type === "player") {
-      const stats = GameState.playerStats;
+      const finalDamage = Math.max(1, amount - this.stats.defense);
 
-      stats.changeHp(-amount); // ✅ will update HUD automatically
+      this.stats.changeHp(-finalDamage);
 
       doHitFlash(this.visual.sprite);
 
-      if (stats.hp <= 0) {
+      if (this.stats.runtime.currentHp <= 0) {
         this.isDead = true;
         this.state.setState("dead");
       } else {

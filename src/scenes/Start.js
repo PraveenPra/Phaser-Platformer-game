@@ -402,6 +402,10 @@ export class Start extends Phaser.Scene {
     this.playerHealthUI = new PlayerHealthUI(this, player);
 
     this.player = player;
+
+    // expose player to other scenes (read-only reference)
+    this.registry.set("player", player);
+
     return player;
   }
 
