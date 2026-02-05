@@ -100,13 +100,11 @@ export class Character extends Phaser.GameObjects.Container {
     // PLAYER DAMAGE
     // ======================
     if (this.type === "player") {
-      const finalDamage = Math.max(1, amount - this.stats.defense);
-
-      this.stats.changeHp(-finalDamage);
+      this.stats.takeDamage(amount);
 
       doHitFlash(this.visual.sprite);
 
-      if (this.stats.runtime.currentHp <= 0) {
+      if (this.stats.runtime.isDead) {
         this.isDead = true;
         this.state.setState("dead");
       } else {

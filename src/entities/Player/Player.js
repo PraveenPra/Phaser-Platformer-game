@@ -31,6 +31,12 @@ export class Player extends Character {
       },
       GameState.playerProgression,
     );
+
+    //Prevents desync if death happens outside animation
+    // Future-proof (DOT damage, void, poison, etc.)
+    this.stats.on("dead", () => {
+      this.isDead = true;
+    });
   }
 
   update(dt) {

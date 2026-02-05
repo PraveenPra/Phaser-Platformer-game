@@ -7,9 +7,9 @@ export class PlayerStats extends Phaser.Events.EventEmitter {
 
     this.runtime = {
       currentHp: this.maxHp,
+      isDead: false,
     };
 
-    // 🔥 IMPORTANT: emit initial state so HUD shows values immediately
     this.emit("hp-changed", this.runtime.currentHp, this.maxHp);
   }
 
@@ -25,18 +25,32 @@ export class PlayerStats extends Phaser.Events.EventEmitter {
     return this.base.defense + this.progression.defenseBonus;
   }
 
-  changeHp(delta) {
-    this.runtime.currentHp = Math.max(0, this.runtime.currentHp + delta);
+  // 🔥 NEW — single entry for damage
+  takeDamage(amount) {
+    if (this.runtime.isDead) return;
 
-    this.emit("hp-changed", this.runtime.currentHp, this.maxHp);
+    const finalDamage = Math.max(1, amount - this.defense);
+    this.changeHp(-finalDamage);
+
+    if (this.runtime.currentHp <= 0) {
+      this.runtime.isDead = true;
+      this.emit("dead");
+    }
   }
 
-  setHp(value) {
-    this.runtime.currentHp = Phaser.Math.Clamp(value, 0, this.maxHp);
+  changeHp(delta) {
+    this.runtime.currentHp = Phaser.Math.Clamp(
+      this.runtime.currentHp + delta,
+      0,
+      this.maxHp,
+    );
+
     this.emit("hp-changed", this.runtime.currentHp, this.maxHp);
   }
 
   resetHp() {
-    this.setHp(this.maxHp);
+    this.runtime.currentHp = this.maxHp;
+    this.runtime.isDead = false;
+    this.emit("hp-changed", this.runtime.currentHp, this.maxHp);
   }
 }
