@@ -76,6 +76,17 @@ export class Character extends Phaser.GameObjects.Container {
     // this.currentHp = profile.combat.maxHp;
     this.isInvincible = false;
     this.isDead = false;
+
+    if (this.type === "player") {
+      this.stats.on("invincible-start", () => {
+        doHitFlash(this.visual.sprite);
+        this.isInvincible = true;
+      });
+
+      this.stats.on("invincible-end", () => {
+        this.isInvincible = false;
+      });
+    }
   }
 
   update(dt) {
