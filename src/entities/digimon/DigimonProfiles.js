@@ -21,6 +21,10 @@ export const DIGIMON_PROFILES = {
           offsetY: 19,
           // duration: 320,//ms
           duration: 80, // per-frame lifetime
+          knockback: {
+            x: 220,
+            y: -120,
+          },
         },
         cooldown: 300,
       },
@@ -42,7 +46,7 @@ export const DIGIMON_PROFILES = {
       skill2: {
         type: "projectile",
         anim: "attack-C",
-        damage: 18,
+        damage: 1,
         impactVFX: "vfx-fireblast",
         projectile: {
           texture: "fireball",
@@ -51,6 +55,10 @@ export const DIGIMON_PROFILES = {
           offsetX: 26,
           offsetY: 20,
           lifetime: 1900,
+          knockback: {
+            x: 520,
+            y: -150,
+          },
         },
         fireFrame: 5,
         cooldown: 800,
@@ -200,6 +208,10 @@ export const DIGIMON_PROFILES = {
           offsetX: 16,
           offsetY: 5,
           duration: 80, // per-frame lifetime
+          knockback: {
+            x: 220,
+            y: -120,
+          },
           // duration: 320,//ms
         },
         cooldown: 500,

@@ -38,7 +38,13 @@ export function setupHitboxCollisions(scene, hitbox, targets, options = {}) {
     });
 
     // 🎯 APPLY DAMAGE LAST
-    target.takeDamage(hb.damage, hb.owner);
+    target.takeDamage({
+      amount: hb.damage,
+      source: hb.owner,
+      hitbox: hb,
+      knockback: hb.knockback,
+      type: hb.owner.role === "player" ? "player-attack" : "enemy-attack",
+    });
 
     if (destroyOnHit) {
       hb.destroy();

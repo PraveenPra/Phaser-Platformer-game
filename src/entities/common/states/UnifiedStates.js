@@ -296,15 +296,21 @@ export const UnifiedStates = {
   },
 
   hit: {
-    enter(e) {
+    enter(e, data) {
       if (e.isDead) return;
 
       e.isInvincible = true;
       e.isAttacking = false;
 
       const body = e.bodyLayer.body;
-      body.setVelocity(0, 0);
-      body.setAcceleration(0, 0);
+
+      //Only freeze movement if NO knockback
+      if (!data?.knockback) {
+        body.setVelocity(0, 0);
+        body.setAcceleration(0, 0);
+      }
+
+      // Always apply high drag to dampen knockback naturally
       body.setDrag(1000, 1000);
 
       AudioManager.playSFX(e.scene, "sfx-hurt", { volume: 0.9 });

@@ -27,6 +27,10 @@ export function spawnProjectile(scene, owner, attack) {
   p.damage = attack.damage;
   p.owner = owner;
   p.hitStop = attack.hitStop;
+
+  // Reactions
+  p.knockback = proj.knockback;
+
   console.warn(owner);
 
   const currentAttackKey = owner?.currentAttackKey || null;

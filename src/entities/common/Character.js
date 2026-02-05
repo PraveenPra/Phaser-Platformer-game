@@ -104,8 +104,22 @@ export class Character extends Phaser.GameObjects.Container {
     this.attackCooldowns[name] = this.scene.time.now + duration;
   }
 
-  takeDamage(amount, source) {
+  takeDamage(damage) {
+    const { amount, source, knockback } = damage;
+
     if (this.isDead || this.isInvincible) return;
+
+    if (knockback && this.bodyLayer?.body) {
+      const dir =
+        source && source.x !== undefined
+          ? Math.sign(this.x - source.x) || 1
+          : 1;
+
+      const kbX = (knockback.x ?? 0) * dir;
+      const kbY = knockback.y ?? 0;
+
+      this.bodyLayer.body.setVelocity(kbX, kbY);
+    }
 
     // ======================
     // PLAYER DAMAGE
@@ -119,7 +133,7 @@ export class Character extends Phaser.GameObjects.Container {
         this.isDead = true;
         this.state.setState("dead");
       } else {
-        this.state.setState("hit", { source });
+        this.state.setState("hit", { source, knockback });
       }
 
       return;
@@ -142,7 +156,7 @@ export class Character extends Phaser.GameObjects.Container {
       this.isDead = true;
       this.state.setState("dead");
     } else {
-      this.state.setState("hit", { source });
+      this.state.setState("hit", { source, knockback });
     }
   }
 }
