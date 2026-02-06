@@ -19,6 +19,10 @@ export function spawnAttackHitbox(scene, owner, config) {
   hitbox.damage = config.damage;
   hitbox.hitStop = config.hitStop;
   hitbox.impactVFX = config.impactVFX;
+
+  // Reactions
+  hitbox.hitType = config.hitType ?? "light";
+
   hitbox.hitTargets = new Set(); // 🔒 per-attack damage control
 
   console.log(`[HITBOX SPAWN] owner=${owner.key} dmg=${hitbox.damage}`);

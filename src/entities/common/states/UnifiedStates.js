@@ -41,16 +41,13 @@ function handleAttackInputs(e) {
 export const UnifiedStates = {
   idle: {
     enter(e) {
-      e.movement.stop();
+      // This makes idle a domain-safe state.
+      // Even if something slips through, idle repairs it.
+      if (e.canGround && e.movement.switchDomain) {
+        e.movement.switchDomain("ground");
+      }
 
-      // // AIR-ONLY idle = hover
-      // if (!e.canGround && e.canAir) {
-      //   console.error("AIR-ONLY IDLE");
-      //   e.visual.play(`${e.key}_fly`, true);
-      //   e.visual.sprite.anims.timeScale = 0.3;
-      //   return;
-      // }
-      // ground / hybrid idle
+      e.movement.stop();
       e.visual.play(`${e.key}_idle`);
     },
 
@@ -172,7 +169,26 @@ export const UnifiedStates = {
       const body = e.bodyLayer.body;
       const move = e.profile.move;
 
-      body.setAllowGravity(false);
+      // FORCE AIR DOMAIN HERE (not only on jump / hit)
+      // This makes airIdle a domain-safe state.
+      // Even if something slips through, airIdle repairs it.
+      // Only allow air domain if NOT coming from launch recovery
+
+      if (e.canAir && e.movement.switchDomain && !e._fromLaunch) {
+        e.movement.switchDomain("air");
+      }
+
+      // Micro-delay before hover (feels amazing)
+      body.setAllowGravity(true);
+
+      const hoverDelay = e._fromLaunch ? 280 : 120;
+
+      e.scene.time.delayedCall(hoverDelay, () => {
+        if (e.state.current === "airIdle" && !e._fromLaunch) {
+          body.setAllowGravity(false);
+        }
+      });
+
       body.setAcceleration(0, 0);
       body.setDrag(move.airDecel, move.airDecel);
 
@@ -286,7 +302,7 @@ export const UnifiedStates = {
 
       // Wait until combat system releases control
       if (!e.isAttacking && !e.isDead) {
-        if (e.canAir && !e.bodyLayer.body.onFloor()) {
+        if (e.canAir) {
           e.state.setState("airIdle");
         } else {
           e.state.setState("idle");
@@ -296,15 +312,21 @@ export const UnifiedStates = {
   },
 
   hit: {
-    enter(e) {
+    enter(e, data) {
       if (e.isDead) return;
 
       e.isInvincible = true;
       e.isAttacking = false;
 
       const body = e.bodyLayer.body;
-      body.setVelocity(0, 0);
-      body.setAcceleration(0, 0);
+
+      //Only freeze movement if NO knockback
+      if (!data?.knockback) {
+        body.setVelocity(0, 0);
+        body.setAcceleration(0, 0);
+      }
+
+      // Always apply high drag to dampen knockback naturally
       body.setDrag(1000, 1000);
 
       AudioManager.playSFX(e.scene, "sfx-hurt", { volume: 0.9 });
@@ -334,6 +356,78 @@ export const UnifiedStates = {
       const body = e.bodyLayer.body;
       body.setDrag(0, 0);
       body.setAcceleration(0, 0);
+    },
+  },
+
+  launch: {
+    enter(e, data) {
+      if (e.isDead) return;
+      e._fromLaunch = true;
+
+      e.isInvincible = true;
+      e.isAttacking = false;
+
+      e.visual.play(`${e.key}_jump`);
+
+      const reaction = data?.reaction;
+      const delay = reaction?.timing?.toRecover ?? 260;
+
+      e._launchTimer = e.scene.time.delayedCall(delay, () => {
+        if (!e.isDead) {
+          e.state.setState("airRecover", data);
+        }
+      });
+    },
+
+    update(e) {
+      // no input, no transitions here
+    },
+
+    exit(e) {
+      if (e._launchTimer) {
+        e._launchTimer.remove();
+        e._launchTimer = null;
+      }
+    },
+  },
+
+  airRecover: {
+    enter(e) {
+      const body = e.bodyLayer.body;
+
+      body.setAllowGravity(true);
+
+      // Slight drag so fall curves, not snaps
+      body.setDrag(120, 80);
+
+      // DO NOT hover yet
+      e.visual.play(`${e.key}_fly`, true);
+      e.visual.sprite.anims.timeScale = 0.4; // opening wings, slow
+    },
+
+    update(e, data) {
+      const body = e.bodyLayer.body;
+      const threshold = data?.reaction?.timing?.fallThreshold ?? 60;
+
+      // Ground-only: never recover to air
+      if (!e.canAir && body.onFloor()) {
+        // e.movement.switchDomain("ground");
+        e.jumpCount = 0;
+        e.state.setState("idle");
+        return;
+      }
+
+      // wait for downward motion (this is the "opening wings while falling")
+      if (e.canAir && body.velocity.y > threshold) {
+        e.state.setState("airIdle");
+        return;
+      }
+    },
+
+    exit(e) {
+      delete e._fromLaunch;
+      e.isInvincible = false;
+      e.visual.sprite.anims.timeScale = 1;
     },
   },
 

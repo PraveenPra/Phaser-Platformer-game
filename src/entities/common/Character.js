@@ -10,6 +10,8 @@ import { MultiDomainMovement } from "../../systems/MultiDomainMovement.js";
 import { UnifiedStates } from "../common/states/UnifiedStates.js";
 import { doHitFlash } from "./vfx/doHitFlash.js";
 import { GameState } from "/src/GameState.js";
+import { ReactionApplier } from "/src/entities/common/combat/ReactionApplier.js";
+import { HitReactions } from "/src/entities/common/combat/HitReactions.js";
 
 export class Character extends Phaser.GameObjects.Container {
   constructor(scene, x, y, textureKey, profile, initialState) {
@@ -73,9 +75,20 @@ export class Character extends Phaser.GameObjects.Container {
     );
 
     // combat runtime state
-    this.currentHp = profile.combat.maxHp;
+    // this.currentHp = profile.combat.maxHp;
     this.isInvincible = false;
     this.isDead = false;
+
+    if (this.type === "player") {
+      this.stats.on("invincible-start", () => {
+        doHitFlash(this.visual.sprite);
+        this.isInvincible = true;
+      });
+
+      this.stats.on("invincible-end", () => {
+        this.isInvincible = false;
+      });
+    }
   }
 
   update(dt) {
@@ -93,24 +106,29 @@ export class Character extends Phaser.GameObjects.Container {
     this.attackCooldowns[name] = this.scene.time.now + duration;
   }
 
-  takeDamage(amount, source) {
+  takeDamage(damage) {
+    const { amount, source, hitType } = damage;
+
     if (this.isDead || this.isInvincible) return;
+
+    const reactionKey = damage.hitType === "launch" ? "LAUNCH" : "LIGHT";
+
+    ReactionApplier.apply(this, HitReactions[reactionKey], damage);
 
     // ======================
     // PLAYER DAMAGE
     // ======================
     if (this.type === "player") {
-      const stats = GameState.playerStats;
-
-      stats.changeHp(-amount); // ✅ will update HUD automatically
+      this.stats.takeDamage(amount);
 
       doHitFlash(this.visual.sprite);
 
-      if (stats.hp <= 0) {
+      if (this.stats.runtime.isDead) {
         this.isDead = true;
         this.state.setState("dead");
       } else {
-        this.state.setState("hit", { source });
+        const hitType = damage.hitType ?? "normal";
+        this.state.setState(hitType === "launch" ? "launch" : "hit", damage);
       }
 
       return;
@@ -133,7 +151,8 @@ export class Character extends Phaser.GameObjects.Container {
       this.isDead = true;
       this.state.setState("dead");
     } else {
-      this.state.setState("hit", { source });
+      const hitType = damage.hitType ?? "normal";
+      this.state.setState(hitType === "launch" ? "launch" : "hit", damage);
     }
   }
 }

@@ -14,18 +14,35 @@ export class HUDPanel extends BasePanel {
   constructor(scene) {
     super(scene);
 
-    // Player health (legacy component, top-left)
+    // Player health
+    // const startScene = scene.scene.get("Start");
+    // const player = GameState.player;
+
     // this.healthUI = new PlayerHealthUI(scene, scene.scene.get("Start")?.player);
     this.healthbar = new UIText(scene, {
-      text: `hp: ${GameState.playerStats.hp} / ${GameState.playerStats.maxHp}`,
+      text: "HP: -- / --",
       anchor: "top-left",
       margin: { top: 50, left: 50 },
     });
-    // Subscribe to changes
-    GameState.playerStats.subscribe((hp, maxHp) => {
-      this.healthbar.setText(`hp: ${hp} / ${maxHp}`);
-    });
+
     this.container.add(this.healthbar.container);
+
+    // Subscribe to changes
+    // 🔥 Subscribe when player is available
+    const player = GameState.player;
+
+    if (player?.stats) {
+      this.bindPlayer(player);
+    }
+
+    // 🔁 Handle player swap / scene restart
+    GameState.events.on("player-set", (player) => {
+      this.bindPlayer(player);
+    });
+
+    // this.show();
+
+    // this.container.add(this.healthbar.container);
 
     // Pause button (icon only)
     this.pauseBtn = new UIButton(scene, {
@@ -61,5 +78,25 @@ export class HUDPanel extends BasePanel {
     });
 
     this.show();
+  }
+
+  bindPlayer(player) {
+    // cleanup old binding
+    this._unbindStats?.();
+
+    const stats = player.stats;
+
+    const onHpChanged = (hp, maxHp) => {
+      this.healthbar.setText(`HP: ${hp} / ${maxHp}`);
+    };
+
+    stats.on("hp-changed", onHpChanged);
+
+    // force refresh immediately
+    onHpChanged(stats.runtime.currentHp, stats.maxHp);
+
+    this._unbindStats = () => {
+      stats.off("hp-changed", onHpChanged);
+    };
   }
 }

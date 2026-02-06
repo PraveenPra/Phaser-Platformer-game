@@ -2,36 +2,37 @@ export const GameState = {
   // currently active digimon key
   selectedDigimon: null, // base form at checkpoint
   currentForm: null, // runtime only (DO NOT persist on death)
+
+  activeGameplayScene: null,
+
+  setActiveScene(sceneKey) {
+    this.activeGameplayScene = sceneKey;
+  },
+
+  player: null,
+
+  events: new Phaser.Events.EventEmitter(),
+
+  setPlayer(player) {
+    this.player = player;
+    this.events.emit("player-set", player);
+  },
+
+  clearPlayer() {
+    this.player = null;
+  },
+
   checkpoint: {
     scene: "Start",
     x: 200,
     y: 350,
   },
 
-  playerStats: {
-    maxHp: 100,
-    hp: 100,
-    _listeners: new Set(),
-
-    _notify() {
-      this._listeners.forEach((cb) => cb(this.hp, this.maxHp));
-    },
-
-    subscribe(cb) {
-      this._listeners.add(cb);
-    },
-
-    // helper to mutate hp safely
-    changeHp(delta) {
-      this.hp = Math.max(0, this.hp + delta);
-      this._notify();
-    },
-
-    // optional helper for maxHp
-    setMaxHp(v) {
-      this.maxHp = v;
-      this._notify();
-    },
+  playerProgression: {
+    level: 1,
+    maxHpBonus: 0,
+    attackBonus: 0,
+    defenseBonus: 0,
   },
 
   dataShards: {

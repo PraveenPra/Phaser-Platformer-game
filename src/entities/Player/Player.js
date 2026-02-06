@@ -3,6 +3,7 @@ import { Character } from "../common/Character.js";
 import { PlayerInput } from "./PlayerInput.js";
 import { changeForm } from "/src/systems/FormChangeController.js";
 import { GameState } from "/src/GameState.js";
+import { PlayerStats } from "/src/stats/PlayerStats.js";
 
 export class Player extends Character {
   constructor(scene, x, y, textureKey) {
@@ -21,6 +22,21 @@ export class Player extends Character {
     this.bodyLayer.body.onWorldBounds = true;
 
     this.inputHandler = new PlayerInput(scene);
+
+    this.stats = new PlayerStats(
+      {
+        maxHp: 100,
+        attack: 20,
+        defense: 5,
+      },
+      GameState.playerProgression,
+    );
+
+    //Prevents desync if death happens outside animation
+    // Future-proof (DOT damage, void, poison, etc.)
+    this.stats.on("dead", () => {
+      this.isDead = true;
+    });
   }
 
   update(dt) {
@@ -59,9 +75,9 @@ export class Player extends Character {
     super.update(dt);
   }
 
-  getHpStore() {
-    return GameState.playerStats;
-  }
+  // getHpStore() {
+  //   return GameState.playerStats;
+  // }
 
   onDeathAnimationComplete() {
     // future:
@@ -69,6 +85,8 @@ export class Player extends Character {
     // - game over screen
     // - fade out
     GameState.currentForm = GameState.selectedDigimon;
+
+    this.stats.resetHp();
 
     this.scene.events.emit("player-dead");
   }

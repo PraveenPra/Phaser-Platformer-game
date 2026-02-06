@@ -22,6 +22,7 @@ export class Start extends Phaser.Scene {
     // =================================================
     // SCENE CONTROLS
     // =================================================
+    GameState.setActiveScene(this.scene.key);
 
     this.input.addPointer(2);
 
@@ -178,6 +179,16 @@ export class Start extends Phaser.Scene {
       frameRate: 24,
       repeat: -1,
     });
+
+    this.anims.create({
+      key: "vfx-rainbowball",
+      frames: this.anims.generateFrameNumbers("vfx-rainbowball", {
+        start: 0,
+        end: 3,
+      }),
+      frameRate: 24,
+      repeat: -1,
+    });
     // =================================================
     // COLLECTIBLE + TRAP ANIMATIONS
     // =================================================
@@ -244,6 +255,17 @@ export class Start extends Phaser.Scene {
     const playerSpawnY = checkpoint?.y ?? 350;
 
     this.player = this.spawnPlayer(playerSpawnX, playerSpawnY, key);
+    GameState.setPlayer(this.player); //needed for UI
+
+    //  CLEANUP when scene shuts down
+    //     UIScene is persistent
+    // Gameplay scenes are destroyed / restarted
+    // The player instance becomes invalid on shutdown
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+      if (GameState.player === this.player) {
+        GameState.clearPlayer();
+      }
+    });
 
     this.events.once("player-dead", () => {
       this.restartFromCheckpoint();
@@ -331,12 +353,12 @@ export class Start extends Phaser.Scene {
 
     // Game start narration
     // INTRO first
-    this.events.emit("narrative:trigger", Tutorials.INTRO);
+    // this.events.emit("narrative:trigger", Tutorials.INTRO);
 
     // MOVE after intro ends
-    this.time.delayedCall(4000, () => {
-      this.events.emit("narrative:trigger", Tutorials.MOVE);
-    });
+    // this.time.delayedCall(4000, () => {
+    //   this.events.emit("narrative:trigger", Tutorials.MOVE);
+    // });
 
     this.physics.world.on("worldbounds", (body) => {
       if (!this.player || this.player.isDead) return;
@@ -362,10 +384,10 @@ export class Start extends Phaser.Scene {
     // this.bgTrees.tilePositionX = camX * this.bgTrees.parallaxFactor;
 
     // inside update()
-    if (!this._jumpHintShown && Math.abs(this.player.body.velocity.x) > 5) {
-      this._jumpHintShown = true;
-      this.events.emit("narrative:trigger", Tutorials.JUMP);
-    }
+    // if (!this._jumpHintShown && Math.abs(this.player.body.velocity.x) > 5) {
+    //   this._jumpHintShown = true;
+    //   this.events.emit("narrative:trigger", Tutorials.JUMP);
+    // }
   }
 
   // =================================================
@@ -392,6 +414,10 @@ export class Start extends Phaser.Scene {
     this.playerHealthUI = new PlayerHealthUI(this, player);
 
     this.player = player;
+
+    // expose player to other scenes (read-only reference)
+    this.registry.set("player", player);
+
     return player;
   }
 
@@ -399,12 +425,11 @@ export class Start extends Phaser.Scene {
     const cam = this.cameras.main;
 
     this.events.emit("narrative:trigger", Tutorials.GAME_OVER);
-    // short pause after death anim
+
     this.time.delayedCall(800, () => {
       cam.fadeOut(1000, 0, 0, 0);
 
       cam.once("camerafadeoutcomplete", () => {
-        GameState.playerStats.hp = GameState.playerStats.maxHp;
         this.scene.restart();
       });
     });
