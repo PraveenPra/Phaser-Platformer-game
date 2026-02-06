@@ -302,7 +302,7 @@ export const UnifiedStates = {
 
       // Wait until combat system releases control
       if (!e.isAttacking && !e.isDead) {
-        if (e.canAir && !e.bodyLayer.body.onFloor()) {
+        if (e.canAir) {
           e.state.setState("airIdle");
         } else {
           e.state.setState("idle");
