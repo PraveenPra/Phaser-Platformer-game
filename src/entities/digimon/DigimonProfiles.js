@@ -59,7 +59,7 @@ export const DIGIMON_PROFILES = {
             x: 220,
             y: -350,
           },
-          hitType: "launch",
+          // hitType: "launch",
         },
         fireFrame: 5,
         cooldown: 800,
@@ -210,8 +210,8 @@ export const DIGIMON_PROFILES = {
           offsetY: 5,
           duration: 80, // per-frame lifetime
           knockback: {
-            x: 220,
-            y: -520,
+            x: 820,
+            y: -880,
           },
           hitType: "launch",
           // duration: 320,//ms
@@ -259,14 +259,6 @@ export const DIGIMON_PROFILES = {
       domains: ["ground", "air"],
       default: "ground",
     },
-    // visual: {
-    //   originX: 0.5,
-    //   originY: 1,
-    //   yOffset: -4,
-    //   anims: {
-    //     "attack-C": -4,
-    //   },
-    // },
 
     attacks: {
       main: {
@@ -298,6 +290,11 @@ export const DIGIMON_PROFILES = {
           offsetX: 19,
           offsetY: 24,
           lifetime: 1200,
+          knockback: {
+            x: 220,
+            y: -350,
+          },
+          hitType: "launch",
         },
         fireFrame: 6,
         cooldown: 800,

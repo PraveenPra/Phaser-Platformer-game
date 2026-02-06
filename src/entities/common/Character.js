@@ -134,7 +134,7 @@ export class Character extends Phaser.GameObjects.Container {
         this.state.setState("dead");
       } else {
         const hitType = damage.hitType ?? "normal";
-        this.state.setState(hitType === "launch" ? "airHit" : "hit", damage);
+        this.state.setState(hitType === "launch" ? "launch" : "hit", damage);
       }
 
       return;
@@ -158,7 +158,7 @@ export class Character extends Phaser.GameObjects.Container {
       this.state.setState("dead");
     } else {
       const hitType = damage.hitType ?? "normal";
-      this.state.setState(hitType === "launch" ? "airHit" : "hit", damage);
+      this.state.setState(hitType === "launch" ? "launch" : "hit", damage);
     }
   }
 }

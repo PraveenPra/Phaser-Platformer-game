@@ -176,8 +176,15 @@ export const UnifiedStates = {
       if (e.canAir && e.movement.switchDomain) {
         e.movement.switchDomain("air");
       }
+      // Micro-delay before hover (feels amazing)
+      body.setAllowGravity(true);
 
-      body.setAllowGravity(false);
+      e.scene.time.delayedCall(120, () => {
+        if (e.state.current === "airIdle") {
+          body.setAllowGravity(false);
+        }
+      });
+
       body.setAcceleration(0, 0);
       body.setDrag(move.airDecel, move.airDecel);
 
@@ -348,7 +355,7 @@ export const UnifiedStates = {
     },
   },
 
-  airHit: {
+  launch: {
     enter(e, data) {
       if (e.isDead) return;
 
@@ -357,47 +364,79 @@ export const UnifiedStates = {
 
       const body = e.bodyLayer.body;
 
-      // 🔁 FORCE AIR DOMAIN IF POSSIBLE
+      // FORCE AIR DOMAIN (important for hybrids)
       if (e.canAir && e.movement.switchDomain) {
         e.movement.switchDomain("air");
       }
 
+      // 🔥 CRITICAL: gravity stays ON
       body.setAllowGravity(true);
 
-      if (!data?.knockback) {
-        body.setVelocity(0, 0);
-        body.setAcceleration(0, 0);
-      }
+      // Shape the throw (NOT linear)
+      const kb = data?.knockback ?? { x: 180, y: -420 };
+      const dir =
+        data?.source?.x !== undefined ? Math.sign(e.x - data.source.x) || 1 : 1;
 
-      body.setDrag(600, 600);
+      body.setVelocity(kb.x * dir, kb.y);
 
-      AudioManager.playSFX(e.scene, "sfx-hurt", { volume: 0.9 });
-      e.visual.play(`${e.key}_take-hit`);
+      // Low drag → arc, not float
+      body.setDrag(40, 20);
 
-      const baseStun = 360;
-      const stun = e.hitStunMultiplier
-        ? baseStun * e.hitStunMultiplier
-        : baseStun;
+      // Lock animation
+      e.visual.play(`${e.key}_jump`);
 
-      e.scene.time.delayedCall(stun, () => {
+      // No control window
+      e._launchTimer = e.scene.time.delayedCall(260, () => {
         if (!e.isDead) {
-          if (e.canAir) {
-            e.state.setState("airIdle");
-          } else {
-            e.state.setState("idle");
-          }
+          e.state.setState("airRecover");
         }
       });
     },
 
-    update() {},
+    update(e) {
+      // no input, no transitions here
+    },
 
     exit(e) {
-      e.isInvincible = false;
+      if (e._launchTimer) {
+        e._launchTimer.remove();
+        e._launchTimer = null;
+      }
+    },
+  },
 
+  airRecover: {
+    enter(e) {
       const body = e.bodyLayer.body;
-      body.setDrag(0, 0);
-      body.setAcceleration(0, 0);
+
+      body.setAllowGravity(true);
+
+      // Slight drag so fall curves, not snaps
+      body.setDrag(120, 80);
+
+      // DO NOT hover yet
+      e.visual.play(`${e.key}_fly`, true);
+      e.visual.sprite.anims.timeScale = 0.4; // opening wings, slow
+    },
+
+    update(e) {
+      const body = e.bodyLayer.body;
+
+      // ✅ WAIT until character is clearly falling
+      if (body.velocity.y > 60) {
+        e.state.setState("airIdle");
+        return;
+      }
+
+      // Safety: land early if grounded
+      if (e.canGround && body.onFloor()) {
+        e.movement.switchDomain("ground");
+        e.state.setState("idle");
+      }
+    },
+
+    exit(e) {
+      e.visual.sprite.anims.timeScale = 1;
     },
   },
 
