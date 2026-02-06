@@ -21,7 +21,7 @@ export function spawnAttackHitbox(scene, owner, config) {
   hitbox.impactVFX = config.impactVFX;
 
   // Reactions
-  hitbox.hitReaction = config.hitReaction ?? "light";
+  hitbox.hitReaction = config.hitReaction ?? "flinch";
 
   hitbox.hitTargets = new Set(); // 🔒 per-attack damage control
 

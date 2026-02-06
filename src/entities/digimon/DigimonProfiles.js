@@ -203,7 +203,7 @@ export const DIGIMON_PROFILES = {
           offsetY: 5,
           duration: 80, // per-frame lifetime
 
-          hitReaction: "launch",
+          hitReaction: "flinch",
           // duration: 320,//ms
         },
         cooldown: 500,

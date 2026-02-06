@@ -111,7 +111,7 @@ export class Character extends Phaser.GameObjects.Container {
 
     if (this.isDead || this.isInvincible) return;
 
-    const reaction = HitReactions[hitReaction ?? "light"];
+    const reaction = HitReactions[hitReaction ?? "flinch"];
 
     ReactionApplier.apply(this, reaction, damage);
 
