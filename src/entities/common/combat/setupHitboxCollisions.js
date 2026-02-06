@@ -42,9 +42,14 @@ export function setupHitboxCollisions(scene, hitbox, targets, options = {}) {
       amount: hb.damage,
       source: hb.owner,
       hitbox: hb,
-      knockback: hb.knockback,
+      hitType: hb.hitType,
       type: hb.owner.role === "player" ? "player-attack" : "enemy-attack",
     });
+
+    // target.hitReaction.handleHit({
+    //   reaction: hit.reaction, // or "light" for now
+    //   force: hit.force, // whatever you already pass
+    // });
 
     if (destroyOnHit) {
       hb.destroy();

@@ -38,8 +38,6 @@ export class PlayerInput {
   }
 
   update(entity) {
-    console.log("Virtual state:", this.virtual);
-
     entity.input = {
       left: this.cursors.left.isDown || this.virtual.left,
       right: this.cursors.right.isDown || this.virtual.right,

@@ -10,6 +10,8 @@ import { MultiDomainMovement } from "../../systems/MultiDomainMovement.js";
 import { UnifiedStates } from "../common/states/UnifiedStates.js";
 import { doHitFlash } from "./vfx/doHitFlash.js";
 import { GameState } from "/src/GameState.js";
+import { ReactionApplier } from "/src/entities/common/combat/ReactionApplier.js";
+import { HitReactions } from "/src/entities/common/combat/HitReactions.js";
 
 export class Character extends Phaser.GameObjects.Container {
   constructor(scene, x, y, textureKey, profile, initialState) {
@@ -105,21 +107,13 @@ export class Character extends Phaser.GameObjects.Container {
   }
 
   takeDamage(damage) {
-    const { amount, source, knockback, hitType } = damage;
+    const { amount, source, hitType } = damage;
 
     if (this.isDead || this.isInvincible) return;
 
-    if (knockback && this.bodyLayer?.body) {
-      const dir =
-        source && source.x !== undefined
-          ? Math.sign(this.x - source.x) || 1
-          : 1;
+    const reactionKey = damage.hitType === "launch" ? "LAUNCH" : "LIGHT";
 
-      const kbX = (knockback.x ?? 0) * dir;
-      const kbY = knockback.y ?? 0;
-
-      this.bodyLayer.body.setVelocity(kbX, kbY);
-    }
+    ReactionApplier.apply(this, HitReactions[reactionKey], damage);
 
     // ======================
     // PLAYER DAMAGE

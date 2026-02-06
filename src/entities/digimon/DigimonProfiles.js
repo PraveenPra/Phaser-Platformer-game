@@ -21,10 +21,6 @@ export const DIGIMON_PROFILES = {
           offsetY: 19,
           // duration: 320,//ms
           duration: 80, // per-frame lifetime
-          knockback: {
-            x: 220,
-            y: -120,
-          },
         },
         cooldown: 300,
       },
@@ -55,10 +51,7 @@ export const DIGIMON_PROFILES = {
           offsetX: 26,
           offsetY: 20,
           lifetime: 1900,
-          knockback: {
-            x: 220,
-            y: -350,
-          },
+
           // hitType: "launch",
         },
         fireFrame: 5,
@@ -209,10 +202,7 @@ export const DIGIMON_PROFILES = {
           offsetX: 16,
           offsetY: 5,
           duration: 80, // per-frame lifetime
-          knockback: {
-            x: 820,
-            y: -880,
-          },
+
           hitType: "launch",
           // duration: 320,//ms
         },
@@ -290,10 +280,7 @@ export const DIGIMON_PROFILES = {
           offsetX: 19,
           offsetY: 24,
           lifetime: 1200,
-          knockback: {
-            x: 220,
-            y: -350,
-          },
+
           hitType: "launch",
         },
         fireFrame: 6,
