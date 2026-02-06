@@ -107,11 +107,11 @@ export class Character extends Phaser.GameObjects.Container {
   }
 
   takeDamage(damage) {
-    const { amount, hitType } = damage;
+    const { amount, hitReaction } = damage;
 
     if (this.isDead || this.isInvincible) return;
 
-    const reaction = HitReactions[hitType ?? "light"];
+    const reaction = HitReactions[hitReaction ?? "light"];
 
     ReactionApplier.apply(this, reaction, damage);
 

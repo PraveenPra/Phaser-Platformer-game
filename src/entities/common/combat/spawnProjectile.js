@@ -28,7 +28,7 @@ export function spawnProjectile(scene, owner, attack) {
   p.owner = owner;
   p.hitStop = attack.hitStop;
   // Reactions
-  p.hitType = attack.projectile.hitType ?? "light";
+  p.hitReaction = attack.projectile.hitReaction ?? "light";
 
   const currentAttackKey = owner?.currentAttackKey || null;
   console.warn("attk", owner?.profile?.attacks[currentAttackKey]?.impactVFX);

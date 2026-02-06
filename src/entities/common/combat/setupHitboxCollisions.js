@@ -42,7 +42,7 @@ export function setupHitboxCollisions(scene, hitbox, targets, options = {}) {
       amount: hb.damage,
       source: hb.owner,
       hitbox: hb,
-      hitType: hb.hitType,
+      hitReaction: hb.hitReaction,
       type: hb.owner.role === "player" ? "player-attack" : "enemy-attack",
     });
 
