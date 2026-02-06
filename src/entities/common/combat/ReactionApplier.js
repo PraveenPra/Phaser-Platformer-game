@@ -3,26 +3,30 @@ export class ReactionApplier {
     const body = target.bodyLayer.body;
     const source = data.source;
 
-    // Direction
+    // direction
     const dir =
       source && source.x !== undefined
         ? Math.sign(target.x - source.x) || 1
         : 1;
 
-    // Switch to air if needed
-    if (reaction.state === "launch" && target.canAir) {
-      target.movement?.switchDomain?.("air");
+    // domain switch
+    if (reaction.switchDomain && target.canAir) {
+      target.movement?.switchDomain?.(reaction.switchDomain);
       body.setAllowGravity(true);
     }
 
-    // Apply launch force
-    if (reaction.launch) {
-      body.setVelocity(reaction.launch.x * dir, reaction.launch.y);
-
+    // force
+    if (reaction.force) {
+      body.setVelocity(reaction.force.x * dir, reaction.force.y);
       body.setDrag(40, 20);
     }
 
-    // Transition to FSM state
+    // invincibility
+    if (reaction.invincible) {
+      target.isInvincible = true;
+    }
+
+    // FSM transition
     target.state.setState(reaction.state, {
       reaction,
       source,

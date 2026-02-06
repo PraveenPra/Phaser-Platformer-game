@@ -254,7 +254,7 @@ export const DIGIMON_PROFILES = {
       main: {
         type: "melee",
         anim: "attack-A",
-        damage: 30,
+        damage: 10,
         fireFrames: [5, 9], // active hit window
         hitbox: {
           width: 20,
@@ -263,6 +263,7 @@ export const DIGIMON_PROFILES = {
           offsetY: 23,
           duration: 80, // per-frame lifetime
           // duration: 320,
+          hitType: "launch",
         },
         cooldown: 100,
       },
@@ -280,7 +281,6 @@ export const DIGIMON_PROFILES = {
           offsetX: 19,
           offsetY: 24,
           lifetime: 1200,
-
           hitType: "launch",
         },
         fireFrame: 6,

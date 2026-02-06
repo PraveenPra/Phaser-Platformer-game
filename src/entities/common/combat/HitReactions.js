@@ -1,19 +1,17 @@
 export const HitReactions = {
-  LIGHT: {
+  light: {
     state: "hit",
+    invincible: true,
   },
 
-  LAUNCH: {
+  launch: {
     state: "launch",
-
-    launch: {
-      x: 180,
-      y: -420,
-    },
-
+    force: { x: 180, y: -420 },
     timing: {
-      toRecover: 260, // ms before airRecover
-      fallThreshold: 60, // velocity.y > this → recover
+      toRecover: 260,
+      fallThreshold: 60,
     },
+    switchDomain: "air",
+    invincible: true,
   },
 };

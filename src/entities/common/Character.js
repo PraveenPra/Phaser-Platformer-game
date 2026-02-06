@@ -107,13 +107,13 @@ export class Character extends Phaser.GameObjects.Container {
   }
 
   takeDamage(damage) {
-    const { amount, source, hitType } = damage;
+    const { amount, hitType } = damage;
 
     if (this.isDead || this.isInvincible) return;
 
-    const reactionKey = damage.hitType === "launch" ? "LAUNCH" : "LIGHT";
+    const reaction = HitReactions[hitType ?? "light"];
 
-    ReactionApplier.apply(this, HitReactions[reactionKey], damage);
+    ReactionApplier.apply(this, reaction, damage);
 
     // ======================
     // PLAYER DAMAGE
@@ -126,9 +126,6 @@ export class Character extends Phaser.GameObjects.Container {
       if (this.stats.runtime.isDead) {
         this.isDead = true;
         this.state.setState("dead");
-      } else {
-        const hitType = damage.hitType ?? "normal";
-        this.state.setState(hitType === "launch" ? "launch" : "hit", damage);
       }
 
       return;
@@ -150,9 +147,6 @@ export class Character extends Phaser.GameObjects.Container {
     if (this.currentHp <= 0) {
       this.isDead = true;
       this.state.setState("dead");
-    } else {
-      const hitType = damage.hitType ?? "normal";
-      this.state.setState(hitType === "launch" ? "launch" : "hit", damage);
     }
   }
 }
