@@ -172,6 +172,11 @@ export const UnifiedStates = {
       const body = e.bodyLayer.body;
       const move = e.profile.move;
 
+      // FORCE AIR DOMAIN HERE (not only on jump / hit)
+      if (e.canAir && e.movement.switchDomain) {
+        e.movement.switchDomain("air");
+      }
+
       body.setAllowGravity(false);
       body.setAcceleration(0, 0);
       body.setDrag(move.airDecel, move.airDecel);
@@ -324,6 +329,59 @@ export const UnifiedStates = {
       e.scene.time.delayedCall(stun, () => {
         if (!e.isDead) {
           if (e.canAir && !body.onFloor()) {
+            e.state.setState("airIdle");
+          } else {
+            e.state.setState("idle");
+          }
+        }
+      });
+    },
+
+    update() {},
+
+    exit(e) {
+      e.isInvincible = false;
+
+      const body = e.bodyLayer.body;
+      body.setDrag(0, 0);
+      body.setAcceleration(0, 0);
+    },
+  },
+
+  airHit: {
+    enter(e, data) {
+      if (e.isDead) return;
+
+      e.isInvincible = true;
+      e.isAttacking = false;
+
+      const body = e.bodyLayer.body;
+
+      // 🔁 FORCE AIR DOMAIN IF POSSIBLE
+      if (e.canAir && e.movement.switchDomain) {
+        e.movement.switchDomain("air");
+      }
+
+      body.setAllowGravity(true);
+
+      if (!data?.knockback) {
+        body.setVelocity(0, 0);
+        body.setAcceleration(0, 0);
+      }
+
+      body.setDrag(600, 600);
+
+      AudioManager.playSFX(e.scene, "sfx-hurt", { volume: 0.9 });
+      e.visual.play(`${e.key}_take-hit`);
+
+      const baseStun = 360;
+      const stun = e.hitStunMultiplier
+        ? baseStun * e.hitStunMultiplier
+        : baseStun;
+
+      e.scene.time.delayedCall(stun, () => {
+        if (!e.isDead) {
+          if (e.canAir) {
             e.state.setState("airIdle");
           } else {
             e.state.setState("idle");
