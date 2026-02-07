@@ -366,7 +366,7 @@ export class Start extends Phaser.Scene {
       if (body.gameObject === this.player) {
         // bottom only
         if (body.blocked.down) {
-          this.player.takeDamage(9999);
+          this.player.forceKill("void");
         }
       }
     });
