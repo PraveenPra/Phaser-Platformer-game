@@ -363,9 +363,14 @@ export class Start extends Phaser.Scene {
     this.physics.world.on("worldbounds", (body) => {
       if (!this.player || this.player.isDead) return;
 
-      if (body.gameObject === this.player) {
+      if (body === this.player.bodyLayer.body) {
         // bottom only
-        if (body.blocked.down) {
+        if (
+          body.blocked.down &&
+          !body.blocked.left &&
+          !body.blocked.right &&
+          !body.blocked.up
+        ) {
           this.player.forceKill("void");
         }
       }
@@ -621,15 +626,12 @@ export class Start extends Phaser.Scene {
     const linkButton = (btn, key) => {
       btn.on("pointerdown", () => {
         this.player.inputHandler.virtual[key] = true;
-        console.log(`Pointer DOWN ${key}`, this.player.inputHandler.virtual);
       });
       btn.on("pointerup", () => {
         this.player.inputHandler.virtual[key] = false;
-        console.log(`Pointer UP ${key}`, this.player.inputHandler.virtual);
       });
       btn.on("pointerout", () => {
         this.player.inputHandler.virtual[key] = false;
-        console.log(`Pointer OUT ${key}`, this.player.inputHandler.virtual);
       });
     };
 
