@@ -30,6 +30,9 @@ export function spawnProjectile(scene, owner, attack) {
   // Reactions
   p.hitReaction = attack.projectile.hitReaction ?? "flinch";
 
+  // Status Effects(burn,freeze)
+  p.statusEffect = attack.projectile.statusEffect ?? null;
+
   const currentAttackKey = owner?.currentAttackKey || null;
   console.warn("attk", owner?.profile?.attacks[currentAttackKey]?.impactVFX);
   p.impactVFX =

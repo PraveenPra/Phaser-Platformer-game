@@ -19,7 +19,7 @@ export const DIGIMON_PROFILES = {
           height: 15,
           offsetX: 19,
           offsetY: 19,
-          // duration: 320,//ms
+          statusEffect: "burn",
           duration: 80, // per-frame lifetime
         },
         cooldown: 300,
@@ -51,7 +51,7 @@ export const DIGIMON_PROFILES = {
           offsetX: 26,
           offsetY: 20,
           lifetime: 1900,
-
+          statusEffect: "burn",
           // hitReaction: "launch",
         },
         fireFrame: 5,
@@ -202,7 +202,7 @@ export const DIGIMON_PROFILES = {
           offsetX: 16,
           offsetY: 5,
           duration: 80, // per-frame lifetime
-
+          statusEffect: "slow",
           hitReaction: "flinch",
           // duration: 320,//ms
         },

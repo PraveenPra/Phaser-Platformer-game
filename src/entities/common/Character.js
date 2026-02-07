@@ -12,6 +12,7 @@ import { doHitFlash } from "./vfx/doHitFlash.js";
 import { GameState } from "/src/GameState.js";
 import { ReactionApplier } from "/src/entities/common/combat/ReactionApplier.js";
 import { HitReactions } from "/src/entities/common/combat/HitReactions.js";
+import { StatusEffectManager } from "../common/status/StatusEffectManager.js";
 
 export class Character extends Phaser.GameObjects.Container {
   constructor(scene, x, y, textureKey, profile, initialState) {
@@ -23,6 +24,7 @@ export class Character extends Phaser.GameObjects.Container {
 
     this.bodyLayer = new CharacterBody(scene, this, profile);
     this.visual = new CharacterVisual(scene, this, textureKey, profile);
+    this.statusEffects = new StatusEffectManager(this);
 
     // Decide initial FSM state based on default movement domain
     let startState = initialState;
@@ -94,6 +96,7 @@ export class Character extends Phaser.GameObjects.Container {
   update(dt) {
     // this.combat.update(dt);
     this.state.update(dt);
+    this.statusEffects.update(dt);
   }
 
   canAttack(name) {

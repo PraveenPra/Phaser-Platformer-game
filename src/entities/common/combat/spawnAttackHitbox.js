@@ -22,6 +22,8 @@ export function spawnAttackHitbox(scene, owner, config) {
 
   // Reactions
   hitbox.hitReaction = config.hitReaction ?? "flinch";
+  // Status Effects
+  hitbox.statusEffect = config.statusEffect ?? null;
 
   hitbox.hitTargets = new Set(); // 🔒 per-attack damage control
 

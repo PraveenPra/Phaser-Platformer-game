@@ -1,5 +1,7 @@
 import { spawnImpactVFX } from "../vfx/spawnImpactVFX.js";
 import { doHitStop } from "../vfx/doHitStop.js";
+import { StatusEffectApplier } from "/src/entities/common/status/StatusEffectApplier.js";
+
 export function setupHitboxCollisions(scene, hitbox, targets, options = {}) {
   const { destroyOnHit = false } = options;
 
@@ -46,10 +48,16 @@ export function setupHitboxCollisions(scene, hitbox, targets, options = {}) {
       type: hb.owner.role === "player" ? "player-attack" : "enemy-attack",
     });
 
-    // target.hitReaction.handleHit({
-    //   reaction: hit.reaction, // or "light" for now
-    //   force: hit.force, // whatever you already pass
-    // });
+    // =========================
+    // STATUS EFFECT APPLICATION
+    // =========================
+    //  Note: Order matters
+    // Damage + reaction first
+    // Status after
+    // Status NEVER causes reactions
+    if (hb.statusEffect) {
+      StatusEffectApplier.apply(target, hb.statusEffect);
+    }
 
     if (destroyOnHit) {
       hb.destroy();
