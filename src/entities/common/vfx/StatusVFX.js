@@ -1,29 +1,25 @@
 export class StatusVFX {
   static attach(owner, key, offset = { x: 0, y: 0 }) {
     const scene = owner.scene;
-
     const vfx = scene.add.sprite(0, 0, key);
+
     vfx.setDepth(owner.depth + 1);
     vfx.play(key);
 
-    vfx.followTarget = owner;
-    vfx.offset = offset;
-
-    scene.events.on("update", () => {
+    const updateHandler = () => {
       if (!vfx.active || !owner.active) return;
 
       const body = owner.bodyLayer?.body;
-
       if (body) {
-        // anchor to physics body center
-        vfx.setPosition(
-          body.center.x + vfx.offset.x,
-          body.center.y + vfx.offset.y,
-        );
-      } else {
-        // fallback (should almost never hit)
-        vfx.setPosition(owner.x + vfx.offset.x, owner.y + vfx.offset.y);
+        vfx.setPosition(body.center.x + offset.x, body.center.y + offset.y);
       }
+    };
+
+    scene.events.on("update", updateHandler);
+
+    // 🔥 cleanup hook
+    vfx.once("destroy", () => {
+      scene.events.off("update", updateHandler);
     });
 
     return vfx;
@@ -31,8 +27,11 @@ export class StatusVFX {
 
   static pulse(vfx) {
     if (!vfx) return;
+    if (!vfx.active) return;
+    if (!vfx.scene) return;
 
     vfx.setAlpha(1);
+
     vfx.scene.tweens.add({
       targets: vfx,
       alpha: 0.6,

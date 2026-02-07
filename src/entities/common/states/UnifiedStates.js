@@ -438,6 +438,10 @@ export const UnifiedStates = {
 
   dead: {
     enter(e) {
+      // purge all status effects immediately.Order matters.
+      // If death animation plays before cleanup, ticks can sneak in.
+      e.statusEffects?.clearAll();
+
       e.isDead = true;
       e.isInvincible = true;
 

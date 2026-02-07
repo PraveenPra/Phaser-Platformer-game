@@ -37,6 +37,8 @@ export class StatusEffectManager {
   }
 
   update(dt) {
+    if (!this.owner.active || this.owner.isDead) return;
+
     for (const [id, effect] of this.active) {
       effect.remaining -= dt;
       effect.elapsed += dt;
@@ -69,5 +71,14 @@ export class StatusEffectManager {
 
   has(id) {
     return this.active.has(id);
+  }
+
+  clearAll() {
+    for (const [id, effect] of this.active) {
+      if (effect.def.onRemove) {
+        effect.def.onRemove(this.owner, effect);
+      }
+    }
+    this.active.clear();
   }
 }
