@@ -12,6 +12,7 @@ import { doHitFlash } from "./vfx/doHitFlash.js";
 import { GameState } from "/src/GameState.js";
 import { ReactionApplier } from "/src/entities/common/combat/ReactionApplier.js";
 import { HitReactions } from "/src/entities/common/combat/HitReactions.js";
+import { StatusEffectManager } from "../common/status/StatusEffectManager.js";
 
 export class Character extends Phaser.GameObjects.Container {
   constructor(scene, x, y, textureKey, profile, initialState) {
@@ -23,6 +24,7 @@ export class Character extends Phaser.GameObjects.Container {
 
     this.bodyLayer = new CharacterBody(scene, this, profile);
     this.visual = new CharacterVisual(scene, this, textureKey, profile);
+    this.statusEffects = new StatusEffectManager(this);
 
     // Decide initial FSM state based on default movement domain
     let startState = initialState;
@@ -92,8 +94,8 @@ export class Character extends Phaser.GameObjects.Container {
   }
 
   update(dt) {
-    // this.combat.update(dt);
     this.state.update(dt);
+    this.statusEffects.update(dt);
   }
 
   canAttack(name) {
@@ -107,13 +109,14 @@ export class Character extends Phaser.GameObjects.Container {
   }
 
   takeDamage(damage) {
-    const { amount, hitType } = damage;
+    const { amount, hitReaction } = damage;
 
     if (this.isDead || this.isInvincible) return;
 
-    const reaction = HitReactions[hitType ?? "light"];
-
-    ReactionApplier.apply(this, reaction, damage);
+    if (hitReaction) {
+      const reaction = HitReactions[hitReaction];
+      ReactionApplier.apply(this, reaction, damage);
+    }
 
     // ======================
     // PLAYER DAMAGE
@@ -143,6 +146,33 @@ export class Character extends Phaser.GameObjects.Container {
       this.healthBar.show();
     }
     this.healthBar?.draw();
+
+    if (this.currentHp <= 0) {
+      this.isDead = true;
+      this.state.setState("dead");
+    }
+  }
+
+  // ======================
+  // EFFECT / DOT DAMAGE
+  // ======================
+  applyEffectDamage(amount) {
+    if (this.isDead) return;
+
+    // PLAYER
+    if (this.type === "player") {
+      this.stats.takeDamage(amount);
+
+      if (this.stats.runtime.isDead) {
+        this.isDead = true;
+        this.state.setState("dead");
+      }
+      return;
+    }
+
+    // ENEMY
+    this.currentHp -= amount;
+    this.currentHp = Math.max(0, this.currentHp);
 
     if (this.currentHp <= 0) {
       this.isDead = true;

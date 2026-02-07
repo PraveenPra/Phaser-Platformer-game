@@ -8,7 +8,6 @@ export function spawnImpactVFX(
   { type = "impact-hit", damage = 0, sourceRole = "player" },
 ) {
   const profile = IMPACT_PROFILES[sourceRole] ?? IMPACT_PROFILES.player;
-  console.warn("spawnImpactVFX", type, profile);
   const vfx = scene.add.sprite(x, y, type);
 
   const baseScale = Phaser.Math.Clamp(damage / 10, 1, 2.2);

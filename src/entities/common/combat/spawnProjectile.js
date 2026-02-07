@@ -28,10 +28,13 @@ export function spawnProjectile(scene, owner, attack) {
   p.owner = owner;
   p.hitStop = attack.hitStop;
   // Reactions
-  p.hitType = attack.projectile.hitType ?? "light";
+  p.hitReaction = attack.projectile.hitReaction ?? "flinch";
+
+  // Status Effects(burn,freeze)
+  p.statusEffect = attack.projectile.statusEffect ?? null;
 
   const currentAttackKey = owner?.currentAttackKey || null;
-  console.warn("attk", owner?.profile?.attacks[currentAttackKey]?.impactVFX);
+
   p.impactVFX =
     owner?.profile?.attacks[currentAttackKey]?.impactVFX || "vfx-fireblast";
   // p.impactVFX = attack.impactVFX || "vfx-fireblast";

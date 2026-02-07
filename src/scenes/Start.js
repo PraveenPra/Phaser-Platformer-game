@@ -189,6 +189,16 @@ export class Start extends Phaser.Scene {
       frameRate: 24,
       repeat: -1,
     });
+
+    this.anims.create({
+      key: "burn-fx",
+      frames: this.anims.generateFrameNumbers("burn-fx", {
+        start: 0,
+        end: 1,
+      }),
+      frameRate: 12,
+      repeat: -1,
+    });
     // =================================================
     // COLLECTIBLE + TRAP ANIMATIONS
     // =================================================
@@ -231,9 +241,7 @@ export class Start extends Phaser.Scene {
     // =================================================
     // ENEMIES GROUP (BEFORE PLAYER)
     // =================================================
-    this.enemies = this.physics.add.group({
-      runChildUpdate: true,
-    });
+    this.enemies = this.physics.add.group();
 
     // Register enemy class for spawner
     this.registry.set("EnemyClass", Enemy);
@@ -363,10 +371,15 @@ export class Start extends Phaser.Scene {
     this.physics.world.on("worldbounds", (body) => {
       if (!this.player || this.player.isDead) return;
 
-      if (body.gameObject === this.player) {
+      if (body === this.player.bodyLayer.body) {
         // bottom only
-        if (body.blocked.down) {
-          this.player.takeDamage(9999);
+        if (
+          body.blocked.down &&
+          !body.blocked.left &&
+          !body.blocked.right &&
+          !body.blocked.up
+        ) {
+          this.player.forceKill("void");
         }
       }
     });
@@ -376,6 +389,11 @@ export class Start extends Phaser.Scene {
     this.player.update(delta);
     this.playerHealthUI.draw();
     this.enemySpawner.update();
+
+    this.enemies.children.each((enemy) => {
+      if (!enemy || enemy.isDead) return;
+      enemy.update(delta);
+    });
 
     const camX = this.cameras.main.scrollX;
     this.bgSky.tilePositionX = camX * this.bgSky.parallaxFactor;
@@ -621,15 +639,12 @@ export class Start extends Phaser.Scene {
     const linkButton = (btn, key) => {
       btn.on("pointerdown", () => {
         this.player.inputHandler.virtual[key] = true;
-        console.log(`Pointer DOWN ${key}`, this.player.inputHandler.virtual);
       });
       btn.on("pointerup", () => {
         this.player.inputHandler.virtual[key] = false;
-        console.log(`Pointer UP ${key}`, this.player.inputHandler.virtual);
       });
       btn.on("pointerout", () => {
         this.player.inputHandler.virtual[key] = false;
-        console.log(`Pointer OUT ${key}`, this.player.inputHandler.virtual);
       });
     };
 

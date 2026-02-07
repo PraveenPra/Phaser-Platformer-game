@@ -19,7 +19,7 @@ export const DIGIMON_PROFILES = {
           height: 15,
           offsetX: 19,
           offsetY: 19,
-          // duration: 320,//ms
+          statusEffect: "burn",
           duration: 80, // per-frame lifetime
         },
         cooldown: 300,
@@ -51,8 +51,8 @@ export const DIGIMON_PROFILES = {
           offsetX: 26,
           offsetY: 20,
           lifetime: 1900,
-
-          // hitType: "launch",
+          statusEffect: "burn",
+          hitReaction: "launch",
         },
         fireFrame: 5,
         cooldown: 800,
@@ -195,15 +195,15 @@ export const DIGIMON_PROFILES = {
         type: "melee",
         anim: "attack-A",
         damage: 2,
-        fireFrames: [3, 5], // active hit window
+        fireFrames: [3], // active hit window
         hitbox: {
           width: 11,
           height: 11,
           offsetX: 16,
           offsetY: 5,
           duration: 80, // per-frame lifetime
-
-          hitType: "launch",
+          statusEffect: "burn",
+          hitReaction: "launch",
           // duration: 320,//ms
         },
         cooldown: 500,
@@ -263,7 +263,7 @@ export const DIGIMON_PROFILES = {
           offsetY: 23,
           duration: 80, // per-frame lifetime
           // duration: 320,
-          hitType: "launch",
+          hitReaction: "launch",
         },
         cooldown: 100,
       },
@@ -281,7 +281,7 @@ export const DIGIMON_PROFILES = {
           offsetX: 19,
           offsetY: 24,
           lifetime: 1200,
-          hitType: "launch",
+          hitReaction: "launch",
         },
         fireFrame: 6,
         cooldown: 800,

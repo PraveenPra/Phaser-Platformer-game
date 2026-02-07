@@ -64,15 +64,12 @@ export class MobileControls {
       const setupBtn = (btn, key) => {
         btn.on("pointerdown", () => {
           this.input.virtual[key] = true;
-          console.log(`Pointer DOWN on ${key}`, this.input.virtual);
         });
         btn.on("pointerup", () => {
           this.input.virtual[key] = false;
-          console.log(`Pointer UP on ${key}`, this.input.virtual);
         });
         btn.on("pointerout", () => {
           this.input.virtual[key] = false;
-          console.log(`Pointer OUT on ${key}`, this.input.virtual);
         });
       };
     };

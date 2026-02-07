@@ -321,7 +321,7 @@ export const UnifiedStates = {
       const body = e.bodyLayer.body;
 
       //Only freeze movement if NO knockback
-      if (!data?.knockback) {
+      if (!data?.reaction?.force) {
         body.setVelocity(0, 0);
         body.setAcceleration(0, 0);
       }
@@ -371,6 +371,11 @@ export const UnifiedStates = {
 
       const reaction = data?.reaction;
       const delay = reaction?.timing?.toRecover ?? 260;
+
+      if (e.canAir && e.movement.switchDomain) {
+        e.movement.switchDomain("air");
+        e.bodyLayer.body.setAllowGravity(true);
+      }
 
       e._launchTimer = e.scene.time.delayedCall(delay, () => {
         if (!e.isDead) {
@@ -433,6 +438,10 @@ export const UnifiedStates = {
 
   dead: {
     enter(e) {
+      // purge all status effects immediately.Order matters.
+      // If death animation plays before cleanup, ticks can sneak in.
+      e.statusEffects?.clearAll();
+
       e.isDead = true;
       e.isInvincible = true;
 
