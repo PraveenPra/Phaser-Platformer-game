@@ -202,7 +202,7 @@ export const DIGIMON_PROFILES = {
           offsetX: 16,
           offsetY: 5,
           duration: 80, // per-frame lifetime
-          statusEffect: "slow",
+          statusEffect: "burn",
           hitReaction: "flinch",
           // duration: 320,//ms
         },

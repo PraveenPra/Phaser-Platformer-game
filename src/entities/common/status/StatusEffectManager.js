@@ -39,10 +39,7 @@ export class StatusEffectManager {
         effect.elapsed >= effect.def.tickInterval
       ) {
         effect.elapsed = 0;
-        this.owner.takeDamage({
-          amount: effect.def.damagePerTick * effect.stacks,
-          hitReaction: null, // ❌ no reactions from DoT
-        });
+        this.owner.applyEffectDamage(effect.def.damagePerTick * effect.stacks);
       }
 
       if (effect.remaining <= 0) {
