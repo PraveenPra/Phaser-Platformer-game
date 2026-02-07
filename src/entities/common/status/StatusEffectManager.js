@@ -20,12 +20,20 @@ export class StatusEffectManager {
       return;
     }
 
-    this.active.set(effectDef.id, {
+    const entry = {
       def: effectDef,
       remaining: effectDef.duration,
       elapsed: 0,
       stacks: 1,
-    });
+      vfx: null,
+    };
+
+    // 🔥 APPLY HOOK
+    if (effectDef.onApply) {
+      effectDef.onApply(this.owner, entry);
+    }
+
+    this.active.set(effectDef.id, entry);
   }
 
   update(dt) {
@@ -33,16 +41,27 @@ export class StatusEffectManager {
       effect.remaining -= dt;
       effect.elapsed += dt;
 
-      // Tick damage
+      // Tick
       if (
         effect.def.damagePerTick &&
         effect.elapsed >= effect.def.tickInterval
       ) {
         effect.elapsed = 0;
+
         this.owner.applyEffectDamage(effect.def.damagePerTick * effect.stacks);
+
+        // 🔥 TICK HOOK (visual pulse, not hit)
+        if (effect.def.onTick) {
+          effect.def.onTick(this.owner, effect);
+        }
       }
 
       if (effect.remaining <= 0) {
+        // 🔥 REMOVE HOOK
+        if (effect.def.onRemove) {
+          effect.def.onRemove(this.owner, effect);
+        }
+
         this.active.delete(id);
       }
     }

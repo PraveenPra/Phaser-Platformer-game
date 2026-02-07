@@ -189,6 +189,16 @@ export class Start extends Phaser.Scene {
       frameRate: 24,
       repeat: -1,
     });
+
+    this.anims.create({
+      key: "burn-fx",
+      frames: this.anims.generateFrameNumbers("burn-fx", {
+        start: 0,
+        end: 1,
+      }),
+      frameRate: 12,
+      repeat: -1,
+    });
     // =================================================
     // COLLECTIBLE + TRAP ANIMATIONS
     // =================================================

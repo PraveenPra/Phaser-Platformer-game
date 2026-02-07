@@ -1,3 +1,5 @@
+import { StatusVFX } from "../vfx/StatusVFX.js";
+
 export const StatusEffects = {
   burn: {
     id: "burn",
@@ -6,7 +8,18 @@ export const StatusEffects = {
     damagePerTick: 2,
     stackable: false,
     refreshOnReapply: true,
-    vfx: "burn",
+
+    onApply(owner, effect) {
+      effect.vfx = StatusVFX.attach(owner, "burn-fx");
+    },
+
+    onTick(owner, effect) {
+      StatusVFX.pulse(effect.vfx);
+    },
+
+    onRemove(owner, effect) {
+      StatusVFX.remove(effect.vfx);
+    },
   },
 
   poison: {
@@ -17,7 +30,6 @@ export const StatusEffects = {
     stackable: true,
     maxStacks: 5,
     refreshOnReapply: false,
-    vfx: "poison",
   },
 
   stun: {

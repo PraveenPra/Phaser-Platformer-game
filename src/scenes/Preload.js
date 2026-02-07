@@ -127,6 +127,11 @@ export class Preload extends Phaser.Scene {
       frameWidth: 32,
       frameHeight: 32,
     });
+
+    this.load.spritesheet("burn-fx", "assets/vfx/burn-fx.png", {
+      frameWidth: 16,
+      frameHeight: 16,
+    });
     // COLLECTIBLES -------------
     this.load.atlas(
       "collectables",
