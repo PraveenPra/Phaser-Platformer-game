@@ -34,7 +34,7 @@ export function spawnProjectile(scene, owner, attack) {
   p.statusEffect = attack.projectile.statusEffect ?? null;
 
   const currentAttackKey = owner?.currentAttackKey || null;
-  console.warn("attk", owner?.profile?.attacks[currentAttackKey]?.impactVFX);
+
   p.impactVFX =
     owner?.profile?.attacks[currentAttackKey]?.impactVFX || "vfx-fireblast";
   // p.impactVFX = attack.impactVFX || "vfx-fireblast";

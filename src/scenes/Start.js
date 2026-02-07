@@ -241,9 +241,7 @@ export class Start extends Phaser.Scene {
     // =================================================
     // ENEMIES GROUP (BEFORE PLAYER)
     // =================================================
-    this.enemies = this.physics.add.group({
-      runChildUpdate: true,
-    });
+    this.enemies = this.physics.add.group();
 
     // Register enemy class for spawner
     this.registry.set("EnemyClass", Enemy);
@@ -391,6 +389,11 @@ export class Start extends Phaser.Scene {
     this.player.update(delta);
     this.playerHealthUI.draw();
     this.enemySpawner.update();
+
+    this.enemies.children.each((enemy) => {
+      if (!enemy || enemy.isDead) return;
+      enemy.update(delta);
+    });
 
     const camX = this.cameras.main.scrollX;
     this.bgSky.tilePositionX = camX * this.bgSky.parallaxFactor;

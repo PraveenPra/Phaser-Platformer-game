@@ -94,7 +94,6 @@ export class Character extends Phaser.GameObjects.Container {
   }
 
   update(dt) {
-    // this.combat.update(dt);
     this.state.update(dt);
     this.statusEffects.update(dt);
   }
