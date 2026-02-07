@@ -10,7 +10,12 @@ export const StatusEffects = {
     refreshOnReapply: true,
 
     onApply(owner, effect) {
-      effect.vfx = StatusVFX.attach(owner, "burn-fx");
+      // fire VFX on body
+      effect.vfx = StatusVFX.attach(
+        owner,
+        "burn-fx",
+        { x: 0, y: 1 }, // body-level placement);
+      );
     },
 
     onTick(owner, effect) {

@@ -1,19 +1,29 @@
 export class StatusVFX {
-  static attach(owner, key) {
+  static attach(owner, key, offset = { x: 0, y: 0 }) {
     const scene = owner.scene;
 
-    // example: small looping particles / sprite
-    const vfx = scene.add.sprite(owner.x, owner.y, key);
-
+    const vfx = scene.add.sprite(0, 0, key);
     vfx.setDepth(owner.depth + 1);
     vfx.play(key);
 
-    // follow owner
     vfx.followTarget = owner;
+    vfx.offset = offset;
 
     scene.events.on("update", () => {
       if (!vfx.active || !owner.active) return;
-      vfx.setPosition(owner.x, owner.y);
+
+      const body = owner.bodyLayer?.body;
+
+      if (body) {
+        // anchor to physics body center
+        vfx.setPosition(
+          body.center.x + vfx.offset.x,
+          body.center.y + vfx.offset.y,
+        );
+      } else {
+        // fallback (should almost never hit)
+        vfx.setPosition(owner.x + vfx.offset.x, owner.y + vfx.offset.y);
+      }
     });
 
     return vfx;
