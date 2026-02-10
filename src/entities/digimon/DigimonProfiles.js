@@ -12,7 +12,6 @@ export const DIGIMON_PROFILES = {
       main: {
         type: "melee",
         anim: "attack-A",
-        damage: 10,
         power: 1.0,
         fireFrames: [4, 7], // active hit window
         hitbox: {
@@ -28,7 +27,6 @@ export const DIGIMON_PROFILES = {
       skill1: {
         type: "melee",
         anim: "attack-B",
-        damage: 30,
         power: 2.0,
         fireFrames: [5], // active hit window
         hitbox: {
@@ -44,7 +42,6 @@ export const DIGIMON_PROFILES = {
       skill2: {
         type: "projectile",
         anim: "attack-C",
-        damage: 1,
         power: 2.5,
         impactVFX: "vfx-fireblast",
         projectile: {
@@ -63,7 +60,6 @@ export const DIGIMON_PROFILES = {
       skill3: {
         type: "melee",
         anim: "attack-D",
-        damage: 10,
         power: 3.0,
         fireFrames: [3, 4, 5, 6], // active hit window
         hitbox: {
@@ -79,7 +75,6 @@ export const DIGIMON_PROFILES = {
       skill4: {
         type: "projectile",
         anim: "attack-E",
-        damage: 18,
         power: 4.0,
         projectile: {
           texture: "big-fireball",
@@ -125,7 +120,6 @@ export const DIGIMON_PROFILES = {
       main: {
         type: "melee",
         anim: "attack-B",
-        damage: 30,
         power: 1.0,
         fireFrames: [3, 4, 5], // active hit window
         hitbox: {
@@ -141,7 +135,6 @@ export const DIGIMON_PROFILES = {
       skill1: {
         type: "melee",
         anim: "attack-C",
-        damage: 30,
         power: 1.0,
         fireFrames: [3, 4, 5], // active hit window
         hitbox: {
@@ -158,7 +151,6 @@ export const DIGIMON_PROFILES = {
     skill2: {
       type: "projectile",
       anim: "attack-B",
-      damage: 10,
       power: 1.0,
       projectile: {
         texture: "vfx-windball",
@@ -202,7 +194,6 @@ export const DIGIMON_PROFILES = {
       main: {
         type: "melee",
         anim: "attack-A",
-        damage: 2,
         power: 1.0,
         fireFrames: [3], // active hit window
         hitbox: {
@@ -221,7 +212,6 @@ export const DIGIMON_PROFILES = {
       skill1: {
         type: "melee",
         anim: "attack-C",
-        damage: 10,
         power: 1.0,
         fireFrames: [2], // active hit window
         hitbox: {
@@ -264,7 +254,6 @@ export const DIGIMON_PROFILES = {
       main: {
         type: "melee",
         anim: "attack-A",
-        damage: 10,
         power: 1.0,
         fireFrames: [5, 9], // active hit window
         hitbox: {
@@ -281,7 +270,6 @@ export const DIGIMON_PROFILES = {
       skill1: {
         type: "projectile",
         anim: "attack-B",
-        damage: 10,
         power: 1.5,
         hitStop: 50, // 👈 light hit
         impactVFX: "vfx-explosion",
@@ -302,7 +290,6 @@ export const DIGIMON_PROFILES = {
       skill2: {
         type: "projectile",
         anim: "attack-C",
-        damage: 10,
         power: 1.8,
         hitStop: 50, // 👈 light hit
         impactVFX: "vfx-explosion",
@@ -351,7 +338,7 @@ export const DIGIMON_PROFILES = {
       main: {
         type: "projectile",
         anim: "attack-A",
-        damage: 18,
+        power: 1.0,
         hitStop: 110, // 👈 heavy hit
         impactVFX: "impact-hit",
         projectile: {
@@ -367,7 +354,7 @@ export const DIGIMON_PROFILES = {
       skill1: {
         type: "projectile",
         anim: "attack-B",
-        damage: 18,
+        power: 1.0,
         projectile: {
           texture: "big-fireball",
           speed: 260,
@@ -382,7 +369,7 @@ export const DIGIMON_PROFILES = {
       skill2: {
         type: "melee",
         anim: "attack-C",
-        damage: 30,
+        power: 1.0,
         fireFrames: [3, 4, 5], // active hit window
         hitbox: {
           width: 20,
@@ -417,7 +404,7 @@ export const DIGIMON_PROFILES = {
       main: {
         type: "melee",
         anim: "attack-A",
-        damage: 30,
+        power: 1.0,
         fireFrames: [5, 6], // active hit window
         hitbox: {
           width: 20,
@@ -432,7 +419,7 @@ export const DIGIMON_PROFILES = {
       skill1: {
         type: "melee",
         anim: "attack-B",
-        damage: 2,
+        power: 1.0,
         fireFrames: [4, 5, 6, 7, 8, 9, 10], // active hit window
         hitbox: {
           width: 25,
@@ -448,7 +435,7 @@ export const DIGIMON_PROFILES = {
       skill2: {
         type: "projectile",
         anim: "attack-C",
-        damage: 5,
+        power: 1.0,
         projectile: {
           texture: "big-fireball",
           speed: 260,
@@ -490,7 +477,7 @@ export const DIGIMON_PROFILES = {
       main: {
         type: "projectile",
         anim: "attack-A",
-        damage: 18,
+        power: 1.0,
         projectile: {
           texture: "big-fireball",
           speed: 260,
@@ -504,7 +491,7 @@ export const DIGIMON_PROFILES = {
       skill1: {
         type: "projectile",
         anim: "attack-B",
-        damage: 18,
+        power: 1.0,
         projectile: {
           texture: "big-fireball",
           speed: 260,
@@ -549,7 +536,7 @@ export const DIGIMON_PROFILES = {
       main: {
         type: "projectile",
         anim: "attack-A",
-        damage: 18,
+        power: 1.0,
         hitStop: 50, // 👈 light hit
         impactVFX: "impact-hit",
         projectile: {
@@ -565,7 +552,7 @@ export const DIGIMON_PROFILES = {
       skill1: {
         type: "projectile",
         anim: "attack-B",
-        damage: 18,
+        power: 1.0,
         projectile: {
           texture: "big-fireball",
           speed: 260,
@@ -580,7 +567,7 @@ export const DIGIMON_PROFILES = {
       skill2: {
         type: "melee",
         anim: "attack-C",
-        damage: 30,
+        power: 1.0,
         fireFrames: [4], // active hit window
         hitbox: {
           width: 23,
@@ -623,7 +610,7 @@ export const DIGIMON_PROFILES = {
       main: {
         type: "projectile",
         anim: "attack-A",
-        damage: 18,
+        power: 1.0,
         impactVFX: "vfx-fireblast",
         projectile: {
           texture: "leafball",
@@ -639,7 +626,7 @@ export const DIGIMON_PROFILES = {
       skill1: {
         type: "projectile",
         anim: "attack-B",
-        damage: 18,
+        power: 1.0,
         impactVFX: "vfx-fireblast",
         projectile: {
           texture: "fireball",
@@ -679,7 +666,7 @@ export const DIGIMON_PROFILES = {
       main: {
         type: "melee",
         anim: "attack-A",
-        damage: 30,
+        power: 1.0,
         fireFrames: [4, 6], // active hit window
         hitbox: {
           width: 10,
@@ -694,7 +681,7 @@ export const DIGIMON_PROFILES = {
       skill1: {
         type: "projectile",
         anim: "attack-B",
-        damage: 18,
+        power: 1.0,
         projectile: {
           texture: "vfx-rainbowball",
           anim: "vfx-rainbowball",
@@ -710,7 +697,7 @@ export const DIGIMON_PROFILES = {
       skill2: {
         type: "projectile",
         anim: "attack-C",
-        damage: 18,
+        power: 1.0,
         hitStop: 110, // 👈 heavy hit
         impactVFX: "impact-hit",
         projectile: {

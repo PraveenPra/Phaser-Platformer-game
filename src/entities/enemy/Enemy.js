@@ -2,14 +2,15 @@ import { Character } from "../common/Character.js";
 import { resolveProfile } from "../digimon/resolveProfile.js";
 import { EnemyAI } from "./EnemyAI.js";
 import { CharacterHealthBar } from "../common/CharacterHealthBar.js";
+import { EnemyStats } from "/src/stats/EnemyStats.js";
 
 export class Enemy extends Character {
   constructor(scene, x, y, textureKey) {
     const profile = resolveProfile(textureKey);
     super(scene, x, y, textureKey, profile, "idle");
 
+    this.type = "enemy";
     this.role = "enemy";
-    this.currentHp = profile.combat.maxHp;
 
     this.healthBar = new CharacterHealthBar(scene, this, {
       visible: false, // show only on hit
@@ -19,6 +20,12 @@ export class Enemy extends Character {
     this.bodyLayer.body.setImmovable(true);
     this.bodyLayer.body.pushable = false;
     // optional
+
+    this.stats = new EnemyStats({
+      maxHp: profile.combat?.maxHp ?? 30,
+      attack: 6,
+      defense: 0,
+    });
 
     this.ai = new EnemyAI();
   }
