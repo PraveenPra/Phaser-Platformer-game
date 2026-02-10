@@ -50,7 +50,7 @@ export class CombatController {
         if (inWindow && !activeHitbox) {
           activeHitbox = spawnAttackHitbox(entity.scene, entity, {
             ...attack.hitbox,
-            damage: attack.damage,
+            damage: entity.getOutgoingDamage(attack),
           });
 
           setupHitboxCollisions(

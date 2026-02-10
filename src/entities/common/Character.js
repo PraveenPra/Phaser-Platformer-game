@@ -179,4 +179,19 @@ export class Character extends Phaser.GameObjects.Container {
       this.state.setState("dead");
     }
   }
+
+  getBaseAttackPower() {
+    return 1; // default for non-player for now
+  }
+
+  getAttackDamageMultiplier(attack) {
+    return attack.power ?? 1;
+  }
+
+  getOutgoingDamage(attack) {
+    const base = this.getBaseAttackPower();
+    const multiplier = this.getAttackDamageMultiplier(attack);
+
+    return Math.round(base * multiplier);
+  }
 }

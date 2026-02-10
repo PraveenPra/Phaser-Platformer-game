@@ -472,6 +472,9 @@ export class Start extends Phaser.Scene {
       cam.fadeOut(1500, 0, 0, 0);
 
       cam.once("camerafadeoutcomplete", () => {
+        GameState.levelUpPlayer();
+        // this.scene.start("NextScene");
+
         // later → go to next level / story scene
         this.scene.restart(); // TEMP
       });
