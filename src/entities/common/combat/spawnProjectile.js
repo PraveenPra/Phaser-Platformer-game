@@ -24,7 +24,7 @@ export function spawnProjectile(scene, owner, attack) {
   // =========================
   // Combat metadata (same as hitbox)
   // =========================
-  p.damage = attack.damage;
+  p.damage = owner.getOutgoingDamage(attack);
   p.owner = owner;
   p.hitStop = attack.hitStop;
   // Reactions

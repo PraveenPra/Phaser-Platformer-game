@@ -35,6 +35,18 @@ export const GameState = {
     defenseBonus: 0,
   },
 
+  levelUpPlayer() {
+    this.playerProgression.level++;
+
+    this.playerProgression.attackBonus += 4;
+    this.playerProgression.maxHpBonus += 10;
+
+    console.log(
+      `[LEVEL UP] Lv ${this.playerProgression.level}`,
+      this.playerProgression,
+    );
+  },
+
   dataShards: {
     count: 0,
     _listeners: new Set(),

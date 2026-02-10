@@ -118,36 +118,18 @@ export class Character extends Phaser.GameObjects.Container {
       ReactionApplier.apply(this, reaction, damage);
     }
 
-    // ======================
-    // PLAYER DAMAGE
-    // ======================
-    if (this.type === "player") {
-      this.stats.takeDamage(amount);
-
-      doHitFlash(this.visual.sprite);
-
-      if (this.stats.runtime.isDead) {
-        this.isDead = true;
-        this.state.setState("dead");
-      }
-
-      return;
-    }
-
-    // ======================
-    // ENEMY DAMAGE
-    // ======================
-    this.currentHp -= amount;
-    this.currentHp = Math.max(0, this.currentHp);
+    this.stats.takeDamage(amount);
 
     doHitFlash(this.visual.sprite);
 
-    if (this.healthBar && !this.healthBar.graphics.visible) {
-      this.healthBar.show();
+    if (this.type === "enemy") {
+      if (this.healthBar && !this.healthBar.graphics.visible) {
+        this.healthBar.show();
+      }
+      this.healthBar?.draw();
     }
-    this.healthBar?.draw();
 
-    if (this.currentHp <= 0) {
+    if (this.stats.runtime.isDead) {
       this.isDead = true;
       this.state.setState("dead");
     }
@@ -159,24 +141,26 @@ export class Character extends Phaser.GameObjects.Container {
   applyEffectDamage(amount) {
     if (this.isDead) return;
 
-    // PLAYER
-    if (this.type === "player") {
-      this.stats.takeDamage(amount);
+    this.stats.takeDamage(amount);
 
-      if (this.stats.runtime.isDead) {
-        this.isDead = true;
-        this.state.setState("dead");
-      }
-      return;
-    }
-
-    // ENEMY
-    this.currentHp -= amount;
-    this.currentHp = Math.max(0, this.currentHp);
-
-    if (this.currentHp <= 0) {
+    if (this.stats.runtime.isDead) {
       this.isDead = true;
       this.state.setState("dead");
     }
+  }
+
+  getBaseAttackPower() {
+    return this.stats?.attack ?? 1;
+  }
+
+  getAttackDamageMultiplier(attack) {
+    return attack.power ?? 1;
+  }
+
+  getOutgoingDamage(attack) {
+    const base = this.getBaseAttackPower();
+    const multiplier = this.getAttackDamageMultiplier(attack);
+
+    return Math.round(base * multiplier);
   }
 }

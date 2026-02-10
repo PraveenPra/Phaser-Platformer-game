@@ -75,9 +75,9 @@ export class Player extends Character {
     super.update(dt);
   }
 
-  // getHpStore() {
-  //   return GameState.playerStats;
-  // }
+  getBaseAttackPower() {
+    return this.stats.attack;
+  }
 
   onDeathAnimationComplete() {
     // future:
