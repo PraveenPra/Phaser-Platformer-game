@@ -32,8 +32,12 @@ export class CharacterHealthBar {
   }
 
   draw() {
-    const maxHp = this.owner.profile.combat.maxHp;
-    const hp = this.owner.currentHp;
+    const stats = this.owner.stats;
+    if (!stats) return;
+
+    const maxHp = stats.maxHp;
+    const hp = stats.runtime.currentHp;
+
     const ratio = Phaser.Math.Clamp(hp / maxHp, 0, 1);
 
     const hpColor = ratio <= 0.4 ? this.red : this.green;
@@ -46,7 +50,7 @@ export class CharacterHealthBar {
       -this.width / 2,
       this.offsetY,
       this.width,
-      this.height
+      this.height,
     );
 
     // hp foreground
@@ -55,7 +59,7 @@ export class CharacterHealthBar {
       -this.width / 2,
       this.offsetY,
       this.width * ratio,
-      this.height
+      this.height,
     );
   }
 

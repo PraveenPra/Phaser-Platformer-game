@@ -226,10 +226,6 @@ export const DIGIMON_PROFILES = {
       },
     },
 
-    combat: {
-      maxHp: 40,
-    },
-
     evolution: {
       prev: null,
       next: null,

@@ -8,9 +8,6 @@ export class EnemyStats {
     };
   }
 
-  // ======================
-  // CORE STATS
-  // ======================
   get maxHp() {
     return this.base.maxHp;
   }
@@ -23,9 +20,6 @@ export class EnemyStats {
     return this.base.defense ?? 0;
   }
 
-  // ======================
-  // DAMAGE ENTRY POINT
-  // ======================
   takeDamage(amount) {
     if (this.runtime.isDead) return;
 
@@ -39,7 +33,7 @@ export class EnemyStats {
   }
 
   resetHp() {
-    this.runtime.currentHp = this.maxHp;
+    this.runtime.currentHp = this.base.maxHp;
     this.runtime.isDead = false;
   }
 }

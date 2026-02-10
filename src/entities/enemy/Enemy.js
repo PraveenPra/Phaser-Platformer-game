@@ -3,6 +3,7 @@ import { resolveProfile } from "../digimon/resolveProfile.js";
 import { EnemyAI } from "./EnemyAI.js";
 import { CharacterHealthBar } from "../common/CharacterHealthBar.js";
 import { EnemyStats } from "/src/stats/EnemyStats.js";
+import { EnemyFactory } from "./EnemyFactory.js";
 
 export class Enemy extends Character {
   constructor(scene, x, y, textureKey) {
@@ -21,10 +22,15 @@ export class Enemy extends Character {
     this.bodyLayer.body.pushable = false;
     // optional
 
-    this.stats = new EnemyStats({
-      maxHp: profile.combat?.maxHp ?? 30,
-      attack: 6,
-      defense: 0,
+    const baseStats = {
+      maxHp: 20,
+      attack: 5,
+    };
+
+    this.stats = EnemyFactory.createStats({
+      base: baseStats,
+      level: scene.level ?? 1,
+      role: "grunt",
     });
 
     this.ai = new EnemyAI();
