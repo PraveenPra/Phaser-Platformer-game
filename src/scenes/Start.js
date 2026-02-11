@@ -46,14 +46,20 @@ export class Start extends Phaser.Scene {
     // TILEMAP + WORLD (MUST COME FIRST)
     // =================================================
     this.map = this.make.tilemap({
-      key: "level1-map",
+      // key: "level1-map",
+      key: "level0-tilemap",
       tileWidth: 32,
       tileHeight: 32,
     });
 
     // map.addTilesetImage("EnemiesTileset2", "level1-tileset-enemies"); // placeholder
 
-    const tileset = this.map.addTilesetImage("Terrain", "level1-tileset");
+    // const tileset = this.map.addTilesetImage("Terrain", "level1-tileset");
+    const tileset = this.map.addTilesetImage(
+      "TerrainTileset_32x32",
+      "level0-terrain-tileset",
+    );
+
     this.groundLayer = this.map.createLayer("GroundLayer", tileset, 0, 0);
     this.groundLayer.setCollisionByProperty({ collides: true });
 
@@ -482,9 +488,9 @@ export class Start extends Phaser.Scene {
   }
 
   spawnDataShards() {
-    const layer = this.map.getObjectLayer("CollectiblesLayer");
+    const layer = this.map.getObjectLayer("CollectablesLayer");
     if (!layer) return;
-
+    console.log("shard", layer);
     this.dataShards.clear(true, true);
 
     layer.objects.forEach((obj) => {
@@ -548,7 +554,7 @@ export class Start extends Phaser.Scene {
   onTrapHit(player, trap) {
     if (player.isInvulnerable) return;
 
-    player.takeDamage(trap.getData("damage") || 1, trap);
+    player.stats.takeDamage(trap.getData("damage") || 1, trap);
 
     player.isInvulnerable = true;
 

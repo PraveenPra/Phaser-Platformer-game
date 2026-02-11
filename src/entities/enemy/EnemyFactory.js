@@ -1,4 +1,4 @@
-import { EnemyStats } from "./EnemyStats.js";
+import { EnemyStats } from "/src/stats/EnemyStats.js";
 import { EnemyArchetypes } from "./EnemyArchetypes.js";
 
 export class EnemyFactory {

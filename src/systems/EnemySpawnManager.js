@@ -13,22 +13,65 @@ export class EnemySpawnManager {
     this._loadSpawnPoints();
   }
 
+  _getObjectProperties(obj) {
+    const props = {};
+    if (!obj.properties) return props;
+
+    obj.properties.forEach((p) => {
+      props[p.name] = p.value;
+    });
+
+    return props;
+  }
+
+  _getTileProperties(gid) {
+    if (!gid) return {};
+
+    for (const tileset of this.map.tilesets) {
+      const localId = gid - tileset.firstgid;
+      if (localId < 0) continue;
+
+      const tileProps = tileset.getTileProperties(localId);
+      if (!tileProps) continue;
+
+      return tileProps; // already { key: value }
+    }
+
+    return {};
+  }
+
   _loadSpawnPoints() {
     const layer = this.map.getObjectLayer("EnemiesLayer");
-    console.log(layer);
+
     if (!layer) {
       console.warn("EnemiesLayer not found");
       return;
     }
 
     layer.objects.forEach((obj) => {
+      const tileProps = this._getTileProperties(obj.gid);
+      const objectProps = this._getObjectProperties(obj);
+
+      // 🔑 object overrides tile
+      const finalProps = {
+        ...tileProps,
+        ...objectProps,
+      };
+
       this.spawnPoints.push({
         id: obj.id,
         x: obj.x,
-        y: obj.y - obj.height, // Tiled → Phaser fix
-        name: obj.name || "agumon",
+        y: obj.y - obj.height,
+
+        charName: finalProps.charName ?? obj.type ?? "agumon",
+        ai: finalProps.ai ?? "idle",
+        level: finalProps.level ?? 1,
+        role: finalProps.role ?? "grunt",
+
         spawned: false,
       });
+
+      console.log("Enemy spawn resolved:", finalProps);
     });
   }
 
@@ -54,11 +97,17 @@ export class EnemySpawnManager {
   _spawnEnemy(point) {
     const EnemyClass = this.scene.registry.get("EnemyClass");
 
-    const digimon = point.name || "agumon";
-
-    const enemy = new EnemyClass(this.scene, point.x, point.y, digimon, {
-      //later add aiType: 'patrol'
-    });
+    const enemy = new EnemyClass(
+      this.scene,
+      point.x,
+      point.y,
+      point.charName || "agumon",
+      {
+        ai: point.ai,
+        level: point.level,
+        role: point.role,
+      },
+    );
 
     enemy.spawnId = point.id;
 

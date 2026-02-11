@@ -2,12 +2,13 @@ import { Character } from "../common/Character.js";
 import { resolveProfile } from "../digimon/resolveProfile.js";
 import { EnemyAI } from "./EnemyAI.js";
 import { CharacterHealthBar } from "../common/CharacterHealthBar.js";
-import { EnemyStats } from "/src/stats/EnemyStats.js";
 import { EnemyFactory } from "./EnemyFactory.js";
 
 export class Enemy extends Character {
-  constructor(scene, x, y, textureKey) {
+  constructor(scene, x, y, textureKey, spawnConfig = {}) {
     const profile = resolveProfile(textureKey);
+    const { level = 1, role = "grunt", ai = "idle" } = spawnConfig;
+
     super(scene, x, y, textureKey, profile, "idle");
 
     this.type = "enemy";
@@ -33,7 +34,7 @@ export class Enemy extends Character {
       role: "grunt",
     });
 
-    this.ai = new EnemyAI();
+    this.ai = new EnemyAI(ai);
   }
 
   update(dt) {

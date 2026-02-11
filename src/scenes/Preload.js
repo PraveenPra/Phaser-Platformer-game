@@ -145,17 +145,24 @@ export class Preload extends Phaser.Scene {
       "assets/traps/traps.png",
       "assets/traps/traps.json",
     );
-    // TILEMAPS ----------------  ---
-
-    this.load.image("groundTile", "assets/ground-tile.png");
-
-    // this.load.image("level1-tileset", "assets/tilemaps/tileset_32x32.png");
-    // this.load.image(
-    //   "level1-tileset-enemies",
-    //   "assets/tilemaps/goblin_spritesheet.png",
-    // ); //dummy placeholder tileset fr enemies
-    // this.load.tilemapTiledJSON("level1-map", "assets/tilemaps/Tilemap1.json");
-
+    // TILEMAPS ----------------
+    // LEVEL 0 TILEMAPS ----------
+    this.load.image(
+      "level0-terrain-tileset",
+      "assets/tilemaps/Level0/TerrainTileset_32x32.png",
+    );
+    this.load.image(
+      "level0-enemies-tileset",
+      "assets/tilemaps/Level0/EnemiesTileset_32x32.png",
+    );
+    this.load.image(
+      "level0-misc-tileset",
+      "assets/tilemaps/Level0/CollectablesTileset_16x16.png",
+    );
+    this.load.tilemapTiledJSON(
+      "level0-tilemap",
+      "assets/tilemaps/Level0/Level0.json",
+    );
     // LEVEL 1 TILEMAPS ----------
     this.load.image(
       "level1-tileset",

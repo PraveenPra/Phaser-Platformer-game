@@ -214,8 +214,8 @@
           "type": "",
           "visible": true,
           "width": 16,
-          "x": 1823.09090909091,
-          "y": 64.3939393939394
+          "x": 1823.09,
+          "y": 64.3939
         },
         {
           "gid": 87,
@@ -244,86 +244,74 @@
         {
           "gid": 103,
           "height": 32,
-          "id": 35,
-          "name": "chivmon",
+          "id": 44,
+          "name": "",
           "rotation": 0,
           "type": "",
           "visible": true,
           "width": 32,
-          "x": 1955,
-          "y": 479
+          "x": 576.25,
+          "y": 415.75
         },
         {
           "gid": 102,
           "height": 32,
-          "id": 36,
-          "name": "gabumon",
+          "id": 45,
+          "name": "",
           "rotation": 0,
           "type": "",
           "visible": true,
           "width": 32,
-          "x": 2847,
+          "x": 1438.5,
+          "y": 351.5
+        },
+        {
+          "gid": 103,
+          "height": 32,
+          "id": 46,
+          "name": "",
+          "rotation": 0,
+          "type": "",
+          "visible": true,
+          "width": 32,
+          "x": 2016,
+          "y": 478
+        },
+        {
+          "gid": 102,
+          "height": 32,
+          "id": 47,
+          "name": "",
+          "rotation": 0,
+          "type": "",
+          "visible": true,
+          "width": 32,
+          "x": 3072,
           "y": 222
         },
         {
-          "gid": 103,
-          "height": 32,
-          "id": 37,
-          "name": "chivmon",
-          "rotation": 0,
-          "type": "",
-          "visible": true,
-          "width": 32,
-          "x": 3362,
-          "y": 415
-        },
-        {
-          "gid": 103,
-          "height": 32,
-          "id": 38,
-          "name": "chivmon",
-          "rotation": 0,
-          "type": "",
-          "visible": true,
-          "width": 32,
-          "x": 1410,
-          "y": 350
-        },
-        {
-          "gid": 103,
-          "height": 32,
-          "id": 39,
-          "name": "chivmon",
-          "rotation": 0,
-          "type": "",
-          "visible": true,
-          "width": 32,
-          "x": 1410,
-          "y": 350
-        },
-        {
           "gid": 102,
           "height": 32,
-          "id": 40,
-          "name": "gabumon",
+          "id": 48,
+          "name": "",
           "rotation": 0,
           "type": "",
           "visible": true,
           "width": 32,
-          "x": 4417,
-          "y": 417
+          "x": 3266,
+          "y": 413.333333333333
         },
         {
           "gid": 103,
           "height": 32,
-          "id": 43,
-          "name": "chivmon",
+          "id": 49,
+          "name": "",
           "rotation": 0,
-          "type": "Guard",
+          "type": "",
           "visible": true,
           "width": 32,
-          "x": 485,
-          "y": 416
+          "x": 4419,
+          "y": 410
         }
       ],
       "opacity": 1,
@@ -334,7 +322,7 @@
     }
   ],
   "nextlayerid": 6,
-  "nextobjectid": 44,
+  "nextobjectid": 51,
   "orientation": "orthogonal",
   "renderorder": "right-down",
   "tiledversion": "1.11.2",
@@ -1408,23 +1396,51 @@
           "id": 0,
           "properties": [
             {
-              "name": "enemyType",
+              "name": "ai",
               "type": "string",
-              "value": "Patrol"
+              "value": "guard"
+            },
+            {
+              "name": "charName",
+              "type": "string",
+              "value": "gabumon"
+            },
+            {
+              "name": "level",
+              "type": "int",
+              "value": 1
+            },
+            {
+              "name": "role",
+              "type": "string",
+              "value": "elite"
             }
-          ],
-          "type": "Patrol"
+          ]
         },
         {
           "id": 1,
           "properties": [
             {
-              "name": "enemyType",
+              "name": "ai",
               "type": "string",
-              "value": "Guard"
+              "value": "guard"
+            },
+            {
+              "name": "charName",
+              "type": "string",
+              "value": "chivmon"
+            },
+            {
+              "name": "level",
+              "type": "int",
+              "value": 2
+            },
+            {
+              "name": "role",
+              "type": "string",
+              "value": "elite"
             }
-          ],
-          "type": "Guard"
+          ]
         }
       ],
       "tilewidth": 32,
