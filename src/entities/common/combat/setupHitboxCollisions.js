@@ -2,6 +2,7 @@ import { spawnImpactVFX } from "../vfx/spawnImpactVFX.js";
 import { doHitStop } from "../vfx/doHitStop.js";
 import { StatusEffectApplier } from "/src/entities/common/status/StatusEffectApplier.js";
 import { createDamagePacket } from "/src/combat/DamageTypes.js";
+import { ReactionResolver } from "/src/combat/ReactionResolver.js";
 
 export function setupHitboxCollisions(scene, hitbox, targets, options = {}) {
   const { destroyOnHit = false } = options;
@@ -56,7 +57,16 @@ export function setupHitboxCollisions(scene, hitbox, targets, options = {}) {
     // STATUS EFFECTS (AFTER HIT)
     // =========================
     if (hb.statusEffect) {
-      StatusEffectApplier.apply(target, hb.statusEffect);
+      const mult = ReactionResolver.getStatusMultiplier(
+        target,
+        hb.statusEffect,
+      );
+
+      if (mult > 0) {
+        StatusEffectApplier.apply(target, hb.statusEffect, {
+          durationMultiplier: mult,
+        });
+      }
     }
 
     if (destroyOnHit) {

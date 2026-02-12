@@ -70,8 +70,6 @@ export class EnemySpawnManager {
 
         spawned: false,
       });
-
-      console.log("Enemy spawn resolved:", finalProps);
     });
   }
 

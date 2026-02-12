@@ -30,6 +30,7 @@ export class Enemy extends Character {
     };
 
     this.archetype = EnemyArchetypes[role] ?? EnemyArchetypes.grunt;
+    this.combatRules = this.archetype.combatRules;
 
     this.stats = EnemyFactory.createStats({
       base: baseStats,
@@ -38,6 +39,13 @@ export class Enemy extends Character {
     });
 
     this.ai = new EnemyAI(this.archetype.aiProfile);
+
+    console.log(`[Enemy Spawned] ${textureKey}`, {
+      role,
+      level,
+      stats: this.stats,
+    });
+    console.log("AI profile:", this.archetype.aiProfile);
   }
 
   update(dt) {

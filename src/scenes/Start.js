@@ -491,7 +491,6 @@ export class Start extends Phaser.Scene {
   spawnDataShards() {
     const layer = this.map.getObjectLayer("CollectablesLayer");
     if (!layer) return;
-    console.log("shard", layer);
     this.dataShards.clear(true, true);
 
     layer.objects.forEach((obj) => {

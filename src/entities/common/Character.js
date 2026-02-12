@@ -11,6 +11,7 @@ import { ReactionApplier } from "/src/entities/common/combat/ReactionApplier.js"
 import { HitReactions } from "/src/entities/common/combat/HitReactions.js";
 import { StatusEffectManager } from "../common/status/StatusEffectManager.js";
 import { createDamagePacket } from "/src/combat/DamageTypes.js";
+import { ReactionResolver } from "/src/combat/ReactionResolver.js";
 
 export class Character extends Phaser.GameObjects.Container {
   constructor(scene, x, y, textureKey, profile, initialState) {
@@ -65,15 +66,6 @@ export class Character extends Phaser.GameObjects.Container {
 
     this.healthBar = null;
 
-    console.log(
-      "[HB INIT]",
-      this.key,
-      "type=",
-      this.type,
-      "healthBar=",
-      !!this.healthBar,
-    );
-
     // combat runtime state
     // this.currentHp = profile.combat.maxHp;
     this.isInvincible = false;
@@ -113,10 +105,19 @@ export class Character extends Phaser.GameObjects.Container {
 
     if (!result.applied) return;
 
-    // Visual + reaction layer
+    // ======================
+    // HIT REACTION (RULED)
+    // ======================
     if (!packet.flags?.dot && packet.hitReaction) {
-      const reaction = HitReactions[packet.hitReaction];
-      ReactionApplier.apply(this, reaction, packet);
+      const allowed = ReactionResolver.canApplyReaction(
+        this,
+        packet.hitReaction,
+      );
+
+      if (allowed) {
+        const reaction = HitReactions[packet.hitReaction];
+        ReactionApplier.apply(this, reaction, packet);
+      }
     }
 
     if (!packet.flags?.dot) {
