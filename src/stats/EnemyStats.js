@@ -1,3 +1,5 @@
+import { createDamageResult } from "/src/combat/DamageTypes.js";
+
 export class EnemyStats {
   constructor(base) {
     this.base = base;
@@ -20,16 +22,32 @@ export class EnemyStats {
     return this.base.defense ?? 0;
   }
 
-  takeDamage(amount) {
-    if (this.runtime.isDead) return;
+  applyDamage(packet) {
+    if (this.runtime.isDead) {
+      return createDamageResult({ applied: false });
+    }
 
-    const finalDamage = Math.max(1, amount - this.defense);
+    const raw = packet.amount;
+    const finalDamage = Math.max(1, raw - this.defense);
+
     this.runtime.currentHp -= finalDamage;
 
     if (this.runtime.currentHp <= 0) {
       this.runtime.currentHp = 0;
       this.runtime.isDead = true;
+
+      return createDamageResult({
+        applied: true,
+        amount: finalDamage,
+        killed: true,
+      });
     }
+
+    return createDamageResult({
+      applied: true,
+      amount: finalDamage,
+      killed: false,
+    });
   }
 
   resetHp() {

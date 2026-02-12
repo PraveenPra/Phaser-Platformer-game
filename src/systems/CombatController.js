@@ -17,6 +17,20 @@ export class CombatController {
 
   execute(attackKey) {
     const entity = this.entity;
+
+    // =========================
+    // 🔒 ROLE-BASED ATTACK PERMISSION
+    // =========================
+    if (entity.type === "enemy") {
+      const allowed = entity.archetype?.allowedAttacks;
+
+      if (!allowed || !allowed.includes(attackKey)) {
+        // Block forbidden attack
+        entity.isAttacking = false;
+        entity.requestedAttack = null;
+        return;
+      }
+    }
     const attack = entity.profile.attacks?.[attackKey];
 
     if (!attack || !this.canAttack(attackKey)) {

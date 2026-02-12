@@ -10,6 +10,7 @@ import { SceneControls } from "../utils/SceneControls.js";
 import { AudioManager } from "../systems/AudioManager.js";
 import { NarrativeSystem } from "../systems/NarrativeSystem.js";
 import { Tutorials } from "/src/data/narrative/tutorials.js";
+import { createDamagePacket } from "/src/combat/DamageTypes.js";
 
 export class Start extends Phaser.Scene {
   constructor() {
@@ -552,15 +553,26 @@ export class Start extends Phaser.Scene {
   }
 
   onTrapHit(player, trap) {
-    if (player.isInvulnerable) return;
+    if (!player || player.isDead) return;
 
-    player.stats.takeDamage(trap.getData("damage") || 1, trap);
+    const damage = trap.getData("damage") ?? 1;
 
-    player.isInvulnerable = true;
-
-    this.time.delayedCall(800, () => {
-      player.isInvulnerable = false;
+    const packet = createDamagePacket({
+      amount: damage,
+      source: null, // environment
+      type: "environment",
+      flags: {
+        environmental: true, // semantic, future-proof
+        ignoresHitReaction: true,
+      },
     });
+
+    const result = player.receiveDamage(packet);
+
+    // Optional: trap-specific feedback
+    if (result?.applied) {
+      // small knockback, camera shake, sfx, etc (optional)
+    }
   }
 
   createMobileControls() {
