@@ -5,6 +5,12 @@ export const EnemyArchetypes = {
     defense: 0,
     aiProfile: "patrol",
     allowedAttacks: ["main"],
+    engagement: {
+      aggroRadius: 160,
+      disengageRadius: 240,
+      commitDelay: 300, // hesitation before aggro
+      chaseConfidence: 0.4, // how far they pursue
+    },
 
     combatRules: {
       reactions: {
@@ -23,6 +29,12 @@ export const EnemyArchetypes = {
     defense: 2,
     aiProfile: "aggressive",
     allowedAttacks: ["main", "skill1"],
+    engagement: {
+      aggroRadius: 260,
+      disengageRadius: 420,
+      commitDelay: 80,
+      chaseConfidence: 0.85,
+    },
 
     combatRules: {
       reactions: {
@@ -41,6 +53,12 @@ export const EnemyArchetypes = {
     defense: 4,
     aiProfile: "boss",
     allowedAttacks: ["main", "skill1", "skill2"],
+    engagement: {
+      aggroRadius: 420,
+      disengageRadius: 9999,
+      commitDelay: 0,
+      chaseConfidence: 1.0,
+    },
 
     combatRules: {
       reactions: {

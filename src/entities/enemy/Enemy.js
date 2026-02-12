@@ -38,7 +38,9 @@ export class Enemy extends Character {
       role,
     });
 
-    this.ai = new EnemyAI(this.archetype.aiProfile);
+    this.ai = new EnemyAI({
+      engagement: this.archetype.engagement,
+    });
 
     console.log(`[Enemy Spawned] ${textureKey}`, {
       role,

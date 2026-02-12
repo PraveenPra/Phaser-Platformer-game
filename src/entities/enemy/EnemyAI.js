@@ -1,5 +1,17 @@
 export class EnemyAI {
-  constructor() {
+  constructor(config = {}) {
+    // =========================
+    // ENGAGEMENT (PHASE 3A)
+    // =========================
+    const e = config.engagement ?? {};
+
+    this.aggroRadius = e.aggroRadius ?? 220;
+    this.disengageRadius = e.disengageRadius ?? 320;
+    this.commitDelay = e.commitDelay ?? 0;
+    this.chaseConfidence = e.chaseConfidence ?? 0.6;
+
+    this.commitTimer = 0;
+
     // =========================
     // PATROL
     // =========================
@@ -7,13 +19,10 @@ export class EnemyAI {
     this.mode = "patrol";
 
     // =========================
-    // TERRITORY (FIXED)
+    // TERRITORY
     // =========================
     this.spawnX = null;
-
-    this.territoryRadius = 220;
-    this.disengageRadius = 320;
-    this.patrolRadius = this.territoryRadius;
+    this.patrolRadius = this.aggroRadius;
 
     // =========================
     // COMBAT
@@ -22,7 +31,7 @@ export class EnemyAI {
     this.attackBuffer = 14;
 
     // =========================
-    // AGGRO TIMING
+    // AGGRO TIMING (legacy-safe)
     // =========================
     this.loseAggroTimer = 0;
     this.loseAggroDelay = 800;
@@ -52,7 +61,7 @@ export class EnemyAI {
     // =========================
     // DEBUG
     // =========================
-    this.debug = false;
+    this.debug = true;
     this.debugGfx = null;
   }
 
@@ -77,7 +86,7 @@ export class EnemyAI {
     }
 
     // =========================
-    // DEBUG CLEANUP (EARLY EXIT)
+    // DEBUG CLEANUP
     // =========================
     if (!this.debug && this.debugGfx) {
       this.debugGfx.clear();
@@ -110,7 +119,7 @@ export class EnemyAI {
     }
 
     // =========================
-    // DISTANCE (EDGE-BASED)
+    // DISTANCE CALC
     // =========================
     const enemyBody = entity.bodyLayer.body;
     const playerBody = player.bodyLayer.body;
@@ -123,28 +132,30 @@ export class EnemyAI {
     }
 
     const absDxEnemy = Math.abs(dxEnemy);
-
     const dxSpawn = player.x - this.spawnX;
     const absDxSpawn = Math.abs(dxSpawn);
 
     // =========================
-    // DEBUG DISTANCE TRACE
+    // ENGAGEMENT LOGIC (PHASE 3A)
     // =========================
-    if (this.debug) {
-      const enemyBody = entity.bodyLayer.body;
-      const playerBody = player.bodyLayer.body;
+    if (this.mode === "patrol" && absDxSpawn <= this.aggroRadius) {
+      this.commitTimer += dt;
+
+      if (this.commitTimer >= this.commitDelay) {
+        this.mode = "aggro";
+        this.commitTimer = 0;
+        this.attackTimer = 0;
+      }
+
+      entity.input = {};
+      return;
+    } else {
+      this.commitTimer = 0;
     }
 
-    // =========================
-    // MODE SWITCHING
-    // =========================
-    if (this.mode === "patrol" && absDxSpawn <= this.territoryRadius) {
-      this.mode = "aggro";
-      this.loseAggroTimer = 0;
-      this.attackTimer = 0;
-    }
+    const effectiveDisengage = this.disengageRadius * this.chaseConfidence;
 
-    if (this.mode === "aggro" && absDxSpawn > this.disengageRadius) {
+    if (this.mode === "aggro" && absDxSpawn > effectiveDisengage) {
       this.loseAggroTimer += dt;
 
       if (this.loseAggroTimer >= this.loseAggroDelay) {
@@ -215,7 +226,7 @@ export class EnemyAI {
   }
 
   // =========================
-  // AGGRO
+  // AGGRO (UNCHANGED COMBAT)
   // =========================
   updateAggro(entity, dxEnemy, absDxEnemy, dt) {
     const player = entity.scene.player;
@@ -226,13 +237,10 @@ export class EnemyAI {
     const mainAttack = entity.profile.attacks?.main;
     const isProjectile = mainAttack?.type === "projectile";
 
-    // =========================
-    // MELEE ENEMY LOGIC
-    // =========================
+    // ---------- MELEE ----------
     if (!isProjectile) {
       const meleeContactDistance = 6;
 
-      // Close enough to hit
       if (absDxEnemy <= meleeContactDistance) {
         this.attackTimer += dt;
         entity.input = {};
@@ -248,7 +256,6 @@ export class EnemyAI {
         return;
       }
 
-      // Need to get closer
       if (absDxEnemy <= this.attackRange) {
         entity.input = { left: dir < 0, right: dir > 0 };
         return;
@@ -266,13 +273,10 @@ export class EnemyAI {
       return;
     }
 
-    // =========================
-    // PROJECTILE ENEMY LOGIC
-    // =========================
+    // ---------- PROJECTILE ----------
     const projectileMinDistance = 28;
     const projectileFireDistance = this.attackRange;
 
-    // TOO CLOSE → back away
     if (absDxEnemy < projectileMinDistance) {
       entity.input = {
         left: dir > 0,
@@ -282,7 +286,6 @@ export class EnemyAI {
       return;
     }
 
-    // FIRE ZONE → stand and shoot
     if (absDxEnemy <= projectileFireDistance) {
       this.attackTimer += dt;
       entity.input = {};
@@ -298,7 +301,6 @@ export class EnemyAI {
       return;
     }
 
-    // TOO FAR → move closer
     this.attackTimer = 0;
 
     if (!this.hasGroundAhead(entity)) {
@@ -365,24 +367,10 @@ export class EnemyAI {
     const y = entity.y - 12;
 
     g.lineStyle(1, 0xffff00, 0.4);
-    g.strokeCircle(this.spawnX, y, this.territoryRadius);
+    g.strokeCircle(this.spawnX, y, this.aggroRadius);
 
     g.lineStyle(1, 0x00ffff, 0.3);
-    g.strokeCircle(this.spawnX, y, this.disengageRadius);
-
-    g.lineStyle(1, 0xff0000, 0.7);
-    g.strokeCircle(
-      this.direction < 0 ? body.left : body.right,
-      y,
-      this.attackRange,
-    );
-
-    g.lineStyle(1, 0x00ff00, 0.8);
-    g.strokeCircle(
-      entity.x + this.direction * this.edgeCheckDistance,
-      entity.y + 12,
-      3,
-    );
+    g.strokeCircle(this.spawnX, y, this.disengageRadius * this.chaseConfidence);
   }
 
   destroyDebug() {
