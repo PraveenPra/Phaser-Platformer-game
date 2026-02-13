@@ -97,15 +97,34 @@ export class Enemy extends Character {
    */
   pickAttack() {
     const allowed = this.archetype.allowedAttacks ?? ["main"];
+    const bias = this.archetype.attackBias ?? {};
 
-    // filter by cooldown & existence
     const viable = allowed.filter(
       (key) => this.profile.attacks?.[key] && this.canAttack(key),
     );
 
     if (viable.length === 0) return "main";
 
-    // simple weighted randomness (future-proof)
-    return viable[Math.floor(Math.random() * viable.length)];
+    // 🔥 opener bias (first attack after aggro)
+    if (!this._hasAttacked && Math.random() < (bias.openerChance ?? 0)) {
+      const skills = viable.filter((k) => k !== "main");
+      if (skills.length) {
+        this._hasAttacked = true;
+        return skills[Math.floor(Math.random() * skills.length)];
+      }
+    }
+
+    this._hasAttacked = true;
+
+    // 🎲 weighted pool
+    const pool = [];
+
+    for (const key of viable) {
+      const weight = key === "main" ? 1 : (bias.skillWeight ?? 1);
+
+      for (let i = 0; i < weight; i++) pool.push(key);
+    }
+
+    return pool[Math.floor(Math.random() * pool.length)];
   }
 }

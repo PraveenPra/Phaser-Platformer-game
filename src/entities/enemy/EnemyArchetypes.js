@@ -28,7 +28,7 @@ export const EnemyArchetypes = {
     attackScale: 1.3,
     defense: 2,
     aiProfile: "aggressive",
-    allowedAttacks: ["main", "skill1"],
+    allowedAttacks: ["main", "skill1", "skill2"],
     engagement: {
       aggroRadius: 260,
       disengageRadius: 420,

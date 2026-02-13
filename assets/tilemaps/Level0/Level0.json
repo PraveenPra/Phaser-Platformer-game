@@ -72,7 +72,7 @@
             {
               "name": "charName",
               "type": "string",
-              "value": "chivmon"
+              "value": "patamon"
             },
             {
               "name": "level",
@@ -82,11 +82,11 @@
             {
               "name": "role",
               "type": "string",
-              "value": "grunt"
+              "value": "elite"
             }
           ],
           "rotation": 0,
-          "type": "chivmon",
+          "type": "patamon",
           "visible": true,
           "width": 32,
           "x": 415.333333333333,
