@@ -5,6 +5,7 @@ export const EnemyArchetypes = {
     defense: 0,
     aiProfile: "patrol",
     allowedAttacks: ["main"],
+    skillUnlockTime: Infinity,
     engagement: {
       aggroRadius: 160,
       disengageRadius: 240,
@@ -29,6 +30,13 @@ export const EnemyArchetypes = {
     defense: 2,
     aiProfile: "aggressive",
     allowedAttacks: ["main", "skill1", "skill2"],
+    skillUnlockTime: 0, // almost immediate
+    repeatAttackLockMs: 400,
+    forceSkillOnce: true,
+    attackBias: {
+      skillWeight: 4,
+      openerChance: 0.9,
+    },
     engagement: {
       aggroRadius: 260,
       disengageRadius: 420,
@@ -53,6 +61,8 @@ export const EnemyArchetypes = {
     defense: 4,
     aiProfile: "boss",
     allowedAttacks: ["main", "skill1", "skill2"],
+    skillUnlockTime: 1200, // ramps
+    repeatAttackLockMs: 1000,
     engagement: {
       aggroRadius: 420,
       disengageRadius: 9999,

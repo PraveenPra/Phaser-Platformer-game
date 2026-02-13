@@ -253,9 +253,13 @@ export class EnemyAI {
     // ATTACK DECISION (LOCKED)
     // =========================
     if (!this.chosenAttack && this.attackDecisionCooldown <= 0) {
-      this.chosenAttack = entity.pickAttack?.() ?? "main";
+      this.chosenAttack =
+        entity.pickAttack?.({
+          distance: absDxEnemy,
+          now: performance.now(),
+        }) ?? "main";
       this.attackDecisionCooldown = 200;
-      // console.log(entity.role, "picked", this.chosenAttack);
+      console.log(entity.role, "picked", this.chosenAttack);
     }
 
     const attackKey = this.chosenAttack;
@@ -274,12 +278,13 @@ export class EnemyAI {
 
         if (
           this.attackTimer >= this.attackWindup &&
-          entity.canAttack("main") &&
+          entity.canAttack(attackKey) &&
           !entity.isAttacking
         ) {
           entity.input = {
             attack: attackKey, // "main", "skill1", "skill2", etc
           };
+          entity.commitAttack(attackKey);
           this.chosenAttack = null;
           this.postAttackTimer = this.postAttackPause;
 
@@ -324,12 +329,13 @@ export class EnemyAI {
 
       if (
         this.attackTimer >= this.attackWindup &&
-        entity.canAttack("main") &&
+        entity.canAttack(attackKey) &&
         !entity.isAttacking
       ) {
         entity.input = {
           attack: attackKey, // "main", "skill1", "skill2", etc
         };
+        entity.commitAttack(attackKey);
         this.chosenAttack = null;
         this.postAttackTimer = this.postAttackPause;
 

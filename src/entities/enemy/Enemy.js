@@ -48,6 +48,10 @@ export class Enemy extends Character {
       stats: this.stats,
     });
     console.log("AI profile:", this.archetype.aiProfile);
+
+    this.combatTime = 0;
+    this.lastAttackKey = null;
+    this.lastAttackTime = 0;
   }
 
   update(dt) {
@@ -59,6 +63,17 @@ export class Enemy extends Character {
 
     this.ai.update(this, dt);
     super.update(dt);
+
+    if (this.ai?.mode === "aggro") {
+      if (this.combatTime === 0) {
+        // entering combat
+        this._hasAttacked = false;
+        this._forcedSkillUsed = false;
+      }
+      this.combatTime += dt;
+    } else {
+      this.combatTime = 0;
+    }
   }
 
   onDeathAnimationComplete() {
@@ -89,18 +104,15 @@ export class Enemy extends Character {
     return scene.player ? [scene.player] : [];
   }
 
-  /**
-   * Phase 3B.1
-   * AI-facing attack picker
-   * - returns an attack key only
-   * - does NOT execute attacks
-   */
-  pickAttack() {
+  pickAttack(context = {}) {
     const allowed = this.archetype.allowedAttacks ?? ["main"];
     const bias = this.archetype.attackBias ?? {};
 
     const viable = allowed.filter(
-      (key) => this.profile.attacks?.[key] && this.canAttack(key),
+      (key) =>
+        this.profile.attacks?.[key] &&
+        this.canAttack(key) &&
+        this.canUseAttackInContext(key, context),
     );
 
     if (viable.length === 0) return "main";
@@ -116,15 +128,58 @@ export class Enemy extends Character {
 
     this._hasAttacked = true;
 
+    // 🔥 elite identity guarantee
+    if (this.archetype?.forceSkillOnce && !this._forcedSkillUsed) {
+      const skills = viable.filter((k) => k !== "main");
+      if (skills.length) {
+        this._forcedSkillUsed = true;
+        return skills[Math.floor(Math.random() * skills.length)];
+      }
+    }
+
     // 🎲 weighted pool
     const pool = [];
 
     for (const key of viable) {
       const weight = key === "main" ? 1 : (bias.skillWeight ?? 1);
-
       for (let i = 0; i < weight; i++) pool.push(key);
     }
 
     return pool[Math.floor(Math.random() * pool.length)];
+  }
+
+  canUseAttackInContext(attackKey, context = {}) {
+    const attack = this.profile.attacks?.[attackKey];
+    if (!attack) return false;
+
+    const { distance = 0, now = performance.now() } = context;
+
+    // 1️⃣ Distance gating (optional per attack)
+    if (attack.minRange && distance < attack.minRange) return false;
+    if (attack.maxRange && distance > attack.maxRange) return false;
+
+    // 2️⃣ Allow elites to reuse skills faster
+    const repeatLock = this.archetype?.repeatAttackLockMs ?? 1200;
+
+    if (
+      this.lastAttackKey === attackKey &&
+      now - this.lastAttackTime < repeatLock
+    ) {
+      return false;
+    }
+
+    // 3️⃣ Fight time gating (skills unlock time)
+    const unlockTime = this.archetype?.skillUnlockTime ?? 0;
+
+    if (attackKey !== "main" && this.combatTime < unlockTime) {
+      return false;
+    }
+
+    return true;
+  }
+
+  commitAttack(attackKey) {
+    this.lastAttackKey = attackKey;
+    this.lastAttackTime = performance.now();
   }
 }
