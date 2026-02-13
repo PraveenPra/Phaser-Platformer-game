@@ -12,7 +12,8 @@ export const EnemyArchetypes = {
       commitDelay: 300, // hesitation before aggro
       chaseConfidence: 0.4, // how far they pursue
     },
-
+    postAttackSequence: "hold",
+    sequenceDuration: 250,
     combatRules: {
       reactions: {
         launch: true,
@@ -43,6 +44,8 @@ export const EnemyArchetypes = {
       commitDelay: 80,
       chaseConfidence: 0.85,
     },
+    postAttackSequence: "pause",
+    sequenceDuration: 420,
 
     combatRules: {
       reactions: {
@@ -69,7 +72,8 @@ export const EnemyArchetypes = {
       commitDelay: 0,
       chaseConfidence: 1.0,
     },
-
+    postAttackSequence: "reengage",
+    sequenceDuration: 520,
     combatRules: {
       reactions: {
         launch: false,

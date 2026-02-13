@@ -55,14 +55,17 @@ export class EnemyAI {
     this.attackWindup = 300;
     this.attackTimer = 0;
 
-    this.postAttackPause = 400;
-    this.postAttackTimer = 0;
-
     // =========================
     // ATTACK DECISION (PHASE 3B.1)
     // =========================
     this.chosenAttack = null;
     this.attackDecisionCooldown = 0;
+
+    // =========================
+    // POST ATTACK SEQUENCING (3B.3)
+    // =========================
+    this.sequence = null; // "pause" | "retreat" | "hold" | "reengage"
+    this.sequenceTimer = 0;
 
     // =========================
     // DEBUG
@@ -73,19 +76,18 @@ export class EnemyAI {
 
   update(entity, dt) {
     // =========================
+    // SEQUENCING OVERRIDE (3B.3)
+    // =========================
+    if (this.sequenceTimer > 0) {
+      this.updateSequencing(entity, dt);
+      return; // ⛔ blocks all other AI
+    }
+
+    // =========================
     // ATTACK DECISION COOLDOWN
     // =========================
     if (this.attackDecisionCooldown > 0) {
       this.attackDecisionCooldown -= dt;
-    }
-
-    // =========================
-    // POST ATTACK PAUSE
-    // =========================
-    if (this.postAttackTimer > 0) {
-      this.postAttackTimer -= dt;
-      entity.input = {};
-      return;
     }
 
     const scene = entity.scene;
@@ -294,7 +296,7 @@ export class EnemyAI {
           };
           entity.commitAttack(attackKey);
           this.chosenAttack = null;
-          this.postAttackTimer = this.postAttackPause;
+          this.startPostAttackSequence(entity);
 
           this.attackTimer = 0;
         }
@@ -345,7 +347,7 @@ export class EnemyAI {
         };
         entity.commitAttack(attackKey);
         this.chosenAttack = null;
-        this.postAttackTimer = this.postAttackPause;
+        this.startPostAttackSequence(entity);
 
         this.attackTimer = 0;
       }
@@ -405,6 +407,52 @@ export class EnemyAI {
 
   turn() {
     this.direction *= -1;
+  }
+
+  updateSequencing(entity, dt) {
+    this.sequenceTimer -= dt;
+    entity.input = {};
+
+    const player = entity.scene.player;
+    if (!player) return;
+
+    const dir = player.x < entity.x ? -1 : 1;
+    entity.visual.flip(dir < 0);
+
+    switch (this.sequence) {
+      case "pause":
+      case "hold":
+        // intentional stillness
+        break;
+
+      case "retreat":
+        entity.input = {
+          left: dir > 0,
+          right: dir < 0,
+        };
+        break;
+
+      case "reengage":
+        entity.input = {
+          left: dir < 0,
+          right: dir > 0,
+        };
+        break;
+    }
+
+    if (this.sequenceTimer <= 0) {
+      this.sequence = null;
+    }
+  }
+
+  startPostAttackSequence(entity) {
+    const archetype = entity.archetype ?? {};
+
+    this.sequence =
+      archetype.postAttackSequence ??
+      Phaser.Utils.Array.GetRandom(["pause", "hold"]);
+
+    this.sequenceTimer = archetype.sequenceDuration ?? 300;
   }
 
   // =========================
