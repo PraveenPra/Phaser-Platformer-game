@@ -24,10 +24,6 @@ export const DIGIMON_DEFAULTS = {
     maxAirSpeed: 180,
   },
 
-  combat: {
-    maxHp: 30,
-  },
-
   movement: {
     mode: "ground",
   },

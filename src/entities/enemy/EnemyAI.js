@@ -1,5 +1,17 @@
 export class EnemyAI {
-  constructor() {
+  constructor(config = {}) {
+    // =========================
+    // ENGAGEMENT (PHASE 3A)
+    // =========================
+    const e = config.engagement ?? {};
+
+    this.aggroRadius = e.aggroRadius ?? 220;
+    this.disengageRadius = e.disengageRadius ?? 320;
+    this.commitDelay = e.commitDelay ?? 0;
+    this.chaseConfidence = e.chaseConfidence ?? 0.6;
+
+    this.commitTimer = 0;
+
     // =========================
     // PATROL
     // =========================
@@ -7,13 +19,10 @@ export class EnemyAI {
     this.mode = "patrol";
 
     // =========================
-    // TERRITORY (FIXED)
+    // TERRITORY
     // =========================
     this.spawnX = null;
-
-    this.territoryRadius = 220;
-    this.disengageRadius = 320;
-    this.patrolRadius = this.territoryRadius;
+    this.patrolRadius = this.aggroRadius;
 
     // =========================
     // COMBAT
@@ -22,7 +31,7 @@ export class EnemyAI {
     this.attackBuffer = 14;
 
     // =========================
-    // AGGRO TIMING
+    // AGGRO TIMING (legacy-safe)
     // =========================
     this.loseAggroTimer = 0;
     this.loseAggroDelay = 800;
@@ -46,24 +55,39 @@ export class EnemyAI {
     this.attackWindup = 300;
     this.attackTimer = 0;
 
-    this.postAttackPause = 400;
-    this.postAttackTimer = 0;
+    // =========================
+    // ATTACK DECISION (PHASE 3B.1)
+    // =========================
+    this.chosenAttack = null;
+    this.attackDecisionCooldown = 0;
+
+    // =========================
+    // POST ATTACK SEQUENCING (3B.3)
+    // =========================
+    this.sequence = null; // "pause" | "retreat" | "hold" | "reengage"
+    this.sequenceTimer = 0;
 
     // =========================
     // DEBUG
     // =========================
-    this.debug = false;
+    this.debug = true;
     this.debugGfx = null;
   }
 
   update(entity, dt) {
     // =========================
-    // POST ATTACK PAUSE
+    // SEQUENCING OVERRIDE (3B.3)
     // =========================
-    if (this.postAttackTimer > 0) {
-      this.postAttackTimer -= dt;
-      entity.input = {};
-      return;
+    if (this.sequenceTimer > 0) {
+      this.updateSequencing(entity, dt);
+      return; // ⛔ blocks all other AI
+    }
+
+    // =========================
+    // ATTACK DECISION COOLDOWN
+    // =========================
+    if (this.attackDecisionCooldown > 0) {
+      this.attackDecisionCooldown -= dt;
     }
 
     const scene = entity.scene;
@@ -77,7 +101,7 @@ export class EnemyAI {
     }
 
     // =========================
-    // DEBUG CLEANUP (EARLY EXIT)
+    // DEBUG CLEANUP
     // =========================
     if (!this.debug && this.debugGfx) {
       this.debugGfx.clear();
@@ -101,6 +125,7 @@ export class EnemyAI {
       entity.input = {};
       this.attackTimer = 0;
       this.postAttackTimer = 0;
+      this.chosenAttack = null;
       return;
     }
 
@@ -110,7 +135,7 @@ export class EnemyAI {
     }
 
     // =========================
-    // DISTANCE (EDGE-BASED)
+    // DISTANCE CALC
     // =========================
     const enemyBody = entity.bodyLayer.body;
     const playerBody = player.bodyLayer.body;
@@ -123,33 +148,36 @@ export class EnemyAI {
     }
 
     const absDxEnemy = Math.abs(dxEnemy);
-
     const dxSpawn = player.x - this.spawnX;
     const absDxSpawn = Math.abs(dxSpawn);
 
     // =========================
-    // DEBUG DISTANCE TRACE
+    // ENGAGEMENT LOGIC (PHASE 3A)
     // =========================
-    if (this.debug) {
-      const enemyBody = entity.bodyLayer.body;
-      const playerBody = player.bodyLayer.body;
+    if (this.mode === "patrol" && absDxSpawn <= this.aggroRadius) {
+      this.commitTimer += dt;
+
+      if (this.commitTimer >= this.commitDelay) {
+        this.mode = "aggro";
+        this.commitTimer = 0;
+        this.attackTimer = 0;
+      }
+
+      entity.input = {};
+      return;
+    } else {
+      this.commitTimer = 0;
     }
 
-    // =========================
-    // MODE SWITCHING
-    // =========================
-    if (this.mode === "patrol" && absDxSpawn <= this.territoryRadius) {
-      this.mode = "aggro";
-      this.loseAggroTimer = 0;
-      this.attackTimer = 0;
-    }
+    const effectiveDisengage = this.disengageRadius * this.chaseConfidence;
 
-    if (this.mode === "aggro" && absDxSpawn > this.disengageRadius) {
+    if (this.mode === "aggro" && absDxSpawn > effectiveDisengage) {
       this.loseAggroTimer += dt;
 
       if (this.loseAggroTimer >= this.loseAggroDelay) {
         this.mode = "return";
         this.attackTimer = 0;
+        this.chosenAttack = null;
         entity.input = {};
         return;
       }
@@ -215,7 +243,7 @@ export class EnemyAI {
   }
 
   // =========================
-  // AGGRO
+  // AGGRO (UNCHANGED COMBAT)
   // =========================
   updateAggro(entity, dxEnemy, absDxEnemy, dt) {
     const player = entity.scene.player;
@@ -223,32 +251,58 @@ export class EnemyAI {
     entity.visual.flip(dir < 0);
     this.direction = dir;
 
-    const mainAttack = entity.profile.attacks?.main;
-    const isProjectile = mainAttack?.type === "projectile";
+    // =========================
+    // ATTACK DECISION (LOCKED)
+    // =========================
+    if (!this.chosenAttack && this.attackDecisionCooldown <= 0) {
+      const player = entity.scene.player;
 
-    // =========================
-    // MELEE ENEMY LOGIC
-    // =========================
+      this.chosenAttack =
+        entity.pickAttack?.({
+          distance: absDxEnemy,
+          now: performance.now(),
+
+          // Phase 3B.2 context
+          playerAirborne: !player.body.blocked.down,
+          playerAttacking: player.isAttacking,
+          enemyHpPct: entity.stats.hp / entity.stats.maxHp,
+        }) ?? "main";
+
+      this.attackDecisionCooldown = 200;
+      console.log(entity.role, "picked", this.chosenAttack);
+    }
+
+    const attackKey = this.chosenAttack;
+    const attackData = entity.profile.attacks?.[attackKey];
+    if (!attackData) return;
+
+    const isProjectile = attackData.type === "projectile";
+
+    // ---------- MELEE ----------
     if (!isProjectile) {
       const meleeContactDistance = 6;
 
-      // Close enough to hit
       if (absDxEnemy <= meleeContactDistance) {
         this.attackTimer += dt;
         entity.input = {};
 
         if (
           this.attackTimer >= this.attackWindup &&
-          entity.canAttack("main") &&
+          entity.canAttack(attackKey) &&
           !entity.isAttacking
         ) {
-          entity.input = { attackMain: true };
+          entity.input = {
+            attack: attackKey, // "main", "skill1", "skill2", etc
+          };
+          entity.commitAttack(attackKey);
+          this.chosenAttack = null;
+          this.startPostAttackSequence(entity);
+
           this.attackTimer = 0;
         }
         return;
       }
 
-      // Need to get closer
       if (absDxEnemy <= this.attackRange) {
         entity.input = { left: dir < 0, right: dir > 0 };
         return;
@@ -266,13 +320,10 @@ export class EnemyAI {
       return;
     }
 
-    // =========================
-    // PROJECTILE ENEMY LOGIC
-    // =========================
+    // ---------- PROJECTILE ----------
     const projectileMinDistance = 28;
     const projectileFireDistance = this.attackRange;
 
-    // TOO CLOSE → back away
     if (absDxEnemy < projectileMinDistance) {
       entity.input = {
         left: dir > 0,
@@ -282,23 +333,27 @@ export class EnemyAI {
       return;
     }
 
-    // FIRE ZONE → stand and shoot
     if (absDxEnemy <= projectileFireDistance) {
       this.attackTimer += dt;
       entity.input = {};
 
       if (
         this.attackTimer >= this.attackWindup &&
-        entity.canAttack("main") &&
+        entity.canAttack(attackKey) &&
         !entity.isAttacking
       ) {
-        entity.input = { attackMain: true };
+        entity.input = {
+          attack: attackKey, // "main", "skill1", "skill2", etc
+        };
+        entity.commitAttack(attackKey);
+        this.chosenAttack = null;
+        this.startPostAttackSequence(entity);
+
         this.attackTimer = 0;
       }
       return;
     }
 
-    // TOO FAR → move closer
     this.attackTimer = 0;
 
     if (!this.hasGroundAhead(entity)) {
@@ -354,6 +409,52 @@ export class EnemyAI {
     this.direction *= -1;
   }
 
+  updateSequencing(entity, dt) {
+    this.sequenceTimer -= dt;
+    entity.input = {};
+
+    const player = entity.scene.player;
+    if (!player) return;
+
+    const dir = player.x < entity.x ? -1 : 1;
+    entity.visual.flip(dir < 0);
+
+    switch (this.sequence) {
+      case "pause":
+      case "hold":
+        // intentional stillness
+        break;
+
+      case "retreat":
+        entity.input = {
+          left: dir > 0,
+          right: dir < 0,
+        };
+        break;
+
+      case "reengage":
+        entity.input = {
+          left: dir < 0,
+          right: dir > 0,
+        };
+        break;
+    }
+
+    if (this.sequenceTimer <= 0) {
+      this.sequence = null;
+    }
+  }
+
+  startPostAttackSequence(entity) {
+    const archetype = entity.archetype ?? {};
+
+    this.sequence =
+      archetype.postAttackSequence ??
+      Phaser.Utils.Array.GetRandom(["pause", "hold"]);
+
+    this.sequenceTimer = archetype.sequenceDuration ?? 300;
+  }
+
   // =========================
   // DEBUG
   // =========================
@@ -365,24 +466,10 @@ export class EnemyAI {
     const y = entity.y - 12;
 
     g.lineStyle(1, 0xffff00, 0.4);
-    g.strokeCircle(this.spawnX, y, this.territoryRadius);
+    g.strokeCircle(this.spawnX, y, this.aggroRadius);
 
     g.lineStyle(1, 0x00ffff, 0.3);
-    g.strokeCircle(this.spawnX, y, this.disengageRadius);
-
-    g.lineStyle(1, 0xff0000, 0.7);
-    g.strokeCircle(
-      this.direction < 0 ? body.left : body.right,
-      y,
-      this.attackRange,
-    );
-
-    g.lineStyle(1, 0x00ff00, 0.8);
-    g.strokeCircle(
-      entity.x + this.direction * this.edgeCheckDistance,
-      entity.y + 12,
-      3,
-    );
+    g.strokeCircle(this.spawnX, y, this.disengageRadius * this.chaseConfidence);
   }
 
   destroyDebug() {

@@ -1,3 +1,5 @@
+import { createDamageResult } from "/src/combat/DamageTypes.js";
+
 export class PlayerStats extends Phaser.Events.EventEmitter {
   constructor(base, progression) {
     super();
@@ -26,16 +28,43 @@ export class PlayerStats extends Phaser.Events.EventEmitter {
   }
 
   // NEW — single entry for damage
-  takeDamage(amount) {
-    if (this.runtime.isDead) return;
+  applyDamage(packet) {
+    if (this.runtime.isDead) {
+      return createDamageResult({ applied: false });
+    }
 
-    const finalDamage = Math.max(1, amount - this.defense);
+    // Invincibility handling moves HERE
+    if (this.isInvincible && !packet.flags?.ignoresInvincibility) {
+      return createDamageResult({ applied: false, blocked: true });
+    }
+
+    const raw = packet.amount;
+    const finalDamage = Math.max(1, raw - this.defense);
+
     this.changeHp(-finalDamage);
 
-    if (this.runtime.currentHp <= 0) {
+    const killed = this.runtime.currentHp <= 0;
+
+    if (killed) {
       this.runtime.isDead = true;
       this.emit("dead");
+    } else {
+      // trigger i-frames
+      this.isInvincible = true;
+      this.emit("invincible-start");
+
+      setTimeout(() => {
+        this.isInvincible = false;
+        this.emit("invincible-end");
+      }, this.iFrameDuration);
     }
+
+    return createDamageResult({
+      applied: true,
+      amount: finalDamage,
+      killed,
+      triggeredInvincibility: !killed,
+    });
   }
 
   changeHp(delta) {

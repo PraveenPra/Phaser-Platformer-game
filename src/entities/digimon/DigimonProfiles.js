@@ -12,14 +12,14 @@ export const DIGIMON_PROFILES = {
       main: {
         type: "melee",
         anim: "attack-A",
-        power: 1.0,
-        fireFrames: [4, 7], // active hit window
+        power: 0.2,
+        fireFrames: [4, 5], // active hit window
         hitbox: {
           width: 9,
           height: 15,
           offsetX: 19,
           offsetY: 19,
-          statusEffect: "burn",
+          // statusEffect: "burn",
           duration: 80, // per-frame lifetime
         },
         cooldown: 300,
@@ -27,7 +27,7 @@ export const DIGIMON_PROFILES = {
       skill1: {
         type: "melee",
         anim: "attack-B",
-        power: 2.0,
+        power: 0.2,
         fireFrames: [5], // active hit window
         hitbox: {
           width: 11,
@@ -42,7 +42,7 @@ export const DIGIMON_PROFILES = {
       skill2: {
         type: "projectile",
         anim: "attack-C",
-        power: 2.5,
+        power: 0.5,
         impactVFX: "vfx-fireblast",
         projectile: {
           texture: "fireball",
@@ -133,9 +133,25 @@ export const DIGIMON_PROFILES = {
         cooldown: 1500,
       },
       skill1: {
+        type: "projectile",
+        anim: "attack-B",
+        power: 1.0,
+        antiAir: true, // 👈 jump check
+        projectile: {
+          texture: "vfx-windball",
+          speed: 260,
+          offsetX: 18,
+          offsetY: -10,
+          lifetime: 1200,
+        },
+        fireFrame: 4,
+        cooldown: 800,
+      },
+      skill2: {
         type: "melee",
         anim: "attack-C",
         power: 1.0,
+        punish: true, // 👈 catches greedy players
         fireFrames: [3, 4, 5], // active hit window
         hitbox: {
           width: 20,
@@ -147,20 +163,6 @@ export const DIGIMON_PROFILES = {
         },
         cooldown: 1500,
       },
-    },
-    skill2: {
-      type: "projectile",
-      anim: "attack-B",
-      power: 1.0,
-      projectile: {
-        texture: "vfx-windball",
-        speed: 260,
-        offsetX: 18,
-        offsetY: -10,
-        lifetime: 1200,
-      },
-      fireFrame: 4,
-      cooldown: 800,
     },
 
     evolution: {
@@ -203,16 +205,31 @@ export const DIGIMON_PROFILES = {
           offsetY: 5,
           duration: 80, // per-frame lifetime
           statusEffect: "burn",
-          hitReaction: "launch",
+          hitReaction: "knockbackHeavy",
           // duration: 320,//ms
         },
         cooldown: 500,
       },
-
+      // skill1: {
+      //   type: "projectile",
+      //   anim: "attack-C",
+      //   power: 1.0,
+      //   punish: true, // 👈 reacts to player attack
+      //   projectile: {
+      //     texture: "vfx-windball",
+      //     speed: 260,
+      //     offsetX: 18,
+      //     offsetY: -10,
+      //     lifetime: 1200,
+      //   },
+      //   fireFrame: 1,
+      //   cooldown: 800,
+      // },
       skill1: {
         type: "melee",
         anim: "attack-C",
         power: 1.0,
+        desperation: true,
         fireFrames: [2], // active hit window
         hitbox: {
           width: 11,
@@ -224,10 +241,6 @@ export const DIGIMON_PROFILES = {
         },
         cooldown: 1500,
       },
-    },
-
-    combat: {
-      maxHp: 40,
     },
 
     evolution: {
@@ -255,7 +268,7 @@ export const DIGIMON_PROFILES = {
         type: "melee",
         anim: "attack-A",
         power: 1.0,
-        fireFrames: [5, 9], // active hit window
+        fireFrames: [5], // active hit window
         hitbox: {
           width: 20,
           height: 11,
@@ -263,14 +276,14 @@ export const DIGIMON_PROFILES = {
           offsetY: 23,
           duration: 80, // per-frame lifetime
           // duration: 320,
-          hitReaction: "launch",
+          hitReaction: "flinch",
         },
         cooldown: 100,
       },
       skill1: {
         type: "projectile",
         anim: "attack-B",
-        power: 1.5,
+        power: 0.5,
         hitStop: 50, // 👈 light hit
         impactVFX: "vfx-explosion",
         projectile: {
@@ -281,7 +294,7 @@ export const DIGIMON_PROFILES = {
           offsetX: 19,
           offsetY: 24,
           lifetime: 1200,
-          hitReaction: "launch",
+          hitReaction: "flinch",
         },
         fireFrame: 6,
         cooldown: 800,
@@ -290,7 +303,7 @@ export const DIGIMON_PROFILES = {
       skill2: {
         type: "projectile",
         anim: "attack-C",
-        power: 1.8,
+        power: 0.8,
         hitStop: 50, // 👈 light hit
         impactVFX: "vfx-explosion",
         projectile: {
@@ -420,6 +433,7 @@ export const DIGIMON_PROFILES = {
         type: "melee",
         anim: "attack-B",
         power: 1.0,
+        punish: true, // 👈 catches overcommit
         fireFrames: [4, 5, 6, 7, 8, 9, 10], // active hit window
         hitbox: {
           width: 25,
@@ -436,6 +450,8 @@ export const DIGIMON_PROFILES = {
         type: "projectile",
         anim: "attack-C",
         power: 1.0,
+        antiAir: true, // 👈 jump denial
+        desperation: true, // 👈 late-fight pressure
         projectile: {
           texture: "big-fireball",
           speed: 260,
@@ -682,6 +698,7 @@ export const DIGIMON_PROFILES = {
         type: "projectile",
         anim: "attack-B",
         power: 1.0,
+        antiAir: true, // 👈 aerial control
         projectile: {
           texture: "vfx-rainbowball",
           anim: "vfx-rainbowball",
@@ -698,6 +715,8 @@ export const DIGIMON_PROFILES = {
         type: "projectile",
         anim: "attack-C",
         power: 1.0,
+        punish: true,
+        desperation: true, // 👈 “phase change” feel
         hitStop: 110, // 👈 heavy hit
         impactVFX: "impact-hit",
         projectile: {

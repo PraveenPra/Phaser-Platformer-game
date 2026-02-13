@@ -10,6 +10,7 @@ import { SceneControls } from "../utils/SceneControls.js";
 import { AudioManager } from "../systems/AudioManager.js";
 import { NarrativeSystem } from "../systems/NarrativeSystem.js";
 import { Tutorials } from "/src/data/narrative/tutorials.js";
+import { createDamagePacket } from "/src/combat/DamageTypes.js";
 
 export class Start extends Phaser.Scene {
   constructor() {
@@ -46,14 +47,20 @@ export class Start extends Phaser.Scene {
     // TILEMAP + WORLD (MUST COME FIRST)
     // =================================================
     this.map = this.make.tilemap({
-      key: "level1-map",
+      // key: "level1-map",
+      key: "level0-tilemap",
       tileWidth: 32,
       tileHeight: 32,
     });
 
     // map.addTilesetImage("EnemiesTileset2", "level1-tileset-enemies"); // placeholder
 
-    const tileset = this.map.addTilesetImage("Terrain", "level1-tileset");
+    // const tileset = this.map.addTilesetImage("Terrain", "level1-tileset");
+    const tileset = this.map.addTilesetImage(
+      "TerrainTileset_32x32",
+      "level0-terrain-tileset",
+    );
+
     this.groundLayer = this.map.createLayer("GroundLayer", tileset, 0, 0);
     this.groundLayer.setCollisionByProperty({ collides: true });
 
@@ -482,9 +489,8 @@ export class Start extends Phaser.Scene {
   }
 
   spawnDataShards() {
-    const layer = this.map.getObjectLayer("CollectiblesLayer");
+    const layer = this.map.getObjectLayer("CollectablesLayer");
     if (!layer) return;
-
     this.dataShards.clear(true, true);
 
     layer.objects.forEach((obj) => {
@@ -546,15 +552,26 @@ export class Start extends Phaser.Scene {
   }
 
   onTrapHit(player, trap) {
-    if (player.isInvulnerable) return;
+    if (!player || player.isDead) return;
 
-    player.takeDamage(trap.getData("damage") || 1, trap);
+    const damage = trap.getData("damage") ?? 1;
 
-    player.isInvulnerable = true;
-
-    this.time.delayedCall(800, () => {
-      player.isInvulnerable = false;
+    const packet = createDamagePacket({
+      amount: damage,
+      source: null, // environment
+      type: "environment",
+      flags: {
+        environmental: true, // semantic, future-proof
+        ignoresHitReaction: true,
+      },
     });
+
+    const result = player.receiveDamage(packet);
+
+    // Optional: trap-specific feedback
+    if (result?.applied) {
+      // small knockback, camera shake, sfx, etc (optional)
+    }
   }
 
   createMobileControls() {

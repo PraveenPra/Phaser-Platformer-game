@@ -1,18 +1,17 @@
 import { CharacterBody } from "./CharacterBody.js";
 import { CharacterVisual } from "./CharacterVisual.js";
 import { StateMachine } from "../../systems/StateMachine.js";
-import { CharacterHealthBar } from "./CharacterHealthBar.js";
 import { CombatController } from "../../systems/CombatController.js";
-import { MovementController } from "../../systems/MovementController.js";
 import { GroundMovement } from "../../systems/GroundMovement.js";
 import { AirMovement } from "../../systems/AirMovement.js";
 import { MultiDomainMovement } from "../../systems/MultiDomainMovement.js";
 import { UnifiedStates } from "../common/states/UnifiedStates.js";
 import { doHitFlash } from "./vfx/doHitFlash.js";
-import { GameState } from "/src/GameState.js";
 import { ReactionApplier } from "/src/entities/common/combat/ReactionApplier.js";
 import { HitReactions } from "/src/entities/common/combat/HitReactions.js";
 import { StatusEffectManager } from "../common/status/StatusEffectManager.js";
+import { createDamagePacket } from "/src/combat/DamageTypes.js";
+import { ReactionResolver } from "/src/combat/ReactionResolver.js";
 
 export class Character extends Phaser.GameObjects.Container {
   constructor(scene, x, y, textureKey, profile, initialState) {
@@ -67,15 +66,6 @@ export class Character extends Phaser.GameObjects.Container {
 
     this.healthBar = null;
 
-    console.log(
-      "[HB INIT]",
-      this.key,
-      "type=",
-      this.type,
-      "healthBar=",
-      !!this.healthBar,
-    );
-
     // combat runtime state
     // this.currentHp = profile.combat.maxHp;
     this.isInvincible = false;
@@ -108,45 +98,63 @@ export class Character extends Phaser.GameObjects.Container {
     this.attackCooldowns[name] = this.scene.time.now + duration;
   }
 
-  takeDamage(damage) {
-    const { amount, hitReaction } = damage;
+  receiveDamage(packet) {
+    if (!this.stats) return;
 
-    if (this.isDead || this.isInvincible) return;
+    const result = this.stats.applyDamage(packet);
 
-    if (hitReaction) {
-      const reaction = HitReactions[hitReaction];
-      ReactionApplier.apply(this, reaction, damage);
+    if (!result.applied) return;
+
+    // ======================
+    // HIT REACTION (RULED)
+    // ======================
+    if (!packet.flags?.dot && packet.hitReaction) {
+      const allowed = ReactionResolver.canApplyReaction(
+        this,
+        packet.hitReaction,
+      );
+
+      if (allowed) {
+        const reaction = HitReactions[packet.hitReaction];
+        ReactionApplier.apply(this, reaction, packet);
+      }
     }
 
-    this.stats.takeDamage(amount);
-
-    doHitFlash(this.visual.sprite);
+    if (!packet.flags?.dot) {
+      doHitFlash(this.visual.sprite);
+    }
 
     if (this.type === "enemy") {
-      if (this.healthBar && !this.healthBar.graphics.visible) {
-        this.healthBar.show();
-      }
+      this.healthBar?.show();
       this.healthBar?.draw();
     }
 
-    if (this.stats.runtime.isDead) {
+    if (result.killed) {
       this.isDead = true;
       this.state.setState("dead");
     }
+
+    return result;
   }
 
   // ======================
   // EFFECT / DOT DAMAGE
   // ======================
   applyEffectDamage(amount) {
-    if (this.isDead) return;
+    if (!this.stats || this.isDead) return;
 
-    this.stats.takeDamage(amount);
+    const packet = createDamagePacket({
+      amount,
+      source: null, // DOT has no direct attacker
+      type: "dot",
+      flags: {
+        dot: true,
+        ignoresHitReaction: true,
+        ignoresInvincibility: true,
+      },
+    });
 
-    if (this.stats.runtime.isDead) {
-      this.isDead = true;
-      this.state.setState("dead");
-    }
+    this.receiveDamage(packet);
   }
 
   getBaseAttackPower() {

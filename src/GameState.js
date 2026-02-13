@@ -25,7 +25,7 @@ export const GameState = {
   checkpoint: {
     scene: "Start",
     x: 200,
-    y: 350,
+    y: 150,
   },
 
   playerProgression: {

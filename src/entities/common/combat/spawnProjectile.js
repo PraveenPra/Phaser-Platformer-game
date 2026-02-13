@@ -39,7 +39,7 @@ export function spawnProjectile(scene, owner, attack) {
     owner?.profile?.attacks[currentAttackKey]?.impactVFX || "vfx-fireblast";
   // p.impactVFX = attack.impactVFX || "vfx-fireblast";
 
-  p._hitTargets = new Set(); // prevent multi-hit
+  p.hitTargets = new Set(); // prevent multi-hit
 
   // =========================
   // Collision → damage
