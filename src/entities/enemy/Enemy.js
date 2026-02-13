@@ -88,4 +88,24 @@ export class Enemy extends Character {
   getAttackTargets(scene) {
     return scene.player ? [scene.player] : [];
   }
+
+  /**
+   * Phase 3B.1
+   * AI-facing attack picker
+   * - returns an attack key only
+   * - does NOT execute attacks
+   */
+  pickAttack() {
+    const allowed = this.archetype.allowedAttacks ?? ["main"];
+
+    // filter by cooldown & existence
+    const viable = allowed.filter(
+      (key) => this.profile.attacks?.[key] && this.canAttack(key),
+    );
+
+    if (viable.length === 0) return "main";
+
+    // simple weighted randomness (future-proof)
+    return viable[Math.floor(Math.random() * viable.length)];
+  }
 }

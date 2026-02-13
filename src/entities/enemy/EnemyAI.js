@@ -59,6 +59,12 @@ export class EnemyAI {
     this.postAttackTimer = 0;
 
     // =========================
+    // ATTACK DECISION (PHASE 3B.1)
+    // =========================
+    this.chosenAttack = null;
+    this.attackDecisionCooldown = 0;
+
+    // =========================
     // DEBUG
     // =========================
     this.debug = true;
@@ -66,6 +72,13 @@ export class EnemyAI {
   }
 
   update(entity, dt) {
+    // =========================
+    // ATTACK DECISION COOLDOWN
+    // =========================
+    if (this.attackDecisionCooldown > 0) {
+      this.attackDecisionCooldown -= dt;
+    }
+
     // =========================
     // POST ATTACK PAUSE
     // =========================
@@ -110,6 +123,7 @@ export class EnemyAI {
       entity.input = {};
       this.attackTimer = 0;
       this.postAttackTimer = 0;
+      this.chosenAttack = null;
       return;
     }
 
@@ -161,6 +175,7 @@ export class EnemyAI {
       if (this.loseAggroTimer >= this.loseAggroDelay) {
         this.mode = "return";
         this.attackTimer = 0;
+        this.chosenAttack = null;
         entity.input = {};
         return;
       }
@@ -234,8 +249,20 @@ export class EnemyAI {
     entity.visual.flip(dir < 0);
     this.direction = dir;
 
-    const mainAttack = entity.profile.attacks?.main;
-    const isProjectile = mainAttack?.type === "projectile";
+    // =========================
+    // ATTACK DECISION (LOCKED)
+    // =========================
+    if (!this.chosenAttack && this.attackDecisionCooldown <= 0) {
+      this.chosenAttack = entity.pickAttack?.() ?? "main";
+      this.attackDecisionCooldown = 200;
+      // console.log(entity.role, "picked", this.chosenAttack);
+    }
+
+    const attackKey = this.chosenAttack;
+    const attackData = entity.profile.attacks?.[attackKey];
+    if (!attackData) return;
+
+    const isProjectile = attackData.type === "projectile";
 
     // ---------- MELEE ----------
     if (!isProjectile) {
@@ -250,7 +277,12 @@ export class EnemyAI {
           entity.canAttack("main") &&
           !entity.isAttacking
         ) {
-          entity.input = { attackMain: true };
+          entity.input = {
+            attack: attackKey, // "main", "skill1", "skill2", etc
+          };
+          this.chosenAttack = null;
+          this.postAttackTimer = this.postAttackPause;
+
           this.attackTimer = 0;
         }
         return;
@@ -295,7 +327,12 @@ export class EnemyAI {
         entity.canAttack("main") &&
         !entity.isAttacking
       ) {
-        entity.input = { attackMain: true };
+        entity.input = {
+          attack: attackKey, // "main", "skill1", "skill2", etc
+        };
+        this.chosenAttack = null;
+        this.postAttackTimer = this.postAttackPause;
+
         this.attackTimer = 0;
       }
       return;

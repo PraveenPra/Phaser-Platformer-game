@@ -5,6 +5,14 @@ import { GameState } from "/src/GameState.js";
 function handleAttackInputs(e) {
   if (e.isDead || e.isAttacking) return false;
 
+  // 🔵 NEW: unified attack key (EnemyAI, future systems)
+  if (e.input?.attack) {
+    e.requestedAttack = e.input.attack;
+    e.state.setState("attack");
+    return true;
+  }
+
+  // 🟡 LEGACY: player / older systems (still supported)
   if (e.input?.attackMain) {
     e.requestedAttack = "main";
     e.state.setState("attack");
@@ -292,6 +300,7 @@ export const UnifiedStates = {
   attack: {
     enter(e) {
       if (e.isDead) return;
+      console.log("EXEC ATTACK:", e.requestedAttack);
 
       const attackKey = e.requestedAttack;
       e.combat.execute(attackKey);
