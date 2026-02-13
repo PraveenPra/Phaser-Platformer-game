@@ -152,7 +152,13 @@ export class Enemy extends Character {
     const attack = this.profile.attacks?.[attackKey];
     if (!attack) return false;
 
-    const { distance = 0, now = performance.now() } = context;
+    const {
+      distance = 0,
+      now = performance.now(),
+      playerAirborne = false,
+      playerAttacking = false,
+      enemyHpPct = 1,
+    } = context;
 
     // 1️⃣ Distance gating (optional per attack)
     if (attack.minRange && distance < attack.minRange) return false;
@@ -172,6 +178,25 @@ export class Enemy extends Character {
     const unlockTime = this.archetype?.skillUnlockTime ?? 0;
 
     if (attackKey !== "main" && this.combatTime < unlockTime) {
+      return false;
+    }
+
+    // =========================
+    // 🔥 PHASE 3B.2 — CONTEXT
+    // =========================
+
+    // 1️⃣ Anti-air logic
+    if (attack.antiAir && !playerAirborne) {
+      return false;
+    }
+
+    // 2️⃣ Punish logic (player mid-attack)
+    if (attack.punish && !playerAttacking) {
+      return false;
+    }
+
+    // 3️⃣ Desperation skills (low HP)
+    if (attack.desperation && enemyHpPct > 0.35) {
       return false;
     }
 

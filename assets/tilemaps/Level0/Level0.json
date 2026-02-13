@@ -72,7 +72,7 @@
             {
               "name": "charName",
               "type": "string",
-              "value": "patamon"
+              "value": "magnamon"
             },
             {
               "name": "level",
@@ -86,7 +86,7 @@
             }
           ],
           "rotation": 0,
-          "type": "patamon",
+          "type": "magnamon",
           "visible": true,
           "width": 32,
           "x": 415.333333333333,
@@ -140,7 +140,7 @@
             {
               "name": "charName",
               "type": "string",
-              "value": "gabumon"
+              "value": "ophanimon"
             },
             {
               "name": "level",
@@ -154,7 +154,7 @@
             }
           ],
           "rotation": 0,
-          "type": "gabumon",
+          "type": "ophanimon",
           "visible": true,
           "width": 32,
           "x": 4160.66666666667,

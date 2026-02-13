@@ -14,8 +14,8 @@ export function setupHitboxCollisions(scene, hitbox, targets, options = {}) {
     if (target === hb.owner) return;
 
     // prevent repeated hits
-    if (hb._hitTargets?.has(target)) return;
-    hb._hitTargets?.add(target);
+    if (hb.hitTargets?.has(target)) return;
+    hb.hitTargets?.add(target);
 
     // =========================
     // DAMAGE (AUTHORITATIVE)

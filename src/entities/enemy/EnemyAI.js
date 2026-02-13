@@ -253,11 +253,19 @@ export class EnemyAI {
     // ATTACK DECISION (LOCKED)
     // =========================
     if (!this.chosenAttack && this.attackDecisionCooldown <= 0) {
+      const player = entity.scene.player;
+
       this.chosenAttack =
         entity.pickAttack?.({
           distance: absDxEnemy,
           now: performance.now(),
+
+          // Phase 3B.2 context
+          playerAirborne: !player.body.blocked.down,
+          playerAttacking: player.isAttacking,
+          enemyHpPct: entity.stats.hp / entity.stats.maxHp,
         }) ?? "main";
+
       this.attackDecisionCooldown = 200;
       console.log(entity.role, "picked", this.chosenAttack);
     }
