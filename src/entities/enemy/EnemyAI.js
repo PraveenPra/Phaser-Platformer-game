@@ -75,6 +75,11 @@ export class EnemyAI {
   }
 
   update(entity, dt) {
+    const bias = entity.archetype?.behaviorBias ?? {};
+    const aggression = bias.aggression ?? 1;
+    const recovery = bias.recovery ?? 1;
+    const preferredRange = bias.preferredRange ?? this.attackRange;
+
     // =========================
     // SEQUENCING OVERRIDE (3B.3)
     // =========================
@@ -124,7 +129,6 @@ export class EnemyAI {
     ) {
       entity.input = {};
       this.attackTimer = 0;
-      this.postAttackTimer = 0;
       this.chosenAttack = null;
       return;
     }
@@ -191,7 +195,14 @@ export class EnemyAI {
     if (this.mode === "patrol") {
       this.updatePatrol(entity, dt);
     } else if (this.mode === "aggro") {
-      this.updateAggro(entity, dxEnemy, absDxEnemy, dt);
+      this.updateAggro(
+        entity,
+        dxEnemy,
+        absDxEnemy,
+        dt,
+        preferredRange,
+        aggression,
+      );
     } else if (this.mode === "return") {
       this.updateReturn(entity);
     }
@@ -245,7 +256,7 @@ export class EnemyAI {
   // =========================
   // AGGRO (UNCHANGED COMBAT)
   // =========================
-  updateAggro(entity, dxEnemy, absDxEnemy, dt) {
+  updateAggro(entity, dxEnemy, absDxEnemy, dt, preferredRange, aggression) {
     const player = entity.scene.player;
     const dir = player.x < entity.x ? -1 : 1;
     entity.visual.flip(dir < 0);
@@ -283,7 +294,8 @@ export class EnemyAI {
       const meleeContactDistance = 6;
 
       if (absDxEnemy <= meleeContactDistance) {
-        this.attackTimer += dt;
+        this.attackTimer += dt * aggression;
+
         entity.input = {};
 
         if (
@@ -303,7 +315,7 @@ export class EnemyAI {
         return;
       }
 
-      if (absDxEnemy <= this.attackRange) {
+      if (absDxEnemy <= preferredRange) {
         entity.input = { left: dir < 0, right: dir > 0 };
         return;
       }
@@ -334,7 +346,8 @@ export class EnemyAI {
     }
 
     if (absDxEnemy <= projectileFireDistance) {
-      this.attackTimer += dt;
+      this.attackTimer += dt * aggression;
+
       entity.input = {};
 
       if (

@@ -48,7 +48,7 @@
             {
               "name": "role",
               "type": "string",
-              "value": "elite"
+              "value": "grunt"
             }
           ],
           "rotation": 0,
@@ -82,7 +82,7 @@
             {
               "name": "role",
               "type": "string",
-              "value": "elite"
+              "value": "miniBoss"
             }
           ],
           "rotation": 0,

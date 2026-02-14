@@ -23,6 +23,11 @@ export const EnemyArchetypes = {
         burn: 1.0,
       },
     },
+    behaviorBias: {
+      preferredRange: 42,
+      aggression: 0.8,
+      recovery: 1.1,
+    },
   },
 
   elite: {
@@ -56,6 +61,11 @@ export const EnemyArchetypes = {
         burn: 0.5, // shorter burn
       },
     },
+    behaviorBias: {
+      preferredRange: 60,
+      aggression: 1.3,
+      recovery: 0.8,
+    },
   },
 
   miniBoss: {
@@ -83,6 +93,11 @@ export const EnemyArchetypes = {
       statusResistance: {
         burn: 0.0, // immune
       },
+    },
+    behaviorBias: {
+      preferredRange: 72,
+      aggression: 0.9,
+      recovery: 1.6,
     },
   },
 };
