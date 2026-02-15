@@ -293,6 +293,23 @@ export class Start extends Phaser.Scene {
       null,
       this,
     );
+    // =================================================
+    // PROJECTILES GROUP
+    // =================================================
+    this.projectiles = this.physics.add.group();
+
+    this.physics.add.collider(this.projectiles, this.groundLayer, (proj) => {
+      if (!proj || !proj.body || !proj.active) return;
+
+      if (
+        proj.motion === "arc" &&
+        !proj._hasHitGround &&
+        proj.body.blocked.down
+      ) {
+        proj._hasHitGround = true;
+        proj.explode();
+      }
+    });
 
     // =================================================
     // PARALLAX BACKGROUNDS

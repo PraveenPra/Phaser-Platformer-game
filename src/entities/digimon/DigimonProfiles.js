@@ -77,6 +77,7 @@ export const DIGIMON_PROFILES = {
         anim: "attack-E",
         power: 4.0,
         projectile: {
+          motion: "arc",
           texture: "big-fireball",
           // scale: 0.1,
           speed: 220,
