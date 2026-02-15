@@ -15,7 +15,7 @@ export const DIGIMON_DEFAULTS = {
   // },
 
   move: {
-    speed: 200,
+    speed: 100,
     jump: 640,
     accel: 1200, // how fast you speed up
     decel: 1600, // how fast you slow down

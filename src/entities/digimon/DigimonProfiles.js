@@ -89,6 +89,10 @@ export const DIGIMON_PROFILES = {
       },
     },
 
+    move: {
+      speed: 200,
+    },
+
     evolution: {
       prev: null,
       next: "imperialdramon",
@@ -537,7 +541,7 @@ export const DIGIMON_PROFILES = {
     movement: {
       mode: "multi-domain",
       domains: ["ground", "air"],
-      default: "ground",
+      default: "air",
     },
     // visual: {
     //   originX: 0.5,
