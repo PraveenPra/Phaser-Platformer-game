@@ -76,8 +76,12 @@ export const DIGIMON_PROFILES = {
         type: "projectile",
         anim: "attack-E",
         power: 4.0,
+        impactVFX: "vfx-gnd-blast",
         projectile: {
           motion: "arc",
+          explosive: true,
+          explodeOnGround: true,
+          explosionRadius: 164,
           texture: "big-fireball",
           // scale: 0.1,
           speed: 220,

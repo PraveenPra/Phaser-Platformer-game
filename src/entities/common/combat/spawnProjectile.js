@@ -1,4 +1,5 @@
 import { setupHitboxCollisions } from "./setupHitboxCollisions.js";
+import { applyExplosionDamage } from "./applyExplosionDamage.js";
 
 export function spawnProjectile(scene, owner, attack) {
   const dir = owner.visual.sprite.flipX ? -1 : 1;
@@ -38,30 +39,42 @@ export function spawnProjectile(scene, owner, attack) {
 
     p.setVelocity(vx, vy);
   }
-
   p.explode = function () {
-    if (!this.active) return;
+    if (!this.active || this._hasExploded) return;
 
-    this._hasHitGround = true;
+    this._hasExploded = true;
 
-    // stop physics immediately
-    this.body.stop();
     this.setVelocity(0, 0);
+    this.body.stop();
     this.body.enable = false;
     this.setVisible(false);
 
-    // 🔽 snap explosion to ground
-    const groundY = this.body.blocked.down ? this.body.bottom : this.y;
-    this.scene.cameras.main.shake(80, 0.003);
+    // --------------------------
+    const g = this.scene.add.graphics();
+    g.lineStyle(1, 0xff0000, 0.8);
+    g.strokeCircle(this.x, this.y, this.explosionRadius ?? 48);
+    this.scene.time.delayedCall(100, () => g.destroy());
+    // -----------------------------
+    // 🔥 APPLY AoE DAMAGE HERE
+    applyExplosionDamage(this.scene, this);
+
+    // VFX
+    const groundY = this.body?.bottom ?? this.y;
 
     const vfx = this.scene.add.sprite(this.x, groundY, "vfx");
     vfx.setOrigin(0.5, 1); // anchor to ground
-    vfx.setScale(1.6);
-    // vfx.setTint(0xaaaaaa);
-    vfx.play("vfx-gnd-blast");
-    vfx.once("animationcomplete", () => vfx.destroy());
 
-    this.spawnGroundCrack?.(groundY);
+    const radius = this.explosionRadius ?? 48;
+    vfx.setScale(1.6);
+
+    const cam = this.scene.cameras.main;
+    cam.shake(
+      80, // duration ms
+      Phaser.Math.Clamp(radius / 300, 0.002, 0.005), // intensity
+    );
+
+    vfx.play(this.impactVFX ?? "vfx-gnd-blast");
+    vfx.once("animationcomplete", () => vfx.destroy());
 
     this.destroy();
   };
@@ -113,9 +126,11 @@ export function spawnProjectile(scene, owner, attack) {
   // =========================
   // Collision → damage
   // =========================
-  setupHitboxCollisions(scene, p, owner.getAttackTargets(scene), {
-    destroyOnHit: true, // projectiles vanish on hit
-  });
+  if (!proj.explodeOnGround) {
+    setupHitboxCollisions(scene, p, owner.getAttackTargets(scene), {
+      destroyOnHit: true,
+    });
+  }
 
   // =========================
   // Lifetime cleanup
