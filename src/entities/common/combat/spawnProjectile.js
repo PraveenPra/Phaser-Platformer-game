@@ -44,18 +44,46 @@ export function spawnProjectile(scene, owner, attack) {
 
     this._hasHitGround = true;
 
-    this.setVelocity(0, 0);
+    // stop physics immediately
     this.body.stop();
-
+    this.setVelocity(0, 0);
     this.body.enable = false;
     this.setVisible(false);
 
-    const vfx = this.scene.add.sprite(this.x, this.y, "vfx");
-    vfx.play(this.impactVFX ?? "vfx-explosion");
+    // 🔽 snap explosion to ground
+    const groundY = this.body.blocked.down ? this.body.bottom : this.y;
+    this.scene.cameras.main.shake(80, 0.003);
+
+    const vfx = this.scene.add.sprite(this.x, groundY, "vfx");
+    vfx.setOrigin(0.5, 1); // anchor to ground
+    vfx.setScale(1.6);
+    // vfx.setTint(0xaaaaaa);
+    vfx.play("vfx-gnd-blast");
     vfx.once("animationcomplete", () => vfx.destroy());
+
+    this.spawnGroundCrack?.(groundY);
 
     this.destroy();
   };
+
+  // p.explode = function () {
+  //   if (!this.active) return;
+
+  //   this._hasHitGround = true;
+
+  //   this.setVelocity(0, 0);
+  //   this.body.stop();
+
+  //   this.body.enable = false;
+  //   this.setVisible(false);
+
+  //   const vfx = this.scene.add.sprite(this.x, this.y, "vfx");
+  //   // vfx.play(this.impactVFX ?? "vfx-gnd-blast");
+  //   vfx.play("vfx-gnd-blast");
+  //   vfx.once("animationcomplete", () => vfx.destroy());
+
+  //   this.destroy();
+  // };
 
   // =====
   if (proj.anim) {

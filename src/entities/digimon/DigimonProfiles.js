@@ -43,7 +43,7 @@ export const DIGIMON_PROFILES = {
         type: "projectile",
         anim: "attack-C",
         power: 0.5,
-        impactVFX: "vfx-fireblast",
+        impactVFX: "vfx-tiny-fire-impact",
         projectile: {
           texture: "fireball",
           anim: "fireball_fly",

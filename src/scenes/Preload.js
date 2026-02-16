@@ -132,6 +132,20 @@ export class Preload extends Phaser.Scene {
       frameWidth: 16,
       frameHeight: 16,
     });
+
+    this.load.spritesheet("vfx-gnd-blast", "assets/vfx/gnd-blast.png", {
+      frameWidth: 32,
+      frameHeight: 32,
+    });
+
+    this.load.spritesheet(
+      "vfx-tiny-fire-impact",
+      "assets/vfx/tiny-fire-impact.png",
+      {
+        frameWidth: 32,
+        frameHeight: 32,
+      },
+    );
     // COLLECTIBLES -------------
     this.load.atlas(
       "collectables",

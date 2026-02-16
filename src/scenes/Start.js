@@ -206,6 +206,24 @@ export class Start extends Phaser.Scene {
       frameRate: 12,
       repeat: -1,
     });
+    this.anims.create({
+      key: "vfx-gnd-blast",
+      frames: this.anims.generateFrameNumbers("vfx-gnd-blast", {
+        start: 0,
+        end: 9,
+      }),
+      frameRate: 24,
+      repeat: 0,
+    });
+    this.anims.create({
+      key: "vfx-tiny-fire-impact",
+      frames: this.anims.generateFrameNumbers("vfx-tiny-fire-impact", {
+        start: 0,
+        end: 9,
+      }),
+      frameRate: 24,
+      repeat: 0,
+    });
     // =================================================
     // COLLECTIBLE + TRAP ANIMATIONS
     // =================================================
