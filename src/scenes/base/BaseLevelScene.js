@@ -17,6 +17,9 @@ export class BaseLevelScene extends Phaser.Scene {
     // Global animations (safe to call once per scene)
     registerGlobalAnimations(this);
 
+    AudioManager.syncPersistentMusic(this);
+    AudioManager.playPersistentMusic(this, "sfx-bg-music-1");
+
     // =================================================
     // UI SCENE (persistent HUD)
     // =================================================
@@ -48,7 +51,6 @@ export class BaseLevelScene extends Phaser.Scene {
       this.enemies = null;
       this.parallaxBg?.destroy();
       this.parallaxBg = null;
-      this.projectileSystem?.destroy();
       this.projectileSystem = null;
     };
 
@@ -57,6 +59,10 @@ export class BaseLevelScene extends Phaser.Scene {
 
     // When player falls into a pit (world bounds), kill them
     this.onPitFall();
+
+    this.events.once("player-dead", () => {
+      this.scene.restart();
+    });
   }
 
   // =================================================
