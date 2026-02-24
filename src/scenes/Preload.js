@@ -77,10 +77,16 @@ export class Preload extends Phaser.Scene {
     // this.load.image("bg3", "assets/background_layer_3.png");
     // this.load.image("bg4", "assets/bg1.jpeg");
 
-    this.load.image("bg1", "assets/bg-fore1.png");
-    this.load.image("bg2", "assets/bg-mid1.png");
-    this.load.image("bg3", "assets/bg-far1.png");
-    this.load.image("bg4", "assets/bg1.jpeg");
+    // this.load.image("bg1", "assets/bg-fore1.png");
+    // this.load.image("bg2", "assets/bg-mid1.png");
+    // this.load.image("bg3", "assets/bg-far1.png");
+    // this.load.image("bg4", "assets/bg1.jpeg");
+
+    this.load.image("bg1", "assets/backgrounds/plx-5.png");
+    this.load.image("bg2", "assets/backgrounds/plx-4.png");
+    this.load.image("bg3", "assets/backgrounds/plx-3.png");
+    this.load.image("bg4", "assets/backgrounds/plx-2.png");
+    this.load.image("bg5", "assets/backgrounds/plx-1.png");
 
     // VFX ----------------
     this.load.image("big-fireball", "assets/vfx/big-fireball.png");
