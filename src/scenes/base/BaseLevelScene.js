@@ -48,6 +48,8 @@ export class BaseLevelScene extends Phaser.Scene {
       this.enemies = null;
       this.parallaxBg?.destroy();
       this.parallaxBg = null;
+      this.projectileSystem?.destroy();
+      this.projectileSystem = null;
     };
 
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, cleanup);

@@ -7,6 +7,7 @@ import { TrapSystem } from "/src/systems/level/TrapSystem.js";
 import { EnemySystem } from "/src/systems/level/EnemySystem.js";
 import { ParallaxBackgroundSystem } from "/src/systems/level/ParallaxBackgroundSystem.js";
 import { FOREST_PARALLAX } from "/src/data/level/parallaxPresets.js";
+import { ProjectileSystem } from "/src/systems/level/ProjectileSystem.js";
 
 export class Level0 extends BaseLevelScene {
   constructor() {
@@ -25,6 +26,11 @@ export class Level0 extends BaseLevelScene {
 
     this.map = map;
     this.groundLayer = groundLayer;
+
+    // =================================================
+    // PROJECTILES - after tilemap and ground layer but before player/enemies
+    // =================================================
+    this.projectileSystem = new ProjectileSystem(this);
 
     // =================================================
     // DATA SHARDS (COLLECTIBLES)
