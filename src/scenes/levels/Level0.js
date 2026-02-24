@@ -3,6 +3,8 @@ import { loadTilemap } from "/src/systems/level/TilemapLoader.js";
 import { ObjectLayerSpawner } from "/src/systems/level/ObjectLayerSpawner.js";
 import { Tutorials } from "/src/data/narrative/tutorials.js";
 import { GameState } from "/src/GameState.js";
+import { DataShardSystem } from "/src/systems/level/DataShardSystem.js";
+import { TrapSystem } from "/src/systems/level/TrapSystem.js";
 
 export class Level0 extends BaseLevelScene {
   constructor() {
@@ -43,12 +45,12 @@ export class Level0 extends BaseLevelScene {
 
     // Game start narration
     // INTRO first
-    this.events.emit("narrative:trigger", Tutorials.INTRO);
+    // this.events.emit("narrative:trigger", Tutorials.INTRO);
 
     // MOVE after intro ends
-    this.time.delayedCall(4000, () => {
-      this.events.emit("narrative:trigger", Tutorials.MOVE);
-    });
+    // this.time.delayedCall(4000, () => {
+    //   this.events.emit("narrative:trigger", Tutorials.MOVE);
+    // });
 
     // =================================================
     // ENEMIES GROUP (empty for now)
@@ -66,6 +68,7 @@ export class Level0 extends BaseLevelScene {
     const y = checkpoint?.y ?? 350;
 
     this.player = this.spawnPlayer(x, y, key);
+    this.cameras.main.startFollow(this.player, true, 0.1, 0.1);
 
     // cleanup on shutdown
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
@@ -78,6 +81,27 @@ export class Level0 extends BaseLevelScene {
     // MOBILE CONTROLS: HUD
     // =================================================
     this.createMobileControls();
+
+    // After player spawns (needs player reference)
+    DataShardSystem.setup(this);
+    TrapSystem.setup(this);
+
+    // create zone
+    const goalX = this.physics.world.bounds.width - 200;
+    const goalY = this.physics.world.bounds.height - 300;
+    const goalW = 200;
+    const goalH = 300;
+    this.levelGoal = this.add.zone(goalX, goalY, goalW, goalH);
+    this.physics.add.existing(this.levelGoal, true);
+
+    // overlap
+    this.physics.add.overlap(
+      this.player,
+      this.levelGoal,
+      this.onLevelComplete,
+      null,
+      this,
+    );
   }
 
   update(time, delta) {

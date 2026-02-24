@@ -1,10 +1,13 @@
 import { registerGlobalAnimations } from "/src/systems/animations/AnimationRegistry.js";
 import { SceneControls } from "/src/utils/SceneControls.js";
 import { NarrativeSystem } from "/src/systems/NarrativeSystem.js";
+import { Tutorials } from "/src/data/narrative/tutorials.js";
 import { Player } from "/src/entities/Player/Player.js";
 import { createAnimations } from "/src/systems/AnimationFactory.js";
 import { PlayerHealthUI } from "/src/ui/PlayerHealthUI.js";
 import { GameState } from "/src/GameState.js";
+import { AudioManager } from "/src/systems/AudioManager.js";
+
 export class BaseLevelScene extends Phaser.Scene {
   constructor(key) {
     super(key);
@@ -165,5 +168,29 @@ export class BaseLevelScene extends Phaser.Scene {
       attackSkill1Btn,
       attackSkill2Btn,
     ];
+  }
+
+  onLevelComplete() {
+    if (this.levelEnding) return;
+    this.levelEnding = true;
+
+    // play narration
+    this.events.emit("narrative:trigger", Tutorials.END);
+
+    // fade after narration
+    this.time.delayedCall(2600, () => {
+      const cam = this.cameras.main;
+
+      AudioManager.playSFX(this, "sfx-level-complete");
+
+      cam.fadeOut(1500, 0, 0, 0);
+
+      cam.once("camerafadeoutcomplete", () => {
+        GameState.levelUpPlayer();
+
+        // TEMP — same as Start
+        this.scene.restart();
+      });
+    });
   }
 }
