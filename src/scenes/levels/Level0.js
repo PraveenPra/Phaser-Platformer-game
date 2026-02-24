@@ -73,5 +73,16 @@ export class Level0 extends BaseLevelScene {
         GameState.clearPlayer();
       }
     });
+
+    // =================================================
+    // MOBILE CONTROLS: HUD
+    // =================================================
+    this.createMobileControls();
+  }
+
+  update(time, delta) {
+    if (this.player) {
+      this.player.update(delta);
+    }
   }
 }
