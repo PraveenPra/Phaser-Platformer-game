@@ -1,11 +1,12 @@
 import { BaseLevelScene } from "../base/BaseLevelScene.js";
 import { loadTilemap } from "/src/systems/level/TilemapLoader.js";
 import { ObjectLayerSpawner } from "/src/systems/level/ObjectLayerSpawner.js";
-import { Tutorials } from "/src/data/narrative/tutorials.js";
 import { GameState } from "/src/GameState.js";
 import { DataShardSystem } from "/src/systems/level/DataShardSystem.js";
 import { TrapSystem } from "/src/systems/level/TrapSystem.js";
 import { EnemySystem } from "/src/systems/level/EnemySystem.js";
+import { ParallaxBackgroundSystem } from "/src/systems/level/ParallaxBackgroundSystem.js";
+import { FOREST_PARALLAX } from "/src/data/level/parallaxPresets.js";
 
 export class Level0 extends BaseLevelScene {
   constructor() {
@@ -96,7 +97,6 @@ export class Level0 extends BaseLevelScene {
     this.levelGoal = this.add.zone(goalX, goalY, goalW, goalH);
     this.physics.add.existing(this.levelGoal, true);
 
-    // overlap
     this.physics.add.overlap(
       this.player,
       this.levelGoal,
@@ -104,6 +104,11 @@ export class Level0 extends BaseLevelScene {
       null,
       this,
     );
+
+    // =================================================
+    // PARALLAX BACKGROUND
+    // =================================================
+    this.parallaxBg = new ParallaxBackgroundSystem(this, FOREST_PARALLAX);
   }
 
   update(time, delta) {
@@ -112,5 +117,7 @@ export class Level0 extends BaseLevelScene {
     }
 
     EnemySystem.update(this, delta);
+
+    this.parallaxBg?.update();
   }
 }
