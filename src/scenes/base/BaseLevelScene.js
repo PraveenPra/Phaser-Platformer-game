@@ -44,6 +44,8 @@ export class BaseLevelScene extends Phaser.Scene {
       this.sceneControls = null;
       this._mobileControls?.forEach((btn) => btn.destroy());
       this._mobileControls = null;
+      this.enemySpawner = null;
+      this.enemies = null;
     };
 
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, cleanup);

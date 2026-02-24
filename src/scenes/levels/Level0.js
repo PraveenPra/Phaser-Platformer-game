@@ -5,6 +5,7 @@ import { Tutorials } from "/src/data/narrative/tutorials.js";
 import { GameState } from "/src/GameState.js";
 import { DataShardSystem } from "/src/systems/level/DataShardSystem.js";
 import { TrapSystem } from "/src/systems/level/TrapSystem.js";
+import { EnemySystem } from "/src/systems/level/EnemySystem.js";
 
 export class Level0 extends BaseLevelScene {
   constructor() {
@@ -53,9 +54,10 @@ export class Level0 extends BaseLevelScene {
     // });
 
     // =================================================
-    // ENEMIES GROUP (empty for now)
+    // ENEMIES GROUP after tilemap and before player
     // =================================================
     this.enemies = this.physics.add.group();
+    EnemySystem.setup(this);
 
     // =================================================
     // PLAYER (SAME AS START)
@@ -108,5 +110,7 @@ export class Level0 extends BaseLevelScene {
     if (this.player) {
       this.player.update(delta);
     }
+
+    EnemySystem.update(this, delta);
   }
 }
