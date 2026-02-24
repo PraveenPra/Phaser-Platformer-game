@@ -70,7 +70,7 @@ export class EnemyAI {
     // =========================
     // DEBUG
     // =========================
-    this.debug = true;
+    this.debug = false;
     this.debugGfx = null;
   }
 
