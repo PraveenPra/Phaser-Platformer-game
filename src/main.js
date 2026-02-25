@@ -4,6 +4,7 @@ import { CharacterSelect } from "./scenes/CharacterSelect.js";
 import { UIScene } from "/src/ui/UIScene.js";
 import { DevCalibrationScene } from "./scenes/DevCalibrationScene.js";
 import { Level0 } from "./scenes/levels/Level0.js";
+import { Level1 } from "./scenes/levels/Level1.js";
 
 const config = {
   type: Phaser.AUTO,
@@ -21,6 +22,7 @@ const config = {
     UIScene,
     DevCalibrationScene,
     Level0,
+    Level1,
   ],
   physics: {
     default: "arcade",

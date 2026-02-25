@@ -14,6 +14,9 @@ export class BaseLevelScene extends Phaser.Scene {
   }
 
   create() {
+    // Set active scene in GameState for global access
+    GameState.setActiveScene(this.scene.key);
+
     // Global animations (safe to call once per scene)
     registerGlobalAnimations(this);
 
@@ -200,8 +203,13 @@ export class BaseLevelScene extends Phaser.Scene {
       cam.once("camerafadeoutcomplete", () => {
         GameState.levelUpPlayer();
 
-        // TEMP — same as Start
-        this.scene.restart();
+        const next = this.levelConfig?.nextLevel;
+
+        if (next) {
+          this.scene.start(next);
+        } else {
+          this.scene.restart(); // fallback
+        }
       });
     });
   }

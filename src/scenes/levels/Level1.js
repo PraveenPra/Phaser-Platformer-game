@@ -1,16 +1,16 @@
 import { BaseLevelScene } from "../base/BaseLevelScene.js";
 import { LevelFlowSystem } from "/src/systems/level/LevelFlowSystem.js";
-import { Level0Config } from "./Level0Config.js";
+import { Level1Config } from "./Level1Config.js";
 import { EnemySystem } from "/src/systems/level/EnemySystem.js";
 
-export class Level0 extends BaseLevelScene {
+export class Level1 extends BaseLevelScene {
   constructor() {
-    super("Level0");
+    super("Level1");
   }
 
   create() {
     super.create();
-    LevelFlowSystem.create(this, Level0Config);
+    LevelFlowSystem.create(this, Level1Config);
   }
 
   update(time, delta) {
