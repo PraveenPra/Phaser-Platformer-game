@@ -186,21 +186,21 @@ export class Preload extends Phaser.Scene {
     // LEVEL 1 TILEMAPS ----------
     this.load.image(
       "level1-tileset",
-      "assets/tilemaps/Level1-Tutorial/Terrain_32x32.png",
+      "assets/tilemaps/Level1/tile_jungle_ground_brown.png",
     );
-    this.load.image(
-      "level1-tileset-enemies",
-      "assets/tilemaps/Level1-Tutorial/Enemies_32x32.png",
-    ); //dummy placeholder tileset fr enemies
+    // this.load.image(
+    //   "level1-tileset-enemies",
+    //   "assets/tilemaps/Level1/Enemies_32x32.png",
+    // );
 
-    this.load.image(
-      "level1-tileset-misc",
-      "assets/tilemaps/Level1-Tutorial/Collectables_16x16.png",
-    ); //dummy placeholder tileset fr traps, collectables
+    // this.load.image(
+    //   "level1-tileset-misc",
+    //   "assets/tilemaps/Level1/Collectables_16x16.png",
+    // );
 
     this.load.tilemapTiledJSON(
-      "level1-map",
-      "assets/tilemaps/Level1-Tutorial/Level1Tutorial.json",
+      "level1-tilemap",
+      "assets/tilemaps/Level1/Level1.json",
     );
 
     // SYSTEM TEXTURES ----------// This generates a 1×1 white texture in memory.

@@ -24,6 +24,13 @@ export class LevelFlowSystem {
 
       scene.map = map;
       scene.groundLayer = groundLayer;
+
+      // OPTIONAL dev visual: Turn on to see tile collision boxes
+      //   groundLayer.renderDebug(scene.add.graphics(), {
+      //     tileColor: null,
+      //     collidingTileColor: new Phaser.Display.Color(243, 134, 48, 200),
+      //     faceColor: new Phaser.Display.Color(40, 39, 37, 255),
+      //   });
     }
 
     // ===============================
