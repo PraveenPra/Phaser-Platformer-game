@@ -194,6 +194,16 @@ export class Preload extends Phaser.Scene {
       "assets/tilemaps/Level1/tile_jungle_slopes_brown.png",
     );
 
+    this.load.image(
+      "level1-plants-tileset",
+      "assets/tilemaps/Level1/tile_jungle_plants_objects.png",
+    );
+
+    this.load.image(
+      "level1-tree-dark-tileset",
+      "assets/tilemaps/Level1/tile_jungle_tree_dark.png",
+    );
+
     // this.load.image(
     //   "level1-tileset-enemies",
     //   "assets/tilemaps/Level1/Enemies_32x32.png",

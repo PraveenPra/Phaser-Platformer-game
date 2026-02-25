@@ -5,23 +5,58 @@ export function loadTilemap(scene, tilemapConfig) {
     tileHeight: 32,
   });
 
-  // Bind ALL tilesets used by this map
-  const tilesets = tilemapConfig.tilesets.map((ts) =>
-    map.addTilesetImage(ts.name, ts.imageKey),
-  );
+  const tilesets = [];
 
-  // Create ground layer using ALL tilesets
+  tilemapConfig.tilesets.forEach((ts) => {
+    const tileset = map.addTilesetImage(ts.name, ts.imageKey);
+    if (tileset) tilesets.push(tileset);
+  });
+
+  const layers = {};
+
+  // ===============================
+  // TILED BACKGROUND (always above parallax)
+  // ===============================
+  if (tilemapConfig.backgroundLayer) {
+    const bg = map.createLayer(tilemapConfig.backgroundLayer, tilesets, 0, 0);
+    bg.setDepth(-5);
+    layers.backgroundLayer = bg;
+  }
+
+  // ===============================
+  // MIDGROUND (props ordering)
+  // ===============================
+  if (tilemapConfig.midgroundLayer) {
+    const mid = map.createLayer(tilemapConfig.midgroundLayer, tilesets, 0, 0);
+    mid.setDepth(0);
+    layers.midgroundLayer = mid;
+  }
+
+  // ===============================
+  // GROUND (collision)
+  // ===============================
   const groundLayer = map.createLayer(
-    tilemapConfig.groundLayer || "GroundLayer",
+    tilemapConfig.groundLayer ?? "GroundLayer",
     tilesets,
     0,
     0,
   );
 
   groundLayer.setCollisionByProperty({ collides: true });
+  groundLayer.setDepth(0);
+  layers.groundLayer = groundLayer;
+
+  // ===============================
+  // FOREGROUND (over player)
+  // ===============================
+  if (tilemapConfig.foregroundLayer) {
+    const fg = map.createLayer(tilemapConfig.foregroundLayer, tilesets, 0, 0);
+    fg.setDepth(20);
+    layers.foregroundLayer = fg;
+  }
 
   scene.physics.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
   scene.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
 
-  return { map, groundLayer };
+  return { map, ...layers };
 }
