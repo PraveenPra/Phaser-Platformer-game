@@ -18,8 +18,8 @@ export class LevelFlowSystem {
     if (config.tilemap) {
       const { map, groundLayer } = loadTilemap(
         scene,
-        config.tilemap.mapKey,
-        config.tilemap.tileset,
+        // config.tilemap.mapKey,
+        config.tilemap,
       );
 
       scene.map = map;

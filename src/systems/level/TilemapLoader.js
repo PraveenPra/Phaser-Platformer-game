@@ -1,22 +1,26 @@
-export function loadTilemap(scene, mapKey, tilesetConfig) {
+export function loadTilemap(scene, tilemapConfig) {
   const map = scene.make.tilemap({
-    key: mapKey,
+    key: tilemapConfig.mapKey,
     tileWidth: 32,
     tileHeight: 32,
   });
 
-  const tileset = map.addTilesetImage(
-    tilesetConfig.name,
-    tilesetConfig.imageKey,
+  // Bind ALL tilesets used by this map
+  const tilesets = tilemapConfig.tilesets.map((ts) =>
+    map.addTilesetImage(ts.name, ts.imageKey),
   );
 
-  const groundLayer = map.createLayer(tilesetConfig.groundLayer, tileset, 0, 0);
+  // Create ground layer using ALL tilesets
+  const groundLayer = map.createLayer(
+    tilemapConfig.groundLayer || "GroundLayer",
+    tilesets,
+    0,
+    0,
+  );
 
   groundLayer.setCollisionByProperty({ collides: true });
 
-  // World bounds
   scene.physics.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
-
   scene.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
 
   return { map, groundLayer };
