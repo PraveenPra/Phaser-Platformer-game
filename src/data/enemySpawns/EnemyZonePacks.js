@@ -2,14 +2,14 @@ export const ForestEnemySpawnConfig = {
   forest_basic: [
     {
       role: "grunt",
-      digimons: ["magnamon", "patamon"],
-      count: { min: 3, max: 4 },
+      digimons: ["botomon"],
+      count: { min: 1, max: 3 },
       level: 1, // px horizontal spread
       ai: "guard",
     },
     {
       role: "elite",
-      digimons: ["seraphimon"],
+      digimons: ["wormmon"],
       count: { min: 1, max: 1 },
       level: 1,
       ai: "guard",

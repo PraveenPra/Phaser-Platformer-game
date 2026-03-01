@@ -11,6 +11,11 @@ export class Preload extends Phaser.Scene {
     // ================================
     // ASSETS (YOUR EXISTING CODE)
     // ================================
+    this.load.atlas(
+      "botomon",
+      "assets/digimons/Botomon/Botomon.png",
+      "assets/digimons/Botomon/Botomon.json",
+    );
 
     this.load.atlas(
       "agumon",
@@ -22,6 +27,12 @@ export class Preload extends Phaser.Scene {
       "gabumon",
       "assets/digimons/Gabumon/Gabumon.png",
       "assets/digimons/Gabumon/Gabumon.json",
+    );
+
+    this.load.atlas(
+      "wormmon",
+      "assets/digimons/Wormmon/Wormmon.png",
+      "assets/digimons/Wormmon/Wormmon.json",
     );
 
     this.load.atlas(
@@ -192,6 +203,11 @@ export class Preload extends Phaser.Scene {
     this.load.image(
       "level1-slopes-tileset",
       "assets/tilemaps/Level1/tile_jungle_slopes_brown.png",
+    );
+
+    this.load.image(
+      "level1-gnd-slopes-tileset",
+      "assets/tilemaps/Level1/tile_jungle_bottom_brown.png",
     );
 
     this.load.image(
