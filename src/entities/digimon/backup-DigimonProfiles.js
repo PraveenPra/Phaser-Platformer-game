@@ -509,16 +509,6 @@ export const DIGIMON_PROFILES = {
       domains: ["ground", "air"],
       default: "air",
     },
-    visual: {
-      originX: 0.5,
-      originY: 1,
-      yOffset: -4,
-      xOffset: -2,
-      anims: {
-        "attack-C": -4,
-        fly: 12,
-      },
-    },
 
     attacks: {
       main: {
@@ -651,16 +641,6 @@ export const DIGIMON_PROFILES = {
     movement: {
       mode: "air",
     },
-    visual: {
-      originX: 0.5,
-      originY: 1,
-      yOffset: -20,
-      xOffset: 2,
-      anims: {
-        // "attack-A": -4,
-        fly: 12,
-      },
-    },
 
     attacks: {
       main: {
@@ -712,14 +692,6 @@ export const DIGIMON_PROFILES = {
       domains: ["ground", "air"],
       default: "air",
     },
-    // visual: {
-    //   originX: 0.5,
-    //   originY: 1,
-    //   yOffset: -4,
-    //   anims: {
-    //     "attack-C": -4,
-    //   },
-    // },
 
     attacks: {
       main: {
@@ -783,17 +755,6 @@ export const DIGIMON_PROFILES = {
       offsetY: 25,
       gravityY: 900,
     },
-
-    // visual: {
-    //   originX: 0.5,
-    //   originY: 1,
-    //   yOffset: -2,
-    //   anims: {
-    //     "attack-A": -6,
-    //     "attack-B": -3,
-    //     "attack-C": -5,
-    //   },
-    // },
 
     attacks: {
       main: {

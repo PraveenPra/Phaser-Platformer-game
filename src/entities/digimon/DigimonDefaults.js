@@ -7,13 +7,6 @@ export const DIGIMON_DEFAULTS = {
     gravityY: 900,
   },
 
-  // visual: {
-  //   originX: 0.5,
-  //   originY: 1,
-  //   yOffset: -2,
-  //   xOffset: 0,
-  // },
-
   move: {
     speed: 100,
     jump: 640,
