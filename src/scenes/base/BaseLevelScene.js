@@ -21,7 +21,7 @@ export class BaseLevelScene extends Phaser.Scene {
     registerGlobalAnimations(this);
 
     AudioManager.syncPersistentMusic(this);
-    AudioManager.playPersistentMusic(this, "sfx-bg-music-1");
+    AudioManager.playPersistentMusic(this, "music-bg-1");
 
     // =================================================
     // UI SCENE (persistent HUD)
