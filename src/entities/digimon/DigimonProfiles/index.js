@@ -9,5 +9,5 @@ export { seraphimon } from "./seraphimon.js";
 export { ophanimon } from "./ophanimon.js";
 export { birdramon } from "./birdramon.js";
 export { wormmon } from "./wormmon.js";
-export { ancientTroiamon } from "./ancientTroiamon.js";
+export { ancienttroiamon } from "./ancienttroiamon.js";
 export { imperialdramon } from "./imperialdramon.js";

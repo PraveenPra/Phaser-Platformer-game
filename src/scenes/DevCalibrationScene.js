@@ -292,7 +292,7 @@ export class DevCalibrationScene extends Phaser.Scene {
 
     const sprite = this.character.visual.sprite;
     sprite.setInteractive();
-    sprite.on("pointerdown", () => this.scene.start("Start"));
+    sprite.on("pointerdown", () => this.scene.start("Level0"));
     const anim = this.anims.get(this.currentAnimKey);
     if (!anim) return;
 

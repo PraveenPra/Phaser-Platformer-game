@@ -1,4 +1,4 @@
-export const ancientTroiamon = {
+export const ancienttroiamon = {
   body: {
     width: 31,
     height: 39,

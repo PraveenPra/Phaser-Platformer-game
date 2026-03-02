@@ -19,7 +19,7 @@ export class CharacterSelect extends Phaser.Scene {
       "patamon",
       "birdramon",
       "imperialdramon",
-      "ancientTroiamon",
+      "ancienttroiamon",
       "ophanimon",
     ];
 
@@ -63,6 +63,6 @@ export class CharacterSelect extends Phaser.Scene {
 
     // this.scene.start("DevCalibrationScene"); // temporary
     // this.scene.start("Start");
-    this.scene.start("Level1");
+    this.scene.start("Level0");
   }
 }
