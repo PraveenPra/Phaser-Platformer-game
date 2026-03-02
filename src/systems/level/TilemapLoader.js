@@ -7,7 +7,7 @@ export function loadTilemap(scene, tilemapConfig) {
 
   const tilesets = [];
 
-  tilemapConfig.tilesets.forEach((ts) => {
+  tilemapConfig?.tilesets?.forEach((ts) => {
     const tileset = map.addTilesetImage(ts.name, ts.imageKey);
     if (tileset) tilesets.push(tileset);
   });
@@ -17,7 +17,7 @@ export function loadTilemap(scene, tilemapConfig) {
   // ===============================
   // TILED BACKGROUND (always above parallax)
   // ===============================
-  if (tilemapConfig.backgroundLayer) {
+  if (tilemapConfig?.backgroundLayer) {
     const bg = map.createLayer(tilemapConfig.backgroundLayer, tilesets, 0, 0);
     bg.setDepth(-5);
     layers.backgroundLayer = bg;
@@ -26,7 +26,7 @@ export function loadTilemap(scene, tilemapConfig) {
   // ===============================
   // MIDGROUND (props ordering)
   // ===============================
-  if (tilemapConfig.midgroundLayer) {
+  if (tilemapConfig?.midgroundLayer) {
     const mid = map.createLayer(tilemapConfig.midgroundLayer, tilesets, 0, 0);
     mid.setDepth(0);
     layers.midgroundLayer = mid;
@@ -49,7 +49,7 @@ export function loadTilemap(scene, tilemapConfig) {
   // ===============================
   // FOREGROUND (over player)
   // ===============================
-  if (tilemapConfig.foregroundLayer) {
+  if (tilemapConfig?.foregroundLayer) {
     const fg = map.createLayer(tilemapConfig.foregroundLayer, tilesets, 0, 0);
     fg.setDepth(20);
     layers.foregroundLayer = fg;

@@ -12,17 +12,17 @@ export const DIGIMON_PROFILES = {
       main: {
         type: "melee",
         anim: "attack-A",
-        power: 2,
-        fireFrames: [0], // active hit window
+        power: 0.5,
+        fireFrames: [5], // active hit window
         hitbox: {
           width: 32,
           height: 48,
-          offsetX: 15,
+          offsetX: 26,
           offsetY: -10,
-          // statusEffect: "burn",
+          statusEffect: "burn",
           duration: 80, // per-frame lifetime
         },
-        cooldown: 100,
+        cooldown: 10,
       },
       skill1: {
         type: "projectile",
@@ -33,13 +33,13 @@ export const DIGIMON_PROFILES = {
           texture: "fireball",
           anim: "fireball_fly",
           speed: 220,
-          offsetX: 26,
-          offsetY: 20,
+          offsetX: 13,
+          offsetY: 9,
           lifetime: 1900,
           statusEffect: "burn",
           hitReaction: "launch",
         },
-        fireFrame: 0,
+        fireFrame: 5,
         cooldown: 800,
       },
     },
@@ -172,7 +172,7 @@ export const DIGIMON_PROFILES = {
       main: {
         type: "melee",
         anim: "attack-A",
-        power: 0.2,
+        power: 0.5,
         fireFrames: [2], // active hit window
         hitbox: {
           width: 9,
@@ -187,7 +187,7 @@ export const DIGIMON_PROFILES = {
       skill1: {
         type: "melee",
         anim: "attack-B",
-        power: 0.2,
+        power: 0.5,
         fireFrames: [2], // active hit window
         hitbox: {
           width: 11,
