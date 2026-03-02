@@ -1,4 +1,5 @@
 export const digimons = [
+  "Kunemon",
   "Botomon",
   "Agumon",
   "Gabumon",

@@ -10,6 +10,7 @@ export class CharacterSelect extends Phaser.Scene {
     const characters = [
       "botomon",
       "wormmon",
+      "kunemon",
       "seraphimon",
       "agumon",
       "chivmon",
