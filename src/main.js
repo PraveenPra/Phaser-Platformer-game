@@ -1,4 +1,4 @@
-import { Start } from "./scenes/Start.js";
+import { Start } from "./scenes/backups/Start.js";
 import { Preload } from "./scenes/Preload/Preload.js";
 import { CharacterSelect } from "./scenes/CharacterSelect.js";
 import { UIScene } from "/src/ui/UIScene.js";

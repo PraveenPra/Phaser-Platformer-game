@@ -1,14 +1,14 @@
-import { createAnimations } from "../systems/AnimationFactory.js";
-import { GameState } from "../GameState.js";
-import { Player } from "../entities/Player/Player.js";
-import { PlayerInput } from "../entities/Player/PlayerInput.js";
-import { MobileControls } from "../entities/Player/MobileControls.js";
-import { Enemy } from "../entities/enemy/Enemy.js";
-import { PlayerHealthUI } from "../ui/PlayerHealthUI.js";
-import { EnemySpawnManager } from "../systems/EnemySpawnManager.js";
-import { SceneControls } from "../utils/SceneControls.js";
-import { AudioManager } from "../systems/AudioManager.js";
-import { NarrativeSystem } from "../systems/NarrativeSystem.js";
+import { createAnimations } from "../../systems/AnimationFactory.js";
+import { GameState } from "../../GameState.js";
+import { Player } from "../../entities/Player/Player.js";
+import { PlayerInput } from "../../entities/Player/PlayerInput.js";
+import { MobileControls } from "../../entities/Player/MobileControls.js";
+import { Enemy } from "../../entities/enemy/Enemy.js";
+import { PlayerHealthUI } from "../../ui/PlayerHealthUI.js";
+import { EnemySpawnManager } from "../../systems/EnemySpawnManager.js";
+import { SceneControls } from "../../utils/SceneControls.js";
+import { AudioManager } from "../../systems/AudioManager.js";
+import { NarrativeSystem } from "../../systems/NarrativeSystem.js";
 import { Tutorials } from "/src/data/narrative/tutorials.js";
 import { createDamagePacket } from "/src/combat/DamageTypes.js";
 

@@ -1,4 +1,4 @@
-import { GameState } from "../GameState.js";
+import { GameState } from "../../GameState.js";
 
 export class Preload extends Phaser.Scene {
   constructor() {
