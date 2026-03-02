@@ -1,5 +1,5 @@
 import { Start } from "./scenes/Start.js";
-import { Preload } from "./scenes/Preload.js";
+import { Preload } from "./scenes/Preload/Preload.js";
 import { CharacterSelect } from "./scenes/CharacterSelect.js";
 import { UIScene } from "/src/ui/UIScene.js";
 import { DevCalibrationScene } from "./scenes/DevCalibrationScene.js";
@@ -28,7 +28,7 @@ const config = {
     default: "arcade",
     arcade: {
       gravity: { y: 900 },
-      debug: true,
+      debug: false,
       debugShowBody: false,
       debugShowVelocity: false,
     },
