@@ -8,7 +8,7 @@ export const ForestEnemySpawnConfig = {
       ai: "guard",
     },
     {
-      role: "elite",
+      role: "grunt",
       digimons: ["wormmon", "kunemon"],
       count: { min: 1, max: 1 },
       level: 1,

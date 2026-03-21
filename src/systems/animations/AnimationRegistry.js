@@ -109,6 +109,35 @@ export function registerGlobalAnimations(scene) {
     repeat: 0,
   });
 
+  scene.anims.create({
+    key: "vfx-watergun-stream",
+    frames: scene.anims.generateFrameNumbers("vfx-watergun-stream", {
+      start: 0,
+      end: 1,
+    }),
+    frameRate: 12,
+    repeat: -1,
+  });
+
+  scene.anims.create({
+    key: "vfx-watergun-impact",
+    frames: scene.anims.generateFrameNumbers("vfx-watergun-impact", {
+      start: 0,
+      end: 7,
+    }),
+    frameRate: 24,
+    repeat: 0,
+  });
+
+  scene.anims.create({
+    key: "vfx-watergun-muzzle",
+    frames: scene.anims.generateFrameNumbers("vfx-watergun-muzzle", {
+      start: 0,
+      end: 6,
+    }),
+    frameRate: 24,
+    repeat: -1,
+  });
   // =================================================
   // COLLECTIBLE + TRAP ANIMATIONS
   // =================================================

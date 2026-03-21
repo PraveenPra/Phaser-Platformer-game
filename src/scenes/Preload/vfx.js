@@ -12,6 +12,30 @@ export const vfxSpritesheets = [
   { key: "burn-fx", file: "burn-fx.png", w: 16, h: 16 },
   { key: "vfx-gnd-blast", file: "gnd-blast.png", w: 32, h: 32 },
   { key: "vfx-tiny-fire-impact", file: "tiny-fire-impact.png", w: 32, h: 32 },
+  {
+    key: "vfx-watergun-impact",
+    file: "watergun/watergun-impact.png",
+    w: 55,
+    h: 48,
+  },
+  {
+    key: "vfx-watergun-muzzle",
+    file: "watergun/watergun-muzzle.png",
+    w: 55,
+    h: 48,
+  },
+  {
+    key: "vfx-watergun-body",
+    file: "watergun/watergun-body.png",
+    w: 55,
+    h: 48,
+  },
+  {
+    key: "vfx-watergun-stream",
+    file: "watergun/watergun-stream.png",
+    w: 39,
+    h: 31,
+  },
 ];
 
 export function loadVFX(scene) {

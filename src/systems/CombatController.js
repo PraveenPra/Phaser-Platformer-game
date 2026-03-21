@@ -1,6 +1,7 @@
 import { spawnAttackHitbox } from "../entities/common/combat/spawnAttackHitbox.js";
 import { spawnProjectile } from "../entities/common/combat/spawnProjectile.js";
 import { setupHitboxCollisions } from "../entities/common/combat/setupHitboxCollisions.js";
+import { spawnBeam } from "/src/combat/beam/spawnBeam.js";
 
 export class CombatController {
   constructor(entity) {
@@ -92,6 +93,13 @@ export class CombatController {
     }
 
     // ===============================
+    // BEAM
+    // ===============================
+    if (attack.beam) {
+      spawnBeam(entity.scene, entity, attack);
+    }
+
+    // ===============================
     // PROJECTILE
     // ===============================
     if (attack.type === "projectile" && attack.fireFrame !== undefined) {
@@ -101,7 +109,10 @@ export class CombatController {
         if (anim.key !== animKey) return;
         if (frame.index !== fireFrame) return;
 
-        spawnProjectile(entity.scene, entity, attack);
+        if (attack.projectile) {
+          spawnProjectile(entity.scene, entity, attack);
+        }
+
         sprite.off(Phaser.Animations.Events.ANIMATION_UPDATE, onUpdate);
       };
 
@@ -111,16 +122,35 @@ export class CombatController {
     // ===============================
     // CLEANUP
     // ===============================
-    sprite.once(
-      Phaser.Animations.Events.ANIMATION_COMPLETE_KEY + animKey,
-      () => {
-        entity.isAttacking = false;
-        entity.startCooldown(attackKey, attack.cooldown);
+    if (!attack.beam) {
+      sprite.once(
+        Phaser.Animations.Events.ANIMATION_COMPLETE_KEY + animKey,
+        () => {
+          entity.isAttacking = false;
+          entity.startCooldown(attackKey, attack.cooldown);
 
-        if (entity.role === "enemy" && entity.ai) {
-          entity.ai.postAttackTimer = entity.ai.postAttackPause;
-        }
-      },
-    );
+          if (entity.role === "enemy" && entity.ai) {
+            entity.ai.postAttackTimer = entity.ai.postAttackPause;
+          }
+        },
+      );
+    }
+  }
+
+  // for beam attacks
+  finishAttack() {
+    const entity = this.entity;
+
+    entity.isAttacking = false;
+
+    if (entity.currentAttackKey) {
+      const attack = entity.profile.attacks[entity.currentAttackKey];
+
+      if (attack) {
+        entity.startCooldown(entity.currentAttackKey, attack.cooldown);
+      }
+    }
+
+    entity.currentAttackKey = null;
   }
 }
