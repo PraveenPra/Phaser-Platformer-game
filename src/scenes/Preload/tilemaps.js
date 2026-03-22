@@ -46,6 +46,18 @@ export const tilemaps = [
       },
     ],
   },
+
+  // SURVIVAL 1
+  {
+    key: "survival1-tilemap",
+    json: "assets/tilemaps/Survival/Survival1.json",
+    tilesets: [
+      {
+        key: "survival1-gnd-tileset",
+        path: "assets/tilemaps/Survival/plainsOfPassage.png",
+      },
+    ],
+  },
 ];
 
 export function loadTilemaps(scene) {
