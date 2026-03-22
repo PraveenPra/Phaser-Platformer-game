@@ -2,6 +2,7 @@ import { BaseLevelScene } from "/src/scenes/base/BaseLevelScene.js";
 import { LevelFlowSystem } from "/src/systems/level/LevelFlowSystem.js";
 import { SurvivalConfig } from "/src/scenes/levels/survival/SurvivalConfig.js";
 import { SurvivalEnemySystem } from "/src/systems/survival/SurvivalEnemySystem.js";
+import { SurvivalHuntAI } from "/src/entities/enemy/ai/survival/SurvivalHuntAI.js";
 
 export class SurvivalScene extends BaseLevelScene {
   constructor() {

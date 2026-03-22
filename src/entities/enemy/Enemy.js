@@ -1,6 +1,6 @@
 import { Character } from "../common/Character.js";
 import { resolveProfile } from "../digimon/resolveProfile.js";
-import { EnemyAI } from "./EnemyAI.js";
+import { EnemyAI } from "./ai/EnemyAI.js";
 import { CharacterHealthBar } from "../common/CharacterHealthBar.js";
 import { EnemyFactory } from "./EnemyFactory.js";
 import { EnemyArchetypes } from "./EnemyArchetypes.js";

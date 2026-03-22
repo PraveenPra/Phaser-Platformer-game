@@ -1,4 +1,5 @@
 import { Enemy } from "/src/entities/enemy/Enemy.js";
+import { SurvivalHuntAI } from "/src/entities/enemy/ai/survival/SurvivalHuntAI.js";
 
 export class SurvivalEnemySystem {
   constructor(scene) {
@@ -15,8 +16,12 @@ export class SurvivalEnemySystem {
     const enemy = new Enemy(this.scene, x, y, charName, {
       ai: config.ai ?? "idle",
       level: config.level ?? 1,
-      role: config.role ?? "grunt",
+      role: config.role ?? "elite",
     });
+
+    enemy.speedMultiplier = 0.35;
+    // override campaign AI
+    enemy.ai = new SurvivalHuntAI();
 
     this.scene.enemies.add(enemy);
 

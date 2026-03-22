@@ -29,6 +29,8 @@ export class Character extends Phaser.GameObjects.Container {
     let startState = initialState;
     this.jumpCount = 0;
 
+    this.speedMultiplier = 1; // For global speed buffs/debuffs
+
     // ✅ MUST exist before FSM
     // Determine which states to use
     if (profile.movement?.mode === "multi-domain") {
