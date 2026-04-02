@@ -6,13 +6,31 @@ export class SurvivalEnemySystem {
     this.scene = scene;
 
     scene.enemies = scene.physics.add.group();
-
     scene.physics.add.collider(scene.enemies, scene.groundLayer);
 
-    // spawning
+    // spawn timers
     this.spawnTimer = 0;
-    this.spawnInterval = 2000; // 2 seconds
+    this.spawnDelayTimer = 0;
+
+    this.waveSpawning = false;
+    this.spawnedInWave = 0;
+
     this.maxEnemies = 6;
+    this.enemyPool = ["agumon", "gabumon", "patamon", "wormmon"];
+
+    // prepare first wave
+    this.prepareNextWave();
+  }
+
+  prepareNextWave() {
+    // random time before next wave
+    this.spawnInterval = Phaser.Math.Between(1800, 4200);
+
+    // random enemies per wave
+    this.waveSize = Phaser.Math.Between(1, 4);
+
+    // random delay between enemies in same wave
+    this.spawnDelay = Phaser.Math.Between(200, 450);
   }
 
   spawn(charName, x, y, config = {}) {
@@ -32,21 +50,22 @@ export class SurvivalEnemySystem {
   spawnRandom() {
     const cam = this.scene.cameras.main;
 
-    // spawn slightly before right edge of screen
+    // spawn near right edge
     const x = cam.scrollX + cam.width - 40;
 
-    // small vertical variation
-    const y = 380;
+    // small Y variation
+    const y = Phaser.Math.Between(360, 400);
 
     console.log("SPAWNING ENEMY");
+    const charName = Phaser.Utils.Array.GetRandom(this.enemyPool);
 
-    this.spawn("agumon", x, y, { level: 1, role: "elite" });
+    this.spawn(charName, x, y, { level: 1, role: "elite" });
+    // this.spawn("agumon", x, y, { level: 1, role: "elite" });
   }
 
   getGroundY(x) {
     const scene = this.scene;
 
-    // scan downward until we find ground
     for (let y = 0; y < scene.scale.height; y += 16) {
       const tile = scene.groundLayer.getTileAtWorldXY(x, y);
 
@@ -59,17 +78,47 @@ export class SurvivalEnemySystem {
   }
 
   update(dt) {
-    // ===== spawn logic =====
-    this.spawnTimer += dt;
-
     const alive = this.scene.enemies.countActive(true);
 
-    if (this.spawnTimer >= this.spawnInterval && alive < this.maxEnemies) {
-      this.spawnRandom();
+    // ===== START WAVE =====
+    this.spawnTimer += dt;
+
+    if (
+      !this.waveSpawning &&
+      this.spawnTimer >= this.spawnInterval &&
+      alive < this.maxEnemies
+    ) {
+      this.waveSpawning = true;
+      this.spawnedInWave = 0;
+      this.spawnDelayTimer = 0;
       this.spawnTimer = 0;
     }
 
-    // ===== update enemies =====
+    // ===== SPAWN WAVE ENEMIES =====
+    if (this.waveSpawning) {
+      this.spawnDelayTimer += dt;
+
+      if (this.spawnDelayTimer >= this.spawnDelay) {
+        if (alive < this.maxEnemies) {
+          this.spawnRandom();
+        }
+
+        this.spawnDelayTimer = 0;
+        this.spawnedInWave++;
+
+        // randomize next spawn delay for organic feel
+        this.spawnDelay = Phaser.Math.Between(200, 450);
+
+        if (this.spawnedInWave >= this.waveSize) {
+          this.waveSpawning = false;
+
+          // prepare new random wave
+          this.prepareNextWave();
+        }
+      }
+    }
+
+    // ===== UPDATE ENEMIES =====
     this.scene.enemies.children.each((enemy) => {
       if (!enemy || enemy.isDead) return;
 
