@@ -18,28 +18,36 @@ export class SurvivalEnemySystem {
     this.maxEnemies = 6;
     this.enemyPool = ["agumon", "gabumon", "patamon", "wormmon"];
 
+    this.gameTime = 0;
+    this.difficultyLevel = 1;
+
     // prepare first wave
     this.prepareNextWave();
   }
 
   prepareNextWave() {
-    // random time before next wave
     this.spawnInterval = Phaser.Math.Between(1800, 4200);
 
-    // random enemies per wave
-    this.waveSize = Phaser.Math.Between(1, 4);
+    this.waveSize = Phaser.Math.Between(
+      1 + this.difficultyLevel,
+      3 + this.difficultyLevel,
+    );
 
-    // random delay between enemies in same wave
     this.spawnDelay = Phaser.Math.Between(200, 450);
   }
 
   spawn(charName, x, y, config = {}) {
     const enemy = new Enemy(this.scene, x, y, charName, {
-      level: config.level ?? 1,
+      level: config.level ?? this.difficultyLevel,
       role: config.role ?? "elite",
     });
 
-    enemy.speedMultiplier = 0.35;
+    enemy.speedMultiplier = Phaser.Math.Clamp(
+      0.25 + this.difficultyLevel * 0.05,
+      0.25,
+      0.6,
+    );
+
     enemy.ai = new SurvivalHuntAI();
 
     this.scene.enemies.add(enemy);
@@ -124,5 +132,9 @@ export class SurvivalEnemySystem {
 
       enemy.update(dt);
     });
+
+    // ===== DIFFICULTY SCALING =====
+    this.gameTime += dt;
+    this.difficultyLevel = Math.floor(this.gameTime / 30000) + 1;
   }
 }
