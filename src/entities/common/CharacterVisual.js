@@ -3,16 +3,14 @@ export class CharacterVisual {
     this.textureKey = textureKey;
     this.profile = profile;
 
-    this.baseYOffset = profile.visual.yOffset ?? 0;
-    this.baseXOffset = profile.visual.xOffset ?? 0;
-    this.animOffsets = profile.visual.anims ?? {};
+    this.baseYOffset = 0;
+    this.baseXOffset = 0;
 
     this.sprite = scene.add.sprite(
       this.baseXOffset,
       this.baseYOffset,
       textureKey,
     );
-    this.sprite.setOrigin(profile.visual.originX, profile.visual.originY);
 
     owner.add(this.sprite);
 
@@ -26,9 +24,8 @@ export class CharacterVisual {
     if (this.sprite.anims.currentAnim?.key === key) return;
 
     const animName = key.replace(`${this.textureKey}_`, "");
-    const animYOffset = this.animOffsets[animName] ?? 0;
 
-    this.sprite.y = this.baseYOffset + animYOffset;
+    this.sprite.y = this.baseYOffset;
     this.sprite.play(key);
   }
 

@@ -1,14 +1,14 @@
-import { createAnimations } from "../systems/AnimationFactory.js";
-import { GameState } from "../GameState.js";
-import { Player } from "../entities/Player/Player.js";
-import { PlayerInput } from "../entities/Player/PlayerInput.js";
-import { MobileControls } from "../entities/Player/MobileControls.js";
-import { Enemy } from "../entities/enemy/Enemy.js";
-import { PlayerHealthUI } from "../ui/PlayerHealthUI.js";
-import { EnemySpawnManager } from "../systems/EnemySpawnManager.js";
-import { SceneControls } from "../utils/SceneControls.js";
-import { AudioManager } from "../systems/AudioManager.js";
-import { NarrativeSystem } from "../systems/NarrativeSystem.js";
+import { createAnimations } from "../../systems/AnimationFactory.js";
+import { GameState } from "../../GameState.js";
+import { Player } from "../../entities/Player/Player.js";
+import { PlayerInput } from "../../entities/Player/PlayerInput.js";
+import { MobileControls } from "../../entities/Player/MobileControls.js";
+import { Enemy } from "../../entities/enemy/Enemy.js";
+import { PlayerHealthUI } from "../../ui/PlayerHealthUI.js";
+import { EnemySpawnManager } from "../../systems/EnemySpawnManager.js";
+import { SceneControls } from "../../utils/SceneControls.js";
+import { AudioManager } from "../../systems/AudioManager.js";
+import { NarrativeSystem } from "../../systems/NarrativeSystem.js";
 import { Tutorials } from "/src/data/narrative/tutorials.js";
 import { createDamagePacket } from "/src/combat/DamageTypes.js";
 
@@ -206,6 +206,24 @@ export class Start extends Phaser.Scene {
       frameRate: 12,
       repeat: -1,
     });
+    this.anims.create({
+      key: "vfx-gnd-blast",
+      frames: this.anims.generateFrameNumbers("vfx-gnd-blast", {
+        start: 0,
+        end: 9,
+      }),
+      frameRate: 24,
+      repeat: 0,
+    });
+    this.anims.create({
+      key: "vfx-tiny-fire-impact",
+      frames: this.anims.generateFrameNumbers("vfx-tiny-fire-impact", {
+        start: 0,
+        end: 9,
+      }),
+      frameRate: 24,
+      repeat: 0,
+    });
     // =================================================
     // COLLECTIBLE + TRAP ANIMATIONS
     // =================================================
@@ -293,6 +311,23 @@ export class Start extends Phaser.Scene {
       null,
       this,
     );
+    // =================================================
+    // PROJECTILES GROUP
+    // =================================================
+    this.projectiles = this.physics.add.group();
+
+    this.physics.add.collider(this.projectiles, this.groundLayer, (proj) => {
+      if (!proj || !proj.body || !proj.active) return;
+
+      if (
+        proj.motion === "arc" &&
+        !proj._hasHitGround &&
+        proj.body.blocked.down
+      ) {
+        proj._hasHitGround = true;
+        proj.explode();
+      }
+    });
 
     // =================================================
     // PARALLAX BACKGROUNDS
@@ -304,27 +339,32 @@ export class Start extends Phaser.Scene {
 
     const createParallax = (key, depth, factor) => {
       const img = this.textures.get(key).getSourceImage();
+
       const bg = this.add.tileSprite(
         0,
-        cam.height - img.height * scale,
+        cam.height - img.height, // stick to bottom
         cam.width,
-        img.height * scale,
+        img.height, // use original height
         key,
       );
 
-      bg.setOrigin(0, 0).setScrollFactor(0).setScale(scale).setDepth(depth);
+      bg.setOrigin(0, 0).setScrollFactor(0).setDepth(depth);
+
+      // Scale to fill height
+      const scale = 1.25; // clean integer
+      bg.setScale(scale);
+      bg.y = cam.height - bg.displayHeight;
 
       bg.parallaxFactor = factor;
-
-      // bg.setAlpha(0.6);
 
       return bg;
     };
 
-    this.bgSky = createParallax("bg3", -50, 0.05);
-    this.bgMountains = createParallax("bg2", -40, 0.04);
-    // this.bgForest = createParallax("bg1", -30, 0.02);
-    // this.bgTrees = createParallax("bg1", -20, 0.01);
+    this.bgSky = createParallax("bg5", -50, 0.05);
+    this.bgMountains = createParallax("bg4", -40, 0.04);
+    this.bgForest = createParallax("bg3", -30, 0.03);
+    this.bgFrontTrees = createParallax("bg2", -20, 0.02);
+    this.bgTrees = createParallax("bg1", -10, 0.01);
 
     // =================================================
     // DATA SHARDS - spawn some for demo
@@ -405,6 +445,9 @@ export class Start extends Phaser.Scene {
     const camX = this.cameras.main.scrollX;
     this.bgSky.tilePositionX = camX * this.bgSky.parallaxFactor;
     this.bgMountains.tilePositionX = camX * this.bgMountains.parallaxFactor;
+    this.bgForest.tilePositionX = camX * this.bgForest.parallaxFactor;
+    this.bgTrees.tilePositionX = camX * this.bgTrees.parallaxFactor;
+    this.bgFrontTrees.tilePositionX = camX * this.bgFrontTrees.parallaxFactor;
     // this.bgForest.tilePositionX = camX * this.bgForest.parallaxFactor;
     // this.bgTrees.tilePositionX = camX * this.bgTrees.parallaxFactor;
 

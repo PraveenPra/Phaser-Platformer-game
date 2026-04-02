@@ -8,6 +8,9 @@ export class CharacterSelect extends Phaser.Scene {
 
   create() {
     const characters = [
+      "botomon",
+      "wormmon",
+      "kunemon",
       "seraphimon",
       "agumon",
       "chivmon",
@@ -16,7 +19,7 @@ export class CharacterSelect extends Phaser.Scene {
       "patamon",
       "birdramon",
       "imperialdramon",
-      "ancientTroiamon",
+      "ancienttroiamon",
       "ophanimon",
     ];
 
@@ -59,6 +62,8 @@ export class CharacterSelect extends Phaser.Scene {
     GameState.selectedDigimon = key;
 
     // this.scene.start("DevCalibrationScene"); // temporary
-    this.scene.start("Start");
+    // this.scene.start("Start");
+    // this.scene.start("Level0");
+    this.scene.start("SurvivalScene");
   }
 }

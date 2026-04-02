@@ -19,8 +19,10 @@ export class GroundMovement {
     const body = this.entity.bodyLayer.body;
     const move = this.entity.profile.move;
 
-    body.setAccelerationX(dir * move.accel);
-    body.setMaxVelocity(move.speed, body.maxVelocity.y);
+    const mult = this.entity.speedMultiplier ?? 1;
+
+    body.setAccelerationX(dir * move.accel * mult);
+    body.setMaxVelocity(move.speed * mult, body.maxVelocity.y);
 
     if (dir !== 0) {
       this.entity.visual.flip(dir < 0);

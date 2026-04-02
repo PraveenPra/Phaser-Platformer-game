@@ -1,4 +1,4 @@
-import { GameState } from "../GameState.js";
+import { GameState } from "../../GameState.js";
 
 export class Preload extends Phaser.Scene {
   constructor() {
@@ -11,6 +11,11 @@ export class Preload extends Phaser.Scene {
     // ================================
     // ASSETS (YOUR EXISTING CODE)
     // ================================
+    this.load.atlas(
+      "botomon",
+      "assets/digimons/Botomon/Botomon.png",
+      "assets/digimons/Botomon/Botomon.json",
+    );
 
     this.load.atlas(
       "agumon",
@@ -22,6 +27,12 @@ export class Preload extends Phaser.Scene {
       "gabumon",
       "assets/digimons/Gabumon/Gabumon.png",
       "assets/digimons/Gabumon/Gabumon.json",
+    );
+
+    this.load.atlas(
+      "wormmon",
+      "assets/digimons/Wormmon/Wormmon.png",
+      "assets/digimons/Wormmon/Wormmon.json",
     );
 
     this.load.atlas(
@@ -77,10 +88,16 @@ export class Preload extends Phaser.Scene {
     // this.load.image("bg3", "assets/background_layer_3.png");
     // this.load.image("bg4", "assets/bg1.jpeg");
 
-    this.load.image("bg1", "assets/bg-fore1.png");
-    this.load.image("bg2", "assets/bg-mid1.png");
-    this.load.image("bg3", "assets/bg-far1.png");
-    this.load.image("bg4", "assets/bg1.jpeg");
+    // this.load.image("bg1", "assets/bg-fore1.png");
+    // this.load.image("bg2", "assets/bg-mid1.png");
+    // this.load.image("bg3", "assets/bg-far1.png");
+    // this.load.image("bg4", "assets/bg1.jpeg");
+
+    this.load.image("bg1", "assets/backgrounds/plx-5.png");
+    this.load.image("bg2", "assets/backgrounds/plx-4.png");
+    this.load.image("bg3", "assets/backgrounds/plx-3.png");
+    this.load.image("bg4", "assets/backgrounds/plx-2.png");
+    this.load.image("bg5", "assets/backgrounds/plx-1.png");
 
     // VFX ----------------
     this.load.image("big-fireball", "assets/vfx/big-fireball.png");
@@ -132,6 +149,20 @@ export class Preload extends Phaser.Scene {
       frameWidth: 16,
       frameHeight: 16,
     });
+
+    this.load.spritesheet("vfx-gnd-blast", "assets/vfx/gnd-blast.png", {
+      frameWidth: 32,
+      frameHeight: 32,
+    });
+
+    this.load.spritesheet(
+      "vfx-tiny-fire-impact",
+      "assets/vfx/tiny-fire-impact.png",
+      {
+        frameWidth: 32,
+        frameHeight: 32,
+      },
+    );
     // COLLECTIBLES -------------
     this.load.atlas(
       "collectables",
@@ -165,22 +196,43 @@ export class Preload extends Phaser.Scene {
     );
     // LEVEL 1 TILEMAPS ----------
     this.load.image(
-      "level1-tileset",
-      "assets/tilemaps/Level1-Tutorial/Terrain_32x32.png",
+      "level1-gnd-tileset",
+      "assets/tilemaps/Level1/tile_jungle_ground_brown.png",
     );
-    this.load.image(
-      "level1-tileset-enemies",
-      "assets/tilemaps/Level1-Tutorial/Enemies_32x32.png",
-    ); //dummy placeholder tileset fr enemies
 
     this.load.image(
-      "level1-tileset-misc",
-      "assets/tilemaps/Level1-Tutorial/Collectables_16x16.png",
-    ); //dummy placeholder tileset fr traps, collectables
+      "level1-slopes-tileset",
+      "assets/tilemaps/Level1/tile_jungle_slopes_brown.png",
+    );
+
+    this.load.image(
+      "level1-gnd-slopes-tileset",
+      "assets/tilemaps/Level1/tile_jungle_bottom_brown.png",
+    );
+
+    this.load.image(
+      "level1-plants-tileset",
+      "assets/tilemaps/Level1/tile_jungle_plants_objects.png",
+    );
+
+    this.load.image(
+      "level1-tree-dark-tileset",
+      "assets/tilemaps/Level1/tile_jungle_tree_dark.png",
+    );
+
+    // this.load.image(
+    //   "level1-tileset-enemies",
+    //   "assets/tilemaps/Level1/Enemies_32x32.png",
+    // );
+
+    // this.load.image(
+    //   "level1-tileset-misc",
+    //   "assets/tilemaps/Level1/Collectables_16x16.png",
+    // );
 
     this.load.tilemapTiledJSON(
-      "level1-map",
-      "assets/tilemaps/Level1-Tutorial/Level1Tutorial.json",
+      "level1-tilemap",
+      "assets/tilemaps/Level1/Level1.json",
     );
 
     // SYSTEM TEXTURES ----------// This generates a 1×1 white texture in memory.

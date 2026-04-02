@@ -1,4 +1,59 @@
 export const DIGIMON_PROFILES = {
+  botomon: {
+    body: {
+      width: 14,
+      height: 14,
+      offsetX: -7,
+      offsetY: 1,
+      gravityY: 900,
+    },
+
+    attacks: {
+      main: {
+        type: "melee",
+        anim: "attack-A",
+        power: 0.5,
+        fireFrames: [5], // active hit window
+        hitbox: {
+          width: 32,
+          height: 48,
+          offsetX: 26,
+          offsetY: -10,
+          statusEffect: "burn",
+          duration: 80, // per-frame lifetime
+        },
+        cooldown: 10,
+      },
+      skill1: {
+        type: "projectile",
+        anim: "attack-A",
+        power: 0.5,
+        impactVFX: "vfx-tiny-fire-impact",
+        projectile: {
+          texture: "fireball",
+          anim: "fireball_fly",
+          speed: 220,
+          offsetX: 13,
+          offsetY: 9,
+          lifetime: 1900,
+          statusEffect: "burn",
+          hitReaction: "launch",
+        },
+        fireFrame: 5,
+        cooldown: 800,
+      },
+    },
+
+    move: {
+      speed: 100,
+    },
+
+    evolution: {
+      prev: null,
+      next: "agumon",
+    },
+  },
+
   agumon: {
     body: {
       width: 11,
@@ -43,7 +98,7 @@ export const DIGIMON_PROFILES = {
         type: "projectile",
         anim: "attack-C",
         power: 0.5,
-        impactVFX: "vfx-fireblast",
+        impactVFX: "vfx-tiny-fire-impact",
         projectile: {
           texture: "fireball",
           anim: "fireball_fly",
@@ -76,7 +131,12 @@ export const DIGIMON_PROFILES = {
         type: "projectile",
         anim: "attack-E",
         power: 4.0,
+        impactVFX: "vfx-gnd-blast",
         projectile: {
+          motion: "arc",
+          explosive: true,
+          explodeOnGround: true,
+          explosionRadius: 164,
           texture: "big-fireball",
           // scale: 0.1,
           speed: 220,
@@ -99,25 +159,141 @@ export const DIGIMON_PROFILES = {
     },
   },
 
+  wormmon: {
+    body: {
+      width: 11,
+      height: 14,
+      offsetX: -6,
+      offsetY: 18,
+      gravityY: 900,
+    },
+
+    attacks: {
+      main: {
+        type: "melee",
+        anim: "attack-A",
+        power: 0.5,
+        fireFrames: [2], // active hit window
+        hitbox: {
+          width: 9,
+          height: 38,
+          offsetX: 19,
+          offsetY: 12,
+          // statusEffect: "burn",
+          duration: 80, // per-frame lifetime
+        },
+        cooldown: 300,
+      },
+      skill1: {
+        type: "melee",
+        anim: "attack-B",
+        power: 0.5,
+        fireFrames: [2], // active hit window
+        hitbox: {
+          width: 11,
+          height: 50,
+          offsetX: 14,
+          offsetY: 5,
+          // duration: 320,
+          // duration: 80, // per-frame lifetime
+        },
+        cooldown: 1500,
+      },
+      skill2: {
+        type: "projectile",
+        anim: "attack-C",
+        power: 0.5,
+        impactVFX: "vfx-tiny-fire-impact",
+        projectile: {
+          texture: "fireball",
+          anim: "fireball_fly",
+          speed: 220,
+          offsetX: 26,
+          offsetY: 18,
+          lifetime: 1900,
+          statusEffect: "burn",
+          hitReaction: "launch",
+        },
+        fireFrame: 1,
+        cooldown: 800,
+      },
+    },
+
+    move: {
+      speed: 100,
+    },
+
+    evolution: {
+      prev: null,
+      next: "imperialdramon",
+    },
+  },
+
+  kunemon: {
+    body: {
+      width: 11,
+      height: 14,
+      offsetX: -6,
+      offsetY: 1,
+      gravityY: 900,
+    },
+
+    attacks: {
+      main: {
+        type: "melee",
+        anim: "attack-A",
+        power: 0.5,
+        fireFrames: [3], // active hit window
+        hitbox: {
+          width: 9,
+          height: 38,
+          offsetX: 15,
+          offsetY: -4,
+          // statusEffect: "burn",
+
+          duration: 80, // per-frame lifetime
+        },
+        cooldown: 300,
+      },
+      skill1: {
+        type: "projectile",
+        anim: "attack-B",
+        power: 0.5,
+        impactVFX: "vfx-tiny-fire-impact",
+        projectile: {
+          texture: "fireball",
+          anim: "fireball_fly",
+          speed: 220,
+          offsetX: 12,
+          offsetY: 8,
+          lifetime: 1900,
+          statusEffect: "burn",
+          hitReaction: "knockbackHeavy",
+        },
+        fireFrame: 3,
+        cooldown: 800,
+      },
+    },
+
+    move: {
+      speed: 80,
+    },
+
+    evolution: {
+      prev: null,
+      next: "imperialdramon",
+    },
+  },
   gabumon: {
     body: {
       width: 11,
       height: 21,
-      offsetX: -3,
-      offsetY: -9,
+      offsetX: -4,
+      offsetY: 10,
       gravityY: 900,
     },
     move: {
       speed: 90,
-    },
-
-    visual: {
-      originX: 0.5,
-      originY: 1,
-      yOffset: -5,
-      anims: {
-        "attack-C": -4,
-      },
     },
 
     attacks: {
@@ -125,12 +301,12 @@ export const DIGIMON_PROFILES = {
         type: "melee",
         anim: "attack-B",
         power: 1.0,
-        fireFrames: [3, 4, 5], // active hit window
+        fireFrames: [2], // active hit window
         hitbox: {
           width: 20,
           height: 18,
-          offsetX: 16,
-          offsetY: -8,
+          offsetX: 21,
+          offsetY: 18,
           duration: 80, // per-frame lifetime
           // duration: 320,
         },
@@ -138,17 +314,17 @@ export const DIGIMON_PROFILES = {
       },
       skill1: {
         type: "projectile",
-        anim: "attack-B",
+        anim: "attack-A",
         power: 1.0,
         antiAir: true, // 👈 jump check
         projectile: {
           texture: "vfx-windball",
           speed: 260,
-          offsetX: 18,
-          offsetY: -10,
+          offsetX: 17,
+          offsetY: 20,
           lifetime: 1200,
         },
-        fireFrame: 4,
+        fireFrame: 9,
         cooldown: 800,
       },
       skill2: {
@@ -156,12 +332,28 @@ export const DIGIMON_PROFILES = {
         anim: "attack-C",
         power: 1.0,
         punish: true, // 👈 catches greedy players
-        fireFrames: [3, 4, 5], // active hit window
+        fireFrames: [5], // active hit window
         hitbox: {
           width: 20,
           height: 18,
-          offsetX: 16,
-          offsetY: -8,
+          offsetX: 21,
+          offsetY: 20,
+          duration: 80, // per-frame lifetime
+          // duration: 320,
+        },
+        cooldown: 1500,
+      },
+      skill3: {
+        type: "melee",
+        anim: "attack-D",
+        power: 1.0,
+        punish: true, // 👈 catches greedy players
+        fireFrames: [4], // active hit window
+        hitbox: {
+          width: 20,
+          height: 18,
+          offsetX: 21,
+          offsetY: 20,
           duration: 80, // per-frame lifetime
           // duration: 320,
         },
@@ -171,29 +363,20 @@ export const DIGIMON_PROFILES = {
 
     evolution: {
       prev: null,
-      next: "greymon",
+      next: null,
     },
   },
 
   chivmon: {
     body: {
-      width: 11,
-      height: 14,
-      offsetX: -3,
-      offsetY: -4,
+      width: 14,
+      height: 15,
+      offsetX: -5,
+      offsetY: 32,
       gravityY: 900,
     },
     move: {
       speed: 100,
-    },
-
-    visual: {
-      originX: 0.5,
-      originY: 1,
-      yOffset: -4,
-      anims: {
-        "attack-C": -4,
-      },
     },
 
     attacks: {
@@ -205,8 +388,8 @@ export const DIGIMON_PROFILES = {
         hitbox: {
           width: 11,
           height: 11,
-          offsetX: 16,
-          offsetY: 5,
+          offsetX: 20,
+          offsetY: 35,
           duration: 80, // per-frame lifetime
           statusEffect: "burn",
           hitReaction: "knockbackHeavy",
@@ -214,37 +397,23 @@ export const DIGIMON_PROFILES = {
         },
         cooldown: 500,
       },
-      // skill1: {
-      //   type: "projectile",
-      //   anim: "attack-C",
-      //   power: 1.0,
-      //   punish: true, // 👈 reacts to player attack
-      //   projectile: {
-      //     texture: "vfx-windball",
-      //     speed: 260,
-      //     offsetX: 18,
-      //     offsetY: -10,
-      //     lifetime: 1200,
-      //   },
-      //   fireFrame: 1,
-      //   cooldown: 800,
-      // },
       skill1: {
         type: "melee",
-        anim: "attack-C",
+        anim: "attack-B",
         power: 1.0,
         desperation: true,
-        fireFrames: [2], // active hit window
+        fireFrames: [3], // active hit window
         hitbox: {
           width: 11,
           height: 10,
           offsetX: 19,
-          offsetY: 4,
+          offsetY: 41,
           duration: 80, // per-frame lifetime
           // duration: 320,
         },
         cooldown: 1500,
       },
+      // Attack-C and D are there in spritesheet, not used
     },
 
     evolution: {
@@ -339,16 +508,6 @@ export const DIGIMON_PROFILES = {
       mode: "multi-domain",
       domains: ["ground", "air"],
       default: "air",
-    },
-    visual: {
-      originX: 0.5,
-      originY: 1,
-      yOffset: -4,
-      xOffset: -2,
-      anims: {
-        "attack-C": -4,
-        fly: 12,
-      },
     },
 
     attacks: {
@@ -482,16 +641,6 @@ export const DIGIMON_PROFILES = {
     movement: {
       mode: "air",
     },
-    visual: {
-      originX: 0.5,
-      originY: 1,
-      yOffset: -20,
-      xOffset: 2,
-      anims: {
-        // "attack-A": -4,
-        fly: 12,
-      },
-    },
 
     attacks: {
       main: {
@@ -543,14 +692,6 @@ export const DIGIMON_PROFILES = {
       domains: ["ground", "air"],
       default: "air",
     },
-    // visual: {
-    //   originX: 0.5,
-    //   originY: 1,
-    //   yOffset: -4,
-    //   anims: {
-    //     "attack-C": -4,
-    //   },
-    // },
 
     attacks: {
       main: {
@@ -614,17 +755,6 @@ export const DIGIMON_PROFILES = {
       offsetY: 25,
       gravityY: 900,
     },
-
-    // visual: {
-    //   originX: 0.5,
-    //   originY: 1,
-    //   yOffset: -2,
-    //   anims: {
-    //     "attack-A": -6,
-    //     "attack-B": -3,
-    //     "attack-C": -5,
-    //   },
-    // },
 
     attacks: {
       main: {

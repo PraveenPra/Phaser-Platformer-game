@@ -150,7 +150,8 @@ export class DevCalibrationScene extends Phaser.Scene {
 
     this.input.keyboard.on("keydown-Z", () => {
       this.currentAttackKey = "main";
-      this.playAnim("attack-A");
+      this.playAnim("attack-A"); //change these to match the anim keys in the profile
+      //for example, if the main attack anim is "attack-B", use that key here and in the profile
     });
 
     this.input.keyboard.on("keydown-X", () => {
@@ -291,7 +292,7 @@ export class DevCalibrationScene extends Phaser.Scene {
 
     const sprite = this.character.visual.sprite;
     sprite.setInteractive();
-    sprite.on("pointerdown", () => this.scene.start("Start"));
+    sprite.on("pointerdown", () => this.scene.start("Level0"));
     const anim = this.anims.get(this.currentAnimKey);
     if (!anim) return;
 
