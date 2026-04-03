@@ -6,6 +6,7 @@ import { DevCalibrationScene } from "./scenes/DevCalibrationScene.js";
 import { Level0 } from "./scenes/levels/Level0.js";
 import { Level1 } from "./scenes/levels/Level1.js";
 import { SurvivalScene } from "./scenes/SurvivalScene.js";
+import { MainMenuScene } from "./scenes/MainMenuScene.js";
 
 const config = {
   type: Phaser.AUTO,
@@ -18,6 +19,7 @@ const config = {
   pixelArt: true,
   scene: [
     Preload,
+    MainMenuScene,
     CharacterSelect,
     Start,
     UIScene,

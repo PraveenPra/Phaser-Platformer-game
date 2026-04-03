@@ -64,6 +64,11 @@ export class CharacterSelect extends Phaser.Scene {
     // this.scene.start("DevCalibrationScene"); // temporary
     // this.scene.start("Start");
     // this.scene.start("Level0");
-    this.scene.start("SurvivalScene");
+    // this.scene.start("SurvivalScene");
+    if (GameState.gameMode === "survival") {
+      this.scene.start("SurvivalScene");
+    } else {
+      this.scene.start("Level0");
+    }
   }
 }
