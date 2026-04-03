@@ -3,6 +3,8 @@ export const GameState = {
   selectedDigimon: null, // base form at checkpoint
   currentForm: null, // runtime only (DO NOT persist on death)
 
+  gameMode: "platformer",
+
   activeGameplayScene: null,
 
   setActiveScene(sceneKey) {

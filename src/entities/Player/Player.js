@@ -25,7 +25,7 @@ export class Player extends Character {
 
     this.stats = new PlayerStats(
       {
-        maxHp: 100,
+        maxHp: 10,
         attack: 20,
         defense: 5,
       },

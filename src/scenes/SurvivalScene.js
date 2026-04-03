@@ -2,6 +2,7 @@ import { BaseLevelScene } from "/src/scenes/base/BaseLevelScene.js";
 import { LevelFlowSystem } from "/src/systems/level/LevelFlowSystem.js";
 import { SurvivalConfig } from "/src/scenes/levels/survival/SurvivalConfig.js";
 import { SurvivalEnemySystem } from "/src/systems/survival/SurvivalEnemySystem.js";
+import { GameState } from "/src/GameState.js";
 
 export class SurvivalScene extends BaseLevelScene {
   constructor() {
@@ -10,6 +11,8 @@ export class SurvivalScene extends BaseLevelScene {
 
   create() {
     super.create();
+
+    GameState.gameMode = "survival";
 
     // build level
     LevelFlowSystem.create(this, SurvivalConfig);
@@ -25,7 +28,66 @@ export class SurvivalScene extends BaseLevelScene {
     this.wave = 0;
 
     // ======================
-    // UI TEXT
+    // GAME OVER
+    // ======================
+    this.events.on("survivalGameOver", (data) => {
+      this.physics.pause();
+
+      this.add
+        .text(480, 200, "GAME OVER", {
+          fontSize: "48px",
+          color: "#ff4444",
+        })
+        .setOrigin(0.5);
+
+      this.add
+        .text(480, 260, "Wave Reached: " + data.wave, {
+          fontSize: "28px",
+          color: "#ffffff",
+        })
+        .setOrigin(0.5);
+
+      this.add
+        .text(480, 310, "Score: " + data.score, {
+          fontSize: "28px",
+          color: "#ffffff",
+        })
+        .setOrigin(0.5);
+
+      this.add
+        .text(480, 360, "Press R to Restart", {
+          fontSize: "20px",
+          color: "#aaaaaa",
+        })
+        .setOrigin(0.5);
+
+      this.input.keyboard.once("keydown-R", () => {
+        this.scene.restart();
+      });
+    });
+
+    this.events.on("survivalComplete", (data) => {
+      const reward = data.score * 2 + 200;
+
+      GameState.coins += reward;
+
+      this.add
+        .text(480, 200, "SURVIVAL COMPLETE!", {
+          fontSize: "42px",
+          color: "#ffff00",
+        })
+        .setOrigin(0.5);
+
+      this.add
+        .text(480, 260, "Reward: " + reward + " bits", {
+          fontSize: "28px",
+          color: "#ffffff",
+        })
+        .setOrigin(0.5);
+    });
+
+    // ======================
+    // UI SCORE & WAVE TEXT
     // ======================
 
     this.scoreText = this.add
@@ -59,14 +121,22 @@ export class SurvivalScene extends BaseLevelScene {
       this.scoreText.setText("Score: " + this.score);
     });
 
-    this.events.on("waveStart", () => {
-      this.wave++;
+    this.events.on("waveStart", (data) => {
+      this.wave = data.wave;
 
       this.waveText.setText("Wave: " + this.wave);
 
       this.waveAlert.setText("WAVE " + this.wave);
 
       this.time.delayedCall(1500, () => {
+        this.waveAlert.setText("");
+      });
+    });
+
+    this.events.on("waveCleared", () => {
+      this.waveAlert.setText("WAVE CLEARED");
+
+      this.time.delayedCall(1200, () => {
         this.waveAlert.setText("");
       });
     });

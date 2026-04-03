@@ -64,7 +64,9 @@ export class BaseLevelScene extends Phaser.Scene {
     this.onPitFall();
 
     this.events.once("player-dead", () => {
-      this.scene.restart();
+      if (GameState.gameMode === "platformer") {
+        this.scene.restart();
+      }
     });
   }
 

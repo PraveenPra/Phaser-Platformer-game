@@ -1,5 +1,6 @@
 import { Enemy } from "/src/entities/enemy/Enemy.js";
 import { SurvivalHuntAI } from "/src/entities/enemy/ai/survival/SurvivalHuntAI.js";
+import { GameState } from "/src/GameState.js";
 
 export class SurvivalEnemySystem {
   constructor(scene) {
@@ -18,11 +19,29 @@ export class SurvivalEnemySystem {
     this.waveState = "waiting";
     this.breakTimer = 0;
 
+    this.currentWave = 1;
+    this.maxWaves = 10;
+
     this.gameTime = 0;
     this.difficultyLevel = 1;
 
     // prepare first wave
     this.prepareNextWave();
+
+    scene.events.on("player-dead", () => {
+      if (GameState.gameMode === "survival") {
+        this.handleGameOver();
+      }
+    });
+  }
+
+  handleGameOver() {
+    this.waveState = "gameover";
+
+    this.scene.events.emit("survivalGameOver", {
+      score: this.scene.score || 0,
+      wave: this.currentWave,
+    });
   }
 
   prepareNextWave() {
@@ -59,7 +78,7 @@ export class SurvivalEnemySystem {
   spawn(charName, x, y, config = {}) {
     const enemy = new Enemy(this.scene, x, y, charName, {
       level: config.level ?? this.difficultyLevel,
-      role: config.role ?? "elite",
+      role: config.role ?? "grunt",
     });
 
     enemy.speedMultiplier = Phaser.Math.Clamp(
@@ -106,6 +125,8 @@ export class SurvivalEnemySystem {
   }
 
   update(dt) {
+    if (this.waveState === "gameover" || this.waveState === "complete") return;
+
     const alive = this.scene.enemies.countActive(true);
 
     // =====================
@@ -120,6 +141,7 @@ export class SurvivalEnemySystem {
         this.spawnDelayTimer = 0;
 
         this.scene.events.emit("waveStart", {
+          wave: this.currentWave,
           size: this.waveSize,
         });
       }
@@ -163,12 +185,28 @@ export class SurvivalEnemySystem {
       this.breakTimer += dt;
 
       if (this.breakTimer >= 2500) {
+        // check if player finished all waves
+        if (this.currentWave >= this.maxWaves) {
+          this.waveState = "complete";
+
+          this.scene.events.emit("survivalComplete", {
+            score: this.scene.score || 0,
+          });
+
+          return;
+        }
+        // next wave
+        this.currentWave++;
         this.difficultyLevel++;
 
         this.prepareNextWave();
 
         this.waveState = "waiting";
         this.spawnTimer = 0;
+
+        this.scene.events.emit("wavePrepare", {
+          wave: this.currentWave,
+        });
       }
     }
 
