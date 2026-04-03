@@ -55,18 +55,33 @@ export class SurvivalScene extends BaseLevelScene {
         .setOrigin(0.5);
 
       this.add
-        .text(480, 360, "Press R to Restart", {
+        .text(480, 360, "R = Restart", {
           fontSize: "20px",
           color: "#aaaaaa",
         })
         .setOrigin(0.5);
 
+      this.add
+        .text(480, 390, "M = Main Menu", {
+          fontSize: "20px",
+          color: "#aaaaaa",
+        })
+        .setOrigin(0.5);
+
+      // restart
       this.input.keyboard.once("keydown-R", () => {
         this.scene.restart();
+      });
+
+      // main menu
+      this.input.keyboard.once("keydown-M", () => {
+        this.scene.start("MainMenuScene");
       });
     });
 
     this.events.on("survivalComplete", (data) => {
+      this.physics.pause();
+
       const reward = data.score * 2 + 200;
 
       GameState.coins += reward;
@@ -84,6 +99,30 @@ export class SurvivalScene extends BaseLevelScene {
           color: "#ffffff",
         })
         .setOrigin(0.5);
+
+      this.add
+        .text(480, 320, "R = Play Again", {
+          fontSize: "20px",
+          color: "#aaaaaa",
+        })
+        .setOrigin(0.5);
+
+      this.add
+        .text(480, 350, "M = Main Menu", {
+          fontSize: "20px",
+          color: "#aaaaaa",
+        })
+        .setOrigin(0.5);
+
+      // restart survival
+      this.input.keyboard.once("keydown-R", () => {
+        this.scene.restart();
+      });
+
+      // back to menu
+      this.input.keyboard.once("keydown-M", () => {
+        this.scene.start("MainMenuScene");
+      });
     });
 
     // ======================
@@ -139,6 +178,10 @@ export class SurvivalScene extends BaseLevelScene {
       this.time.delayedCall(1200, () => {
         this.waveAlert.setText("");
       });
+    });
+
+    this.input.keyboard.on("keydown-ESC", () => {
+      this.scene.start("MainMenuScene");
     });
   }
 
