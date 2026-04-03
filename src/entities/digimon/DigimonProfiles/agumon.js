@@ -41,7 +41,7 @@ export const agumon = {
     skill2: {
       type: "projectile",
       anim: "attack-C",
-      power: 0.5,
+      power: 1.5,
       impactVFX: "vfx-tiny-fire-impact",
       projectile: {
         texture: "fireball",
