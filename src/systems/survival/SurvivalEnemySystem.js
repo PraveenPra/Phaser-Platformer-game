@@ -18,9 +18,6 @@ export class SurvivalEnemySystem {
     this.waveState = "waiting";
     this.breakTimer = 0;
 
-    this.maxEnemies = 6;
-    this.enemyPool = ["agumon", "gabumon", "patamon", "wormmon"];
-
     this.gameTime = 0;
     this.difficultyLevel = 1;
 
@@ -41,6 +38,22 @@ export class SurvivalEnemySystem {
       150,
       500,
     );
+  }
+
+  getCurrentEnemyPool() {
+    if (this.difficultyLevel < 2) {
+      return ["agumon"];
+    }
+
+    if (this.difficultyLevel < 5) {
+      return ["agumon", "gabumon"];
+    }
+
+    if (this.difficultyLevel < 7) {
+      return ["agumon", "gabumon", "patamon"];
+    }
+
+    return ["agumon", "gabumon", "patamon", "wormmon"];
   }
 
   spawn(charName, x, y, config = {}) {
@@ -72,8 +85,8 @@ export class SurvivalEnemySystem {
     const y = Phaser.Math.Between(360, 400);
 
     console.log("SPAWNING ENEMY");
-    const charName = Phaser.Utils.Array.GetRandom(this.enemyPool);
-
+    const pool = this.getCurrentEnemyPool();
+    const charName = Phaser.Utils.Array.GetRandom(pool);
     this.spawn(charName, x, y, { level: 1, role: "elite" });
     // this.spawn("agumon", x, y, { level: 1, role: "elite" });
   }
