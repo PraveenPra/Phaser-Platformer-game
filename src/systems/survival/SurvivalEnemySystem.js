@@ -15,6 +15,9 @@ export class SurvivalEnemySystem {
     this.waveSpawning = false;
     this.spawnedInWave = 0;
 
+    this.waveState = "waiting";
+    this.breakTimer = 0;
+
     this.maxEnemies = 6;
     this.enemyPool = ["agumon", "gabumon", "patamon", "wormmon"];
 
@@ -26,14 +29,18 @@ export class SurvivalEnemySystem {
   }
 
   prepareNextWave() {
-    this.spawnInterval = Phaser.Math.Between(1800, 4200);
+    // time before wave begins
+    this.spawnInterval = Phaser.Math.Between(2000, 3500);
 
-    this.waveSize = Phaser.Math.Between(
-      1 + this.difficultyLevel,
-      3 + this.difficultyLevel,
+    // enemies per wave
+    this.waveSize = Phaser.Math.Clamp(3 + this.difficultyLevel, 3, 12);
+
+    // spawn speed
+    this.spawnDelay = Phaser.Math.Clamp(
+      500 - this.difficultyLevel * 20,
+      150,
+      500,
     );
-
-    this.spawnDelay = Phaser.Math.Between(200, 450);
   }
 
   spawn(charName, x, y, config = {}) {
@@ -88,57 +95,77 @@ export class SurvivalEnemySystem {
   update(dt) {
     const alive = this.scene.enemies.countActive(true);
 
-    // ===== START WAVE =====
-    this.spawnTimer += dt;
+    // =====================
+    // WAITING FOR WAVE
+    // =====================
+    if (this.waveState === "waiting") {
+      this.spawnTimer += dt;
 
-    if (
-      !this.waveSpawning &&
-      this.spawnTimer >= this.spawnInterval &&
-      alive < this.maxEnemies
-    ) {
-      this.waveSpawning = true;
-      this.spawnedInWave = 0;
-      this.spawnDelayTimer = 0;
-      this.spawnTimer = 0;
+      if (this.spawnTimer >= this.spawnInterval) {
+        this.waveState = "spawning";
+        this.spawnedInWave = 0;
+        this.spawnDelayTimer = 0;
 
-      this.scene.events.emit("waveStart", {
-        size: this.waveSize,
-      });
+        this.scene.events.emit("waveStart", {
+          size: this.waveSize,
+        });
+      }
     }
 
-    // ===== SPAWN WAVE ENEMIES =====
-    if (this.waveSpawning) {
+    // =====================
+    // SPAWNING WAVE
+    // =====================
+    else if (this.waveState === "spawning") {
       this.spawnDelayTimer += dt;
 
       if (this.spawnDelayTimer >= this.spawnDelay) {
-        if (alive < this.maxEnemies) {
-          this.spawnRandom();
-        }
+        this.spawnRandom();
 
         this.spawnDelayTimer = 0;
         this.spawnedInWave++;
 
-        // randomize next spawn delay for organic feel
-        this.spawnDelay = Phaser.Math.Between(200, 450);
-
         if (this.spawnedInWave >= this.waveSize) {
-          this.waveSpawning = false;
-
-          // prepare new random wave
-          this.prepareNextWave();
+          // spawning finished
+          this.waveState = "combat";
         }
       }
     }
 
-    // ===== UPDATE ENEMIES =====
+    // =====================
+    // COMBAT PHASE
+    // =====================
+    else if (this.waveState === "combat") {
+      if (alive === 0) {
+        this.waveState = "break";
+        this.breakTimer = 0;
+
+        this.scene.events.emit("waveCleared");
+      }
+    }
+
+    // =====================
+    // BREAK BETWEEN WAVES
+    // =====================
+    else if (this.waveState === "break") {
+      this.breakTimer += dt;
+
+      if (this.breakTimer >= 2500) {
+        this.difficultyLevel++;
+
+        this.prepareNextWave();
+
+        this.waveState = "waiting";
+        this.spawnTimer = 0;
+      }
+    }
+
+    // =====================
+    // UPDATE ENEMIES
+    // =====================
     this.scene.enemies.children.each((enemy) => {
       if (!enemy || enemy.isDead) return;
 
       enemy.update(dt);
     });
-
-    // ===== DIFFICULTY SCALING =====
-    this.gameTime += dt;
-    this.difficultyLevel = Math.floor(this.gameTime / 30000) + 1;
   }
 }
