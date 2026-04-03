@@ -98,6 +98,9 @@ export class Enemy extends Character {
         this.destroy();
       },
     });
+
+    // used by survival mode to track kills
+    this.scene.events.emit("enemyKilled", this);
   }
 
   getAttackTargets(scene) {

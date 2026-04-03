@@ -100,6 +100,10 @@ export class SurvivalEnemySystem {
       this.spawnedInWave = 0;
       this.spawnDelayTimer = 0;
       this.spawnTimer = 0;
+
+      this.scene.events.emit("waveStart", {
+        size: this.waveSize,
+      });
     }
 
     // ===== SPAWN WAVE ENEMIES =====
