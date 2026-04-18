@@ -173,4 +173,9 @@ export class Character extends Phaser.GameObjects.Container {
 
     return Math.round(base * multiplier);
   }
+
+  destroy(fromScene) {
+    this.statusEffects?.clearAll();
+    super.destroy(fromScene);
+  }
 }

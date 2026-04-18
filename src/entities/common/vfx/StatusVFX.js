@@ -6,8 +6,18 @@ export class StatusVFX {
     vfx.setDepth(owner.depth + 1);
     vfx.play(key);
 
+    const destroyVfx = () => {
+      if (vfx.active) {
+        vfx.destroy();
+      }
+    };
+
     const updateHandler = () => {
-      if (!vfx.active || !owner.active) return;
+      if (!vfx.active) return;
+      if (!owner.active || owner.isDead) {
+        destroyVfx();
+        return;
+      }
 
       const body = owner.bodyLayer?.body;
       if (body) {
@@ -16,10 +26,11 @@ export class StatusVFX {
     };
 
     scene.events.on("update", updateHandler);
+    owner.once?.("destroy", destroyVfx);
 
-    // 🔥 cleanup hook
     vfx.once("destroy", () => {
       scene.events.off("update", updateHandler);
+      owner.off?.("destroy", destroyVfx);
     });
 
     return vfx;
