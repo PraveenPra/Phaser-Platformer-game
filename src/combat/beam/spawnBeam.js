@@ -76,8 +76,19 @@ export function spawnBeam(scene, owner, attack) {
       targets.children.iterate((target) => {
         if (!target || !target.active || !target.receiveDamage) return;
         if (target === owner) return;
+        const targetBody = target.body;
+        const targetRect = targetBody
+          ? new Phaser.Geom.Rectangle(
+              targetBody.x,
+              targetBody.y,
+              targetBody.width,
+              targetBody.height,
+            )
+          : new Phaser.Geom.Rectangle(target.x, target.y, 1, 1);
 
-        if (!Phaser.Geom.Rectangle.Contains(rect, target.x, target.y)) return;
+        if (!Phaser.Geom.Intersects.RectangleToRectangle(rect, targetRect)) {
+          return;
+        }
 
         const damagePacket = createDamagePacket({
           amount: beam.damage,
