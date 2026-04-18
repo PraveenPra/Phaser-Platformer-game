@@ -133,7 +133,12 @@ export class EnemyAI {
       return;
     }
 
-    if (entity.state.current === "hit" || entity.state.current === "dead") {
+    if (
+      entity.state.current === "hit" ||
+      entity.state.current === "launch" ||
+      entity.state.current === "airRecover" ||
+      entity.state.current === "dead"
+    ) {
       entity.input = {};
       return;
     }

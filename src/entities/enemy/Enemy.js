@@ -56,7 +56,12 @@ export class Enemy extends Character {
 
   update(dt) {
     // 🔒 hit & dead override AI
-    if (this.state.current === "hit" || this.state.current === "dead") {
+    if (
+      this.state.current === "hit" ||
+      this.state.current === "launch" ||
+      this.state.current === "airRecover" ||
+      this.state.current === "dead"
+    ) {
       super.update(dt);
       return;
     }
